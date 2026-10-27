@@ -10,7 +10,7 @@ Requires CMake, Ninja, SDL2 and SDL2_image.
 
 On Fedora: `sudo dnf install gcc cmake ninja-build SDL2-devel SDL2_image-devel`
 
-<!-- TODO: Add other platforms -->
+On Ubuntu/Debian: `sudo apt install build-essential cmake ninja-build libsdl2-dev libsdl2-image-dev`
 
 ### Build & Run
 
