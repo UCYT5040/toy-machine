@@ -17,3 +17,12 @@ On Fedora: `sudo dnf install gcc cmake ninja-build SDL2-devel SDL2_image-devel`
 ```bash
 make run
 ```
+
+## Utilities
+
+`./add_emoji.sh` can be used to quickly download emojis:
+
+```bash
+# Downloads Black Sun with Rays and saves as `assets/emojis/sun.svg`
+./add_emoji.sh ☀️ sun
+```
