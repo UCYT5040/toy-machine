@@ -7,7 +7,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(SDL2 REQUIRED sdl2 SDL2_image)
+pkg_check_modules(SDL2 REQUIRED sdl2 SDL2_image SDL2_ttf)
 
 file(GLOB SOURCES "src/*.c")
 add_executable(toy_machine ${SOURCES})
