@@ -1,4 +1,5 @@
 #include "dev.h"
+#include "emoji_registry.h"
 #include "entities.h"
 
 void run_dev_command(World *world, char *command, char *output_buffer,

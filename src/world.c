@@ -1,5 +1,6 @@
 #include "world.h"
 #include "emoji_registry.h"
+#include "entities.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
@@ -49,11 +50,22 @@ void world_update(World *world, double dt) {
 
         double substep_dt = dt / (double)PHYSICS_SUBSTEPS;
         for (int step = 0; step < PHYSICS_SUBSTEPS; step++) {
-                // TODO: Pass to a physics_step function
-        }
+                for (int i = 0; i < MAX_ENTITIES; i++) {
+                        Entity *entity = &world->entities[i];
 
-        for (int i = 0; i < MAX_ENTITIES; i++) {
-                world->entities[i].a = (Vec2){0.0, 0.0};
+                        if (!entity->active)
+                                continue;
+
+                        entity->a = (Vec2){0.0, 0.0};
+
+                        entity_physics_step(entity); // Computes `a`
+
+                        entity->v.x += entity->a.x * substep_dt;
+                        entity->v.y += entity->a.y * substep_dt;
+
+                        entity->pos.x += entity->v.x * substep_dt;
+                        entity->pos.y += entity->v.y * substep_dt;
+                }
         }
 }
 

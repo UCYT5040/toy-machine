@@ -39,7 +39,7 @@ typedef struct {
 
         double radius; /* TODO: Consider allowing custom shapes for non-circular
                           emojis, or perhaps auto-detecting the shape */
-        double mass;
+        double mass;   /* Immovable if 0.0 */
         double restitution; /* Bounciness, from 0.0 (no bounce) to 1.0
                                (perfectly elastic) */
         uint32_t default_tags;
@@ -51,7 +51,7 @@ typedef struct {
 typedef struct Entity {
         EmojiDefinition *definition;
 
-        bool active; /* Immovable if false */
+        bool active; /* Entity slot is free if false */
         int index;
         EmojiType type;
 
