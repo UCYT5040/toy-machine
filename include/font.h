@@ -1,4 +1,5 @@
 #pragma once
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
@@ -13,5 +14,5 @@ typedef struct {
 bool font_init(FontAtlas *atlas, SDL_Renderer *renderer, const char *font_path,
                int font_size);
 void font_draw(FontAtlas *atlas, SDL_Renderer *renderer, const char *text,
-               float x, float y, SDL_Color color);
+               double x, double y, SDL_Color color);
 void font_destroy(FontAtlas *atlas);

@@ -27,7 +27,7 @@ void world_init(World *world, SDL_Renderer *renderer) {
         }
 }
 
-void world_update(World *world, float dt) {
+void world_update(World *world, double dt) {
         for (int i = 0; i < MAX_ENTITIES; i++) {
                 Entity *entity = &world->entities[i];
                 if (!entity->active) {
@@ -41,19 +41,19 @@ void world_update(World *world, float dt) {
                 Entity *dragged_entity =
                     &world->entities[world->dragged_entity_index];
 
-                dragged_entity->velocity.x =
-                    (world->mouse_pos.x - dragged_entity->position.x) * 20.0f;
-                dragged_entity->velocity.y =
-                    (world->mouse_pos.y - dragged_entity->position.y) * 20.0f;
+                dragged_entity->v.x =
+                    (world->mouse_pos.x - dragged_entity->pos.x) * 20.0;
+                dragged_entity->v.y =
+                    (world->mouse_pos.y - dragged_entity->pos.y) * 20.0;
         }
 
-        float substep_dt = dt / (float)PHYSICS_SUBSTEPS;
+        double substep_dt = dt / (double)PHYSICS_SUBSTEPS;
         for (int step = 0; step < PHYSICS_SUBSTEPS; step++) {
                 // TODO: Pass to a physics_step function
         }
 
         for (int i = 0; i < MAX_ENTITIES; i++) {
-                world->entities[i].force = (Vec2){0.0f, 0.0f};
+                world->entities[i].a = (Vec2){0.0, 0.0};
         }
 }
 
@@ -71,16 +71,10 @@ void world_render(World *world, SDL_Renderer *renderer) {
                 }
 
                 SDL_FRect dest_rect = {
-                    entity->position.x - entity->definition->radius *
-                                             entity->definition->scale *
-                                             entity->scale,
-                    entity->position.y - entity->definition->radius *
-                                             entity->definition->scale *
-                                             entity->scale,
-                    entity->definition->radius * 2.0f *
-                        entity->definition->scale * entity->scale,
-                    entity->definition->radius * 2.0f *
-                        entity->definition->scale * entity->scale};
+                    entity->pos.x - entity->definition->radius,
+                    entity->pos.y - entity->definition->radius,
+                    entity->definition->radius * 2.0,
+                    entity->definition->radius * 2.0};
 
                 SDL_RenderCopyF(renderer, texture, NULL, &dest_rect);
         }
