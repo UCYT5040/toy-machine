@@ -1,7 +1,7 @@
 #include "world.h"
 
 const EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
-    [EMOJI_SOCCER_BALL] = {.name = "Soccer Ball",
+    [EMOJI_SOCCER_BALL] = {.name = "soccer_ball",
                            .svg_path = "assets/soccer_ball.svg",
                            .radius = 20.0f,
                            .mass = 1.0f,

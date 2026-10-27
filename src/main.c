@@ -1,3 +1,4 @@
+#include "dev.h"
 #include "event.h"
 #include "font.h"
 #include "world.h"
@@ -7,6 +8,7 @@
 #include <stdio.h>
 
 #define MAX_DEV_COMMAND_LENGTH 256
+#define MAX_DEV_COMMAND_OUTPUT 256
 
 int main(void) {
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
@@ -31,6 +33,8 @@ int main(void) {
   font_init(&font_atlas, renderer,
             "assets/Roboto_Mono/static/RobotoMono-Regular.ttf", 16);
 
+  char dev_command_output_buffer[256] = {0};
+
   while (running) {
     SDL_Event event;
 
@@ -49,11 +53,13 @@ int main(void) {
             world.dev_command_mode = false;
             break;
           case SDL_KEYDOWN:
-            if (event.key.keysym.sym == SDLK_ESCAPE) {
+            if (event.key.keysym.sym == SDLK_ESCAPE ||
+                event.key.keysym.sym == SDLK_F1) {
               world.dev_command_mode = false;
             } else if (event.key.keysym.sym == SDLK_RETURN) {
-              world.dev_command_mode = false;
-              // TODO: Submit command
+              run_dev_command(&world, dev_command_buffer,
+                              dev_command_output_buffer,
+                              MAX_DEV_COMMAND_OUTPUT);
             } else if (event.key.keysym.sym == SDLK_BACKSPACE &&
                        strlen(dev_command_buffer) > 0) {
               dev_command_buffer[strlen(dev_command_buffer) - 1] = '\0';
@@ -76,6 +82,10 @@ int main(void) {
 
         font_draw(&font_atlas, renderer, dev_command_buffer, 10.0f,
                   10.0f + font_atlas.line_height,
+                  (SDL_Color){255, 255, 255, 255});
+
+        font_draw(&font_atlas, renderer, dev_command_output_buffer, 10.0f,
+                  10.0f + font_atlas.line_height * 2,
                   (SDL_Color){255, 255, 255, 255});
 
         SDL_RenderPresent(renderer);

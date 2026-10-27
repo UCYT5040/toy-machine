@@ -73,8 +73,8 @@ typedef struct World {
   bool mouse_down;
   int dragged_entity_index; // -1 if no entity is being dragged
 
-  bool dev_command_mode; // If true, the user is currently typing a developer
-                         // command (game is paused)
+  bool dev_command_mode; // If true, the dev command window is open (game is
+                         // paused)
   bool dev_show_hitboxes;
   // TODO: Add more developer/debugging features
 } World;
