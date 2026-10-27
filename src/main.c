@@ -1,3 +1,5 @@
+#include "event.h"
+#include "world.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <stdbool.h>
@@ -19,18 +21,13 @@ int main(void) {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
 
+  World world = {0};
+
   while (running) {
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
-      if (event.type == SDL_QUIT)
-        running = false;
-      else if (event.type == SDL_MOUSEMOTION) {
-        int x = event.motion.x;
-        int y = event.motion.y;
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_RenderDrawPoint(renderer, x, y);
-      }
+      handle_event(&world, &event, &running);
     }
 
     SDL_RenderPresent(renderer);
