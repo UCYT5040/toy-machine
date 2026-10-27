@@ -73,3 +73,5 @@ typedef struct World {
   bool mouse_down;
   int dragged_entity_index; // -1 if no entity is being dragged
 } World;
+
+void world_update(World *world, float dt);
