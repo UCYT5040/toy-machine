@@ -4,10 +4,10 @@
 #include <stdbool.h>
 
 typedef struct {
-  SDL_Texture *glyphs[128];
-  int widths[128];
-  int heights[128];
-  int line_height;
+        SDL_Texture *glyphs[128];
+        int widths[128];
+        int heights[128];
+        int line_height;
 } FontAtlas;
 
 bool font_init(FontAtlas *atlas, SDL_Renderer *renderer, const char *font_path,
