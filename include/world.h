@@ -2,6 +2,8 @@
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 
+#define MAX_ENTITIES 1024
+
 typedef struct {
   float x, y;
 } Vec2;
@@ -59,3 +61,15 @@ typedef struct Entity {
   uint32_t tags; // TODO: See above comment about bitmasking
   float timer;   // Can be used for various purposes
 } Entity;
+
+typedef struct World {
+  Entity entities[MAX_ENTITIES];
+  SDL_Texture *textures[EMOJI_COUNT];
+
+  int width, height;
+  float gravity;
+
+  Vec2 mouse_pos;
+  bool mouse_down;
+  int dragged_entity_index; // -1 if no entity is being dragged
+} World;
