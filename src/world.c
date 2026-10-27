@@ -9,6 +9,9 @@
 void world_init(World *world, SDL_Renderer *renderer) {
         *world = (World){0};
 
+        world->dragged_entity_index =
+            -1; // First element will be in a dragging state if not set to `-1`
+
         for (int i = 1; i < EMOJI_COUNT; i++) {
                 EmojiDefinition *definition = &EMOJI_DEFINITIONS[i];
 
@@ -82,11 +85,11 @@ void world_render(World *world, SDL_Renderer *renderer) {
                         continue;
                 }
 
-                SDL_FRect dest_rect = {
-                    entity->pos.x - entity->definition->radius,
-                    entity->pos.y - entity->definition->radius,
-                    entity->definition->radius * 2.0,
-                    entity->definition->radius * 2.0};
+                double radius = entity->definition->radius * entity->scale;
+
+                SDL_FRect dest_rect = {entity->pos.x - radius,
+                                       entity->pos.y - radius, radius * 2.0,
+                                       radius * 2.0};
 
                 SDL_RenderCopyF(renderer, texture, NULL, &dest_rect);
         }

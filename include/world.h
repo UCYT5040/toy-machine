@@ -60,6 +60,8 @@ typedef struct Entity {
         Vec2 a;
         double angle;
 
+        double scale; // To scale individual entities
+
         uint32_t tags; // TODO: See above comment about bitmasking
         double timer;  // Can be used for various purposes
 } Entity;

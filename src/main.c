@@ -6,6 +6,7 @@
 #include <SDL2/SDL_image.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
 
 #define MAX_DEV_COMMAND_LENGTH 256
 #define MAX_DEV_COMMAND_OUTPUT 256
@@ -45,6 +46,8 @@ int main(void) {
                 uint64_t current_counter = SDL_GetPerformanceCounter();
                 dt = (double)(current_counter - last_counter) /
                      (double)frequency;
+                if (dt > 0.05)
+                        dt = 0.05; // In case of a freeze
                 last_counter = current_counter;
 
                 SDL_Event event;
@@ -121,6 +124,8 @@ int main(void) {
 
                                 SDL_RenderPresent(renderer);
                         }
+                        last_counter = SDL_GetPerformanceCounter();
+                        dt = 0.0;
                 }
 
                 SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
