@@ -33,11 +33,17 @@ typedef void (*EmojiCollideFunction)(struct World *world, struct Entity *self,
 typedef struct {
   const char *name;
   const char *svg_path;
+
+  int index;
+
+  // TODO: Either remove radius or scale (I accidentally added both)
   float radius;      // TODO: Consider allowing custom shapes for non-circular
                      // emojis, or perhaps auto-detecting the shape
   float mass;        // 0.0 means immovable
   float restitution; // Bounciness, from 0.0 (no bounce) to 1.0 (perfectly
                      // elastic)
+  float scale;       // Relative to a soccer ball (1.0) and planet Earth (2.5)
+                     // (consider adding more examples)
   uint32_t default_tags; // TODO: Maybe we don't use a bitmask in case we add
                          // more than 8 tags?
 
@@ -56,6 +62,8 @@ typedef struct Entity {
   Vec2 velocity;
   Vec2 force;
   float angle;
+  float
+      scale; // This is in addition to the scale defined in the EmojiDefinition
 
   float inverse_mass;
   uint32_t tags; // TODO: See above comment about bitmasking
@@ -79,4 +87,6 @@ typedef struct World {
   // TODO: Add more developer/debugging features
 } World;
 
+void world_init(World *world, SDL_Renderer *renderer);
 void world_update(World *world, float dt);
+void world_render(World *world, SDL_Renderer *renderer);

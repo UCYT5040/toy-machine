@@ -43,6 +43,7 @@ void run_dev_command(World *world, char *command, char *output_buffer,
             entity->force.x = 0.0f;
             entity->force.y = 0.0f;
             entity->angle = 0.0f;
+            entity->scale = 1.0f;
             entity->inverse_mass = (entity->definition->mass > 0.0f)
                                        ? 1.0f / entity->definition->mass
                                        : 0.0f; // Handle immovable objects

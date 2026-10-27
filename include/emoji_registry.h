@@ -1,3 +1,3 @@
 #include "world.h"
 
-extern const EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT];
+extern EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT];

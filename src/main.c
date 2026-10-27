@@ -5,7 +5,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <stdbool.h>
-#include <stdio.h>
+#include <stdint.h>
 
 #define MAX_DEV_COMMAND_LENGTH 256
 #define MAX_DEV_COMMAND_OUTPUT 256
@@ -23,10 +23,16 @@ int main(void) {
 
   bool running = true;
 
+  double frequency = SDL_GetPerformanceFrequency();
+  uint64_t last_counter = SDL_GetPerformanceCounter();
+  float dt = 0.0f;
+
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
 
-  World world = {0}; // TODO: Add init_world function
+  World world;
+
+  world_init(&world, renderer);
 
   FontAtlas font_atlas;
 
@@ -36,6 +42,10 @@ int main(void) {
   char dev_command_output_buffer[256] = {0};
 
   while (running) {
+    uint64_t current_counter = SDL_GetPerformanceCounter();
+    dt = (float)(current_counter - last_counter) / (float)frequency;
+    last_counter = current_counter;
+
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
@@ -91,6 +101,13 @@ int main(void) {
         SDL_RenderPresent(renderer);
       }
     }
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+
+    world_update(&world, dt);
+
+    world_render(&world, renderer);
 
     SDL_RenderPresent(renderer);
   }
