@@ -25,5 +25,11 @@ void handle_event(World *world, SDL_Event *event, bool *running) {
     }
     break;
   }
+
+  case SDL_KEYDOWN: {
+    if (event->key.keysym.sym == SDLK_F1) {
+      world->dev_command_mode = !world->dev_command_mode;
+    }
+  }
   }
 }
