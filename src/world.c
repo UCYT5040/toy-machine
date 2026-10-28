@@ -41,25 +41,35 @@ void world_update(World *world, double dt) {
                 // TODO: Run update function for each entity, if it has one
         }
 
-        if (world->dragged_entity_index != -1) {
-                Entity *dragged_entity =
-                    &world->entities[world->dragged_entity_index];
-
-                dragged_entity->v.x =
-                    (world->mouse_pos.x - dragged_entity->pos.x) * 20.0;
-                dragged_entity->v.y =
-                    (world->mouse_pos.y - dragged_entity->pos.y) * 20.0;
-        }
-
         double substep_dt = dt / (double)PHYSICS_SUBSTEPS;
         for (int step = 0; step < PHYSICS_SUBSTEPS; step++) {
+                // Calculate `a` for all entities
                 for (int i = 0; i < MAX_ENTITIES; i++) {
                         Entity *entity = &world->entities[i];
 
                         if (!entity->active)
                                 continue;
 
-                        entity_physics_step(entity, &substep_dt);
+                        entity->a = (Vec2){0.0, 0.0};
+
+                        if (i == world->dragged_entity_index) {
+                                entity->pos = world->mouse_pos;
+                                continue;
+                        }
+
+                        entity_physics_step(entity);
+                }
+
+                // Integrate acceleration and velocity
+                for (int i = 0; i < MAX_ENTITIES; i++) {
+                        Entity *entity = &world->entities[i];
+
+                        if (!entity->active ||
+                            entity->definition->mass <= 0.0 ||
+                            i == world->dragged_entity_index)
+                                continue;
+
+                        entity_physics_integrate(entity, &substep_dt);
                 }
         }
 }

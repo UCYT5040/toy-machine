@@ -40,7 +40,7 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                                         Entity *entity = &world->entities[j];
                                         if (!entity->active) {
                                                 entity_create_default(
-                                                    entity, i, (Vec2){x, y});
+                                                    entity, i, (Vec2){x, y}, j);
 
                                                 snprintf(output_buffer,
                                                          output_buffer_size,
