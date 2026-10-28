@@ -1,5 +1,6 @@
 #include "world.h"
 #include "emoji_registry.h"
+#include "entities.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
@@ -7,6 +8,9 @@
 
 void world_init(World *world, SDL_Renderer *renderer) {
         *world = (World){0};
+
+        world->dragged_entity_index =
+            -1; // First element will be in a dragging state if not set to `-1`
 
         for (int i = 1; i < EMOJI_COUNT; i++) {
                 EmojiDefinition *definition = &EMOJI_DEFINITIONS[i];
@@ -27,7 +31,7 @@ void world_init(World *world, SDL_Renderer *renderer) {
         }
 }
 
-void world_update(World *world, float dt) {
+void world_update(World *world, double dt) {
         for (int i = 0; i < MAX_ENTITIES; i++) {
                 Entity *entity = &world->entities[i];
                 if (!entity->active) {
@@ -41,19 +45,30 @@ void world_update(World *world, float dt) {
                 Entity *dragged_entity =
                     &world->entities[world->dragged_entity_index];
 
-                dragged_entity->velocity.x =
-                    (world->mouse_pos.x - dragged_entity->position.x) * 20.0f;
-                dragged_entity->velocity.y =
-                    (world->mouse_pos.y - dragged_entity->position.y) * 20.0f;
+                dragged_entity->v.x =
+                    (world->mouse_pos.x - dragged_entity->pos.x) * 20.0;
+                dragged_entity->v.y =
+                    (world->mouse_pos.y - dragged_entity->pos.y) * 20.0;
         }
 
-        float substep_dt = dt / (float)PHYSICS_SUBSTEPS;
+        double substep_dt = dt / (double)PHYSICS_SUBSTEPS;
         for (int step = 0; step < PHYSICS_SUBSTEPS; step++) {
-                // TODO: Pass to a physics_step function
-        }
+                for (int i = 0; i < MAX_ENTITIES; i++) {
+                        Entity *entity = &world->entities[i];
 
-        for (int i = 0; i < MAX_ENTITIES; i++) {
-                world->entities[i].force = (Vec2){0.0f, 0.0f};
+                        if (!entity->active)
+                                continue;
+
+                        entity->a = (Vec2){0.0, 0.0};
+
+                        entity_physics_step(entity); // Computes `a`
+
+                        entity->v.x += entity->a.x * substep_dt;
+                        entity->v.y += entity->a.y * substep_dt;
+
+                        entity->pos.x += entity->v.x * substep_dt;
+                        entity->pos.y += entity->v.y * substep_dt;
+                }
         }
 }
 
@@ -70,17 +85,11 @@ void world_render(World *world, SDL_Renderer *renderer) {
                         continue;
                 }
 
-                SDL_FRect dest_rect = {
-                    entity->position.x - entity->definition->radius *
-                                             entity->definition->scale *
-                                             entity->scale,
-                    entity->position.y - entity->definition->radius *
-                                             entity->definition->scale *
-                                             entity->scale,
-                    entity->definition->radius * 2.0f *
-                        entity->definition->scale * entity->scale,
-                    entity->definition->radius * 2.0f *
-                        entity->definition->scale * entity->scale};
+                double radius = entity->definition->radius * entity->scale;
+
+                SDL_FRect dest_rect = {entity->pos.x - radius,
+                                       entity->pos.y - radius, radius * 2.0,
+                                       radius * 2.0};
 
                 SDL_RenderCopyF(renderer, texture, NULL, &dest_rect);
         }

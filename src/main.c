@@ -18,5 +18,5 @@ int main(void) {
 
     app_destroy(&app);
 
-    return 0;
+        return 0;
 }

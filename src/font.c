@@ -27,9 +27,9 @@ bool font_init(FontAtlas *atlas, SDL_Renderer *renderer, const char *font_path,
         return true;
 }
 void font_draw(FontAtlas *atlas, SDL_Renderer *renderer, const char *text,
-               float x, float y, SDL_Color color) {
-        float cursor_x = x;
-        float cursor_y = y;
+               double x, double y, SDL_Color color) {
+        double cursor_x = x;
+        double cursor_y = y;
 
         for (const char *p = text; *p; p++) {
                 if (*p == '\n') {
@@ -49,8 +49,8 @@ void font_draw(FontAtlas *atlas, SDL_Renderer *renderer, const char *text,
                 SDL_SetTextureAlphaMod(glyph_texture, color.a);
 
                 SDL_FRect dest_rect = {cursor_x, cursor_y,
-                                       (float)atlas->widths[c],
-                                       (float)atlas->heights[c]};
+                                       (double)atlas->widths[c],
+                                       (double)atlas->heights[c]};
                 SDL_RenderCopyF(renderer, glyph_texture, NULL, &dest_rect);
 
                 cursor_x += atlas->widths[c];

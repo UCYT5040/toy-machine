@@ -1,11 +1,12 @@
 #pragma once
+
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 
 #define MAX_ENTITIES 1024
 
 typedef struct {
-        float x, y;
+        double x, y;
 } Vec2;
 
 typedef enum { EMOJI_NONE = 0, EMOJI_SOCCER_BALL, EMOJI_COUNT } EmojiType;
@@ -26,7 +27,7 @@ struct World;
 struct Entity;
 
 typedef void (*EmojiUpdateFunction)(struct World *world, struct Entity *self,
-                                    float dt);
+                                    double dt);
 typedef void (*EmojiCollideFunction)(struct World *world, struct Entity *self,
                                      struct Entity *other);
 
@@ -36,16 +37,12 @@ typedef struct {
 
         int index;
 
-        // TODO: Either remove radius or scale (I accidentally added both)
-        float radius; // TODO: Consider allowing custom shapes for non-circular
-                      // emojis, or perhaps auto-detecting the shape
-        float mass;   // 0.0 means immovable
-        float restitution; // Bounciness, from 0.0 (no bounce) to 1.0 (perfectly
-                           // elastic)
-        float scale; // Relative to a soccer ball (1.0) and planet Earth (2.5)
-                     // (consider adding more examples)
-        uint32_t default_tags; // TODO: Maybe we don't use a bitmask in case we
-                               // add more than 8 tags?
+        double radius; /* TODO: Consider allowing custom shapes for non-circular
+                          emojis, or perhaps auto-detecting the shape */
+        double mass;   /* Immovable if 0.0 */
+        double restitution; /* Bounciness, from 0.0 (no bounce) to 1.0
+                               (perfectly elastic) */
+        uint32_t default_tags;
 
         EmojiUpdateFunction update;
         EmojiCollideFunction collide;
@@ -54,20 +51,19 @@ typedef struct {
 typedef struct Entity {
         EmojiDefinition *definition;
 
-        bool active; // TODO: Is this ever false?
+        bool active; /* Entity slot is free if false */
         int index;
         EmojiType type;
 
-        Vec2 position;
-        Vec2 velocity;
-        Vec2 force;
-        float angle;
-        float scale; // This is in addition to the scale defined in the
-                     // EmojiDefinition
+        Vec2 pos;
+        Vec2 v;
+        Vec2 a;
+        double angle;
 
-        float inverse_mass;
+        double scale; // To scale individual entities
+
         uint32_t tags; // TODO: See above comment about bitmasking
-        float timer;   // Can be used for various purposes
+        double timer;  // Can be used for various purposes
 } Entity;
 
 typedef struct World {
@@ -75,7 +71,11 @@ typedef struct World {
         SDL_Texture *textures[EMOJI_COUNT];
 
         int width, height;
-        float gravity;
+
+        /*
+        Using passive object with large mass to create gravity
+        double gravity;
+        */
 
         Vec2 mouse_pos;
         bool mouse_down;
@@ -88,5 +88,5 @@ typedef struct World {
 } World;
 
 void world_init(World *world, SDL_Renderer *renderer);
-void world_update(World *world, float dt);
+void world_update(World *world, double dt);
 void world_render(World *world, SDL_Renderer *renderer);

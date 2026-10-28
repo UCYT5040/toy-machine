@@ -1,4 +1,6 @@
 #include "dev.h"
+#include "emoji_registry.h"
+#include "entities.h"
 
 void run_dev_command(World *world, char *command, char *output_buffer,
                      size_t output_buffer_size) {
@@ -30,34 +32,15 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                                         return;
                                 }
 
-                                float x = strtof(x_str, NULL);
-                                float y = strtof(y_str, NULL);
+                                double x = strtof(x_str, NULL);
+                                double y = strtof(y_str, NULL);
 
                                 // Find an inactive entity slot
                                 for (int j = 0; j < MAX_ENTITIES; j++) {
                                         Entity *entity = &world->entities[j];
                                         if (!entity->active) {
-                                                entity->active = true;
-                                                entity->definition =
-                                                    &EMOJI_DEFINITIONS[i];
-                                                entity->type = (EmojiType)i;
-                                                entity->position.x = x;
-                                                entity->position.y = y;
-                                                entity->velocity.x = 0.0f;
-                                                entity->velocity.y = 0.0f;
-                                                entity->force.x = 0.0f;
-                                                entity->force.y = 0.0f;
-                                                entity->angle = 0.0f;
-                                                entity->scale = 1.0f;
-                                                entity->inverse_mass =
-                                                    (entity->definition->mass >
-                                                     0.0f)
-                                                        ? 1.0f /
-                                                              entity->definition
-                                                                  ->mass
-                                                        : 0.0f; // Handle
-                                                                // immovable
-                                                                // objects
+                                                entity_create_default(
+                                                    entity, i, (Vec2){x, y});
 
                                                 snprintf(output_buffer,
                                                          output_buffer_size,

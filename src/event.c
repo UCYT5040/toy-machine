@@ -7,8 +7,8 @@ void handle_event(World *world, SDL_Event *event, bool *running) {
                 break;
 
         case SDL_MOUSEMOTION: {
-                world->mouse_pos.x = (float)event->motion.x;
-                world->mouse_pos.y = (float)event->motion.y;
+                world->mouse_pos.x = (double)event->motion.x;
+                world->mouse_pos.y = (double)event->motion.y;
                 break;
         }
 
