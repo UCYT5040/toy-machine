@@ -1,6 +1,9 @@
 #include "dev.h"
 #include "emoji_registry.h"
 #include "entities.h"
+#include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
 
 void run_dev_command(World *world, char *command, char *output_buffer,
                      size_t output_buffer_size) {
@@ -76,5 +79,32 @@ void run_dev_command(World *world, char *command, char *output_buffer,
 
                 snprintf(output_buffer, output_buffer_size, "Speed set to %.2f",
                          speed);
+        } else if (strcmp(command_name, "hitboxes") == 0) {
+                char *option_str = strtok(NULL, " \t\n");
+                if (option_str == NULL) {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Usage: hitboxes <on/off>");
+                        return;
+                }
+
+                // Skips any whitespace
+                while (option_str[0] == ' ')
+                        option_str++;
+
+                if (strcmp(option_str, "on") == 0) {
+                        world->dev_show_hitboxes = true;
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Enabled hitboxes");
+                } else if (strcmp(option_str, "off") == 0) {
+                        world->dev_show_hitboxes = false;
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Disabled hitboxes");
+                } else {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Invalid argument to command \"hitboxes\". "
+                                 "Only \"on\" and \"off\" are allowed.");
+                }
+        } else {
+                snprintf(output_buffer, output_buffer_size, "Unknown command");
         }
 }
