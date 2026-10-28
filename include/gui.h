@@ -6,7 +6,7 @@
 #include "font.h"
 #include "world.h"
 
-#define MAX_DEV_COMMAMD_LENGTH 256
+#define MAX_DEV_COMMAND_LENGTH 256
 #define MAX_DEV_COMMAND_OUTPUT 256
 
 typedef struct {
