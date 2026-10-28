@@ -59,15 +59,7 @@ void world_update(World *world, double dt) {
                         if (!entity->active)
                                 continue;
 
-                        entity->a = (Vec2){0.0, 0.0};
-
-                        entity_physics_step(entity); // Computes `a`
-
-                        entity->v.x += entity->a.x * substep_dt;
-                        entity->v.y += entity->a.y * substep_dt;
-
-                        entity->pos.x += entity->v.x * substep_dt;
-                        entity->pos.y += entity->v.y * substep_dt;
+                        entity_physics_step(entity, &substep_dt);
                 }
         }
 }
