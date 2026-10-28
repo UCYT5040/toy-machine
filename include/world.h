@@ -9,7 +9,12 @@ typedef struct {
         double x, y;
 } Vec2;
 
-typedef enum { EMOJI_NONE = 0, EMOJI_SOCCER_BALL, EMOJI_COUNT } EmojiType;
+typedef enum {
+        EMOJI_NONE = 0,
+        EMOJI_SOCCER_BALL,
+        EMOJI_EARTH,
+        EMOJI_COUNT
+} EmojiType;
 
 typedef enum {
         TAG_NONE = 0,

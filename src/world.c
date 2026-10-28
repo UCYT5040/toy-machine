@@ -57,7 +57,7 @@ void world_update(World *world, double dt) {
                                 continue;
                         }
 
-                        entity_physics_step(entity);
+                        entity_physics_step(entity, world);
                 }
 
                 // Integrate acceleration and velocity

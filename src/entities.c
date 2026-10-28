@@ -1,5 +1,7 @@
-#include "entities.h"
+#include <math.h>
+
 #include "emoji_registry.h"
+#include "entities.h"
 #include "world.h"
 
 void entity_create_default(Entity *entity, int definition_index, Vec2 pos,
@@ -17,11 +19,30 @@ void entity_create_default(Entity *entity, int definition_index, Vec2 pos,
         entity->a = (Vec2){0.0, 0.0};
 }
 
-void entity_physics_step(Entity *entity) {
+// Calculates the gravitational field strengh of `other` on `self`
+static Vec2 entity_gravitational_field_strength(Entity *self, Entity *other) {
+        double dx = other->pos.x - self->pos.x;
+        double dy = other->pos.y - self->pos.y;
+        double distance = fmax(sqrt(dx * dx + dy * dy), 0.01);
+
+        double a = G * other->definition->mass / (distance * distance);
+
+        return (Vec2){a * dx / distance, a * dy / distance};
+}
+
+void entity_physics_step(Entity *entity, World *world) {
         if (entity->definition->mass <= 0.0)
                 return; // Object is immovable
 
-        entity->a.y = 9.81; // Homogenous gravitational field downwards
+        for (int i = 0; i < MAX_ENTITIES; i++) {
+                Entity *other = &world->entities[i];
+                if (entity == other || !other->active)
+                        continue;
+
+                Vec2 a = entity_gravitational_field_strength(entity, other);
+                entity->a.x += a.x;
+                entity->a.y += a.y;
+        }
 }
 
 void entity_physics_integrate(Entity *entity, double *dt) {
