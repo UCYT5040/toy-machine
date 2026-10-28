@@ -98,6 +98,9 @@ typedef struct World {
         bool mouse_down;
         int dragged_entity_index; // -1 if no entity is being dragged
 
+        double speed; // Currently used only for dev commands, but could
+                      // be an effect later on (this is a multiplier for dt)
+
         bool dev_command_mode; // If true, the dev command window is open (game
                                // is paused)
         bool dev_show_hitboxes;

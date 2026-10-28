@@ -11,6 +11,7 @@ void world_init(World *world, SDL_Renderer *renderer) {
 
         world->dragged_entity_index =
             -1; // First element will be in a dragging state if not set to `-1`
+        world->speed = 1.0; // If left unset, the game will be frozen (0.0)
 
         for (int i = 1; i < EMOJI_COUNT; i++) {
                 EmojiDefinition *definition = &EMOJI_DEFINITIONS[i];
@@ -32,6 +33,8 @@ void world_init(World *world, SDL_Renderer *renderer) {
 }
 
 void world_update(World *world, double dt) {
+        double scaled_dt = dt * world->speed; // TODO: Is it necessary to do this in the parent loop? (i.e., is dt referenced anywhere else)
+
         for (int i = 0; i < MAX_ENTITIES; i++) {
                 Entity *entity = &world->entities[i];
                 if (!entity->active) {
@@ -42,7 +45,7 @@ void world_update(World *world, double dt) {
         }
 
 
-        double substep_dt = dt / (double)PHYSICS_SUBSTEPS;
+        double substep_dt = scaled_dt / (double)PHYSICS_SUBSTEPS;
         for (int step = 0; step < PHYSICS_SUBSTEPS; step++) {
                 // Calculate `a` for all entities
                 for (int i = 0; i < MAX_ENTITIES; i++) {

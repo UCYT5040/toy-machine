@@ -57,5 +57,24 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                                 return;
                         }
                 }
+        } else if (strcmp(command_name, "speed") == 0) {
+                char *speed_str = strtok(NULL, " \t\n");
+                if (speed_str == NULL) {
+                        snprintf(
+                            output_buffer, output_buffer_size,
+                            "Usage: speed <value> (e.g., 0.5 for half speed)");
+                        return;
+                }
+
+                double speed = strtof(speed_str, NULL);
+
+                // Accept `0.0`, since that can be used to freeze the game
+                if (speed < 0.0) {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Speed must be non-negative");
+                }
+
+                snprintf(output_buffer, output_buffer_size, "Speed set to %.2f",
+                         speed);
         }
 }
