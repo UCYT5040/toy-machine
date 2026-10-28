@@ -94,3 +94,6 @@ void world_render(World *world, SDL_Renderer *renderer);
 int world_get_entity_at(
     World *world, Vec2 pos); // If multiple entities overlap, selects the entity
                              // with a center nearest to the position.
+
+void world_handle_mouse_down(World *world);
+void world_handle_mouse_up(World *world);

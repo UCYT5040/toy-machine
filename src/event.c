@@ -16,6 +16,7 @@ void handle_event(World *world, SDL_Event *event, bool *running) {
                 if (event->button.button == SDL_BUTTON_LEFT) {
                         world->mouse_down =
                             true; // TODO: Consider adding a mouse button state
+                        world_handle_mouse_down(world);
                 }
                 break;
         }
@@ -23,6 +24,7 @@ void handle_event(World *world, SDL_Event *event, bool *running) {
         case SDL_MOUSEBUTTONUP: {
                 if (event->button.button == SDL_BUTTON_LEFT) {
                         world->mouse_down = false;
+                        world_handle_mouse_up(world);
                 }
                 break;
         }

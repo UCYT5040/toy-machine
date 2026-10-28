@@ -41,9 +41,13 @@ void world_update(World *world, double dt) {
                 // TODO: Run update function for each entity, if it has one
         }
 
-        if (world->dragged_entity_index != -1) {
+        if (world->dragged_entity_index == -1) {
+
+        } else {
                 Entity *dragged_entity =
                     &world->entities[world->dragged_entity_index];
+
+                // TODO: This should be handled in substeps
 
                 dragged_entity->v.x =
                     (world->mouse_pos.x - dragged_entity->pos.x) * 20.0;
@@ -93,6 +97,18 @@ void world_render(World *world, SDL_Renderer *renderer) {
 
                 SDL_RenderCopyF(renderer, texture, NULL, &dest_rect);
         }
+}
+
+void world_handle_mouse_down(World *world) {
+        int entity_index = world_get_entity_at(world, world->mouse_pos);
+
+        if (entity_index != -1) {
+                world->dragged_entity_index = entity_index;
+        }
+}
+
+void world_handle_mouse_up(World *world) {
+        world->dragged_entity_index = -1;
 }
 
 int world_get_entity_at(World *world, Vec2 pos) {

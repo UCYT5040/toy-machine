@@ -10,6 +10,7 @@ void entity_create_default(Entity *entity, size_t definition_index, Vec2 pos) {
         entity->v = (Vec2){0.0, 0.0};
         entity->a = (Vec2){0.0, 0.0};
         entity->angle = 0.0;
+        entity->scale = 1.0;
 }
 
 void entity_physics_step(Entity *entity) {
