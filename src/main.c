@@ -8,7 +8,7 @@
 int main(void) {
     App app;
     if (!app_init(&app, WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT)) {
-        return 1
+        return 1;
     }
     
     World world;
