@@ -16,4 +16,12 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                        .restitution = 0.5,
                        .default_tags = TAG_PROCESSOR,
                        .update = NULL,
-                       .collide = NULL}};
+                       .collide = NULL},
+    [EMOJI_EARTH] = {.name = "earth",
+                     .svg_path = "assets/emojis/earth.svg",
+                     .radius = 100.0,
+                     .mass = 5.974e17, // Too small on purpose
+                     .restitution = 0.0,
+                     .default_tags = TAG_NONE,
+                     .update = NULL,
+                     .collide = NULL}};

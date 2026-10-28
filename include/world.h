@@ -13,6 +13,7 @@ typedef enum {
         EMOJI_NONE = 0,
         EMOJI_SOCCER_BALL,
         EMOJI_FACTORY,
+        EMOJI_EARTH,
         EMOJI_COUNT
 } EmojiType;
 
@@ -73,6 +74,7 @@ typedef struct Entity {
 
         Vec2 pos;
         Vec2 v;
+        Vec2 a;
         double angle;
 
         double scale; // To scale individual entities

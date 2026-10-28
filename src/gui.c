@@ -10,20 +10,25 @@ bool app_init(App *app, const char *title, int width, int height) {
                 return false;
         }
 
-        app->window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
+        app->window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED,
+                                       SDL_WINDOWPOS_CENTERED, width, height,
+                                       SDL_WINDOW_SHOWN);
         if (!app->window) {
                 SDL_Quit();
                 return false;
         }
 
-        app->renderer = SDL_CreateRenderer(app->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+        app->renderer = SDL_CreateRenderer(app->window, -1,
+                                           SDL_RENDERER_ACCELERATED |
+                                               SDL_RENDERER_PRESENTVSYNC);
         if (!app->renderer) {
                 SDL_DestroyWindow(app->window);
                 SDL_Quit();
                 return false;
         }
 
-        font_init(&app->font_atlas, app->renderer, "assets/Roboto_Mono/static/RobotoMono-Regular.ttf", 16);
+        font_init(&app->font_atlas, app->renderer,
+                  "assets/Roboto_Mono/static/RobotoMono-Regular.ttf", 16);
         gui_console_init(&app->dev_console, &app->font_atlas);
 
         app->running = true;
@@ -37,17 +42,19 @@ void app_run(App *app, World *world) {
         while (app->running) {
                 /* delta time compute */
                 uint64_t current_counter = SDL_GetPerformanceCounter();
-                float dt = (float)(current_counter - last_counter) / (float)frequency;
+                float dt =
+                    (float)(current_counter - last_counter) / (float)frequency;
                 last_counter = current_counter;
 
                 /* event processing */
                 SDL_Event event;
                 while (SDL_PollEvent(&event)) {
                         handle_event(world, &event, &app->running);
-                        gui_console_handle_event(&app->dev_console, world, &event, &app->running);
+                        gui_console_handle_event(&app->dev_console, world,
+                                                 &event, &app->running);
                 }
 
-                /* update world */ 
+                /* update world */
                 if (!world->dev_command_mode) {
                         world_update(world, dt);
                 }
@@ -81,7 +88,8 @@ void gui_console_init(DevConsole *console, FontAtlas *font_atlas) {
         console->was_mode_active = false;
 }
 
-void gui_console_handle_event(DevConsole *console, World *world, SDL_Event *event, bool *running) {
+void gui_console_handle_event(DevConsole *console, World *world,
+                              SDL_Event *event, bool *running) {
         if (world->dev_command_mode && !console->was_mode_active) {
                 SDL_StartTextInput();
                 console->was_mode_active = true;
@@ -94,7 +102,7 @@ void gui_console_handle_event(DevConsole *console, World *world, SDL_Event *even
                 return;
         }
 
-        /* These values are repeated quite a bit and 
+        /* These values are repeated quite a bit and
         are pretty long so I assigned them to a variable */
         SDL_Keycode key = event->key.keysym.sym;
         char *cb = console->command_buffer;
@@ -107,7 +115,7 @@ void gui_console_handle_event(DevConsole *console, World *world, SDL_Event *even
                 world->dev_command_mode = false;
                 break;
         case SDL_KEYDOWN:
-                if (key == SDLK_ESCAPE || key == SDLK_F1) {
+                if (key == SDLK_ESCAPE) {
                         world->dev_command_mode = false;
                 } else if (key == SDLK_RETURN) {
                         run_dev_command(world, cb, ob, MAX_DEV_COMMAND_OUTPUT);
@@ -131,7 +139,8 @@ void gui_console_render(DevConsole *console, SDL_Renderer *renderer) {
         SDL_Color white = {255, 255, 255, 255};
         float fh = console->font_atlas->line_height;
         font_draw(console->font_atlas, renderer, "> ", 10.0f, 10.0f, white);
-        font_draw(console->font_atlas, renderer, console->command_buffer, 10.0f, 10.0f + fh, white);
-        font_draw(console->font_atlas, renderer, console->output_buffer, 10.0f, 10.0f + fh * 2, white);
+        font_draw(console->font_atlas, renderer, console->command_buffer, 10.0f,
+                  10.0f + fh, white);
+        font_draw(console->font_atlas, renderer, console->output_buffer, 10.0f,
+                  10.0f + fh * 2, white);
 }
-
