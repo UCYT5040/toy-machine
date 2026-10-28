@@ -94,3 +94,31 @@ void world_render(World *world, SDL_Renderer *renderer) {
                 SDL_RenderCopyF(renderer, texture, NULL, &dest_rect);
         }
 }
+
+int world_get_entity_at(World *world, Vec2 pos) {
+        int nearest = -1;
+        double nearest_distance_sq = 0.0;
+
+        for (int i = 0; i < MAX_ENTITIES; i++) {
+                Entity *entity = &world->entities[i];
+                if (!entity->active) {
+                        continue;
+                }
+
+                double dx = pos.x - entity->pos.x;
+                double dy = pos.y - entity->pos.y;
+                double distance_sq = dx * dx + dy * dy;
+
+                double radius = entity->definition->radius * entity->scale;
+
+                if (distance_sq <= radius * radius) {
+                        if (nearest == -1 ||
+                            distance_sq < nearest_distance_sq) {
+                                nearest = i;
+                                nearest_distance_sq = distance_sq;
+                        }
+                }
+        }
+
+        return nearest;
+}
