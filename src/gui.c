@@ -4,6 +4,70 @@
 #include <SDL/SDL2_image.h>
 #include <string.h>
 
+/* App GUI stuff */
+bool app_init(App *app, const char *title, int width, int height) {
+        if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+                return false;
+        }
+
+        app->window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
+        if (!app->window) {
+                SDL_DestroyWindow(app)
+                SDL_Quit();
+                return false;
+        }
+
+        font_init(&app->font_atlas, app->renderer, "assets/Roboto_Mono/static/RobotoMono-Regular.ttf", 16);
+        gui_console_init(&app->dev_console, &app->font_atlas);
+
+        app->running = true;
+        return true;
+}
+
+void app_run(App *app, World *world) {
+        double frequency = (double)SDL_GetPerformanceFrequency();
+        uint64_t last_counter = SDL_GetPerformanceCounter();
+
+        while (app->running) {
+                /* delta time compute */
+                uint64_t current_counter = SDL_GetPerformanceCounter();
+                float dt = (float)(current_counter - last_counter) / (float)frequency
+                last_counter = current_counter;
+
+                /* event processing */
+                SDL_Event event;
+                while (SDL_PollEvent(&event)) {
+                        handle_event(world, &event, &app-running);
+                        gui_console_handle_event(&app->dev_console, world, &event, &app->running);
+                }
+
+                /* update world */ 
+                if (!world->dev_command_mode) {
+                        world_update(world, dt);
+                }
+
+                /* render pipe */
+                SDL_SetREnderDrawColor(app->renderer, 0, 0, 0, 255);\
+                SDL_RenderClear(app->renderer);
+
+                world_render(world, app->renderer);
+
+                if (world->dev_command_mode) {
+                        gui_console_render(&app->dev_console, app->renderer);
+                }
+
+                SDL_RenderPresent(app->renderer);
+        }
+}
+
+void app_destroy(App *app) {
+        font_destroy(&app->font_atlas);
+        SDL_DestroyRenderer(app->renderer);
+        SDL_DestroyWindow(app->window);
+        SDL_Quit();
+}
+
+/* Developer Console Stuff */
 void gui_console_init(DevConsole *console, FontAtlas *font_atlas) {
         memset(console->command_buffer, 0, sizeof(console->command_buffer));
         memset(console->output_buffer, 0, sizeof(console->output_buffer));\
