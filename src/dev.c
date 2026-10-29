@@ -66,9 +66,11 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                         return;
                 }
 
-                for (int i = 1; i < EMOJI_COUNT; i++) {
-                        if (strcmp(emoji_name, EMOJI_DEFINITIONS[i].name) ==
-                            0) {
+                bool found = false;
+                for (int i = 1; i < EMOJI_COUNT && !found; i++) {
+                        found =
+                            strcmp(emoji_name, EMOJI_DEFINITIONS[i].name) == 0;
+                        if (found) {
                                 char *x_str = strtok(NULL, " \t\n");
                                 char *y_str = strtok(NULL, " \t\n");
                                 if (x_str == NULL || y_str == NULL) {
@@ -103,6 +105,11 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                                          "entities.");
                                 return;
                         }
+                }
+
+                if (!found) {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Emoji not found");
                 }
         } else if (strcmp(command_name, "speed") == 0) {
                 char *speed_str = strtok(NULL, " \t\n");
@@ -150,6 +157,8 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                                  "Invalid argument to command \"hitboxes\". "
                                  "Only \"on\" and \"off\" are allowed.");
                 }
+        } else if (strcmp(command_name, "exit") == 0) {
+                exit(0);
         } else {
                 snprintf(output_buffer, output_buffer_size,
                          "Unknown command %s, type 'help' for\n a list of "
