@@ -16,7 +16,7 @@ static void append_output(char *buffer, size_t buffer_size, size_t *used,
         va_list args;
         va_start(args, format);
         int written = vsnprintf(buffer + *used, buffer_size - *used, format, args);
-        va_ends(args);
+        va_end(args);
 
         if (written < 0) {
                 return;
