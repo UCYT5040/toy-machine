@@ -30,10 +30,33 @@ static Vec2 entity_gravitational_field_strength(Entity *self, Entity *other) {
         return (Vec2){a * dx / distance, a * dy / distance};
 }
 
+static bool entity_is_colliding(Entity *self, Entity *other) {
+        // Assuming circular hitboxes for now
+        double dx = other->pos.x - self->pos.x;
+        double dy = other->pos.y - self->pos.y;
+
+        return sqrt(dx * dx + dy * dy) <=
+               self->definition->radius * self->scale +
+                   other->definition->radius * other->scale;
+}
+
 void entity_physics_step(Entity *entity, World *world) {
         if (entity->definition->mass <= 0.0)
                 return; // Object is immovable
 
+        // Detect and handle collisions
+        for (int i = 0; i < MAX_ENTITIES; i++) {
+                Entity *other = &world->entities[i];
+                if (entity == other || !other->active)
+                        continue;
+
+                if (entity_is_colliding(entity, other)) {
+                        entity->v.x *= -1.0;
+                        entity->v.y *= -1.0;
+                }
+        }
+
+        // Calculate gravitational field stregth of all other entities
         for (int i = 0; i < MAX_ENTITIES; i++) {
                 Entity *other = &world->entities[i];
                 if (entity == other || !other->active)
