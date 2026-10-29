@@ -117,8 +117,9 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                 if (speed < 0.0) {
                         snprintf(output_buffer, output_buffer_size,
                                  "Speed must be non-negative");
+                        return;
                 }
-
+                
                 snprintf(output_buffer, output_buffer_size, "Speed set to %.2f",
                          speed);
         } else if (strcmp(command_name, "hitboxes") == 0) {
