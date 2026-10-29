@@ -31,13 +31,26 @@ static Vec2 entity_gravitational_field_strength(Entity *self, Entity *other) {
 }
 
 static bool entity_is_colliding(Entity *self, Entity *other) {
-        // Assuming circular hitboxes for now
         double dx = other->pos.x - self->pos.x;
         double dy = other->pos.y - self->pos.y;
 
+        // Assuming circular hitboxes for now
         return sqrt(dx * dx + dy * dy) <=
                self->definition->radius * self->scale +
                    other->definition->radius * other->scale;
+}
+
+static void entity_fix_overlap(Entity *self, Entity *other) {
+        double dx = other->pos.x - self->pos.x;
+        double dy = other->pos.y - self->pos.y;
+
+        double distance = fmax(sqrt(dx * dx + dy * dy), 0.01);
+
+        double diff = self->definition->radius * self->scale +
+                      other->definition->radius * other->scale - distance;
+
+        self->pos.x -= dx / distance * diff;
+        self->pos.y -= dy / distance * diff;
 }
 
 void entity_physics_step(Entity *entity, World *world) {
@@ -53,6 +66,8 @@ void entity_physics_step(Entity *entity, World *world) {
                 if (entity_is_colliding(entity, other)) {
                         entity->v.x *= -1.0;
                         entity->v.y *= -1.0;
+
+                        entity_fix_overlap(entity, other);
                 }
         }
 
