@@ -30,14 +30,14 @@ static Vec2 entity_gravitational_field_strength(Entity *self, Entity *other) {
         return (Vec2){a * dx / distance, a * dy / distance};
 }
 
-static bool entity_is_colliding(Entity *self, Entity *other) {
-        double dx = other->pos.x - self->pos.x;
-        double dy = other->pos.y - self->pos.y;
+static bool entity_is_colliding(Entity *e1, Entity *e2) {
+        double dx = e2->pos.x - e1->pos.x;
+        double dy = e2->pos.y - e1->pos.y;
 
         // Assuming circular hitboxes for now
         return sqrt(dx * dx + dy * dy) <=
-               self->definition->radius * self->scale +
-                   other->definition->radius * other->scale;
+               e1->definition->radius * e1->scale +
+                   e2->definition->radius * e2->scale;
 }
 
 static void entity_fix_overlap(Entity *self, Entity *other) {
@@ -51,6 +51,20 @@ static void entity_fix_overlap(Entity *self, Entity *other) {
 
         self->pos.x -= dx / distance * diff;
         self->pos.y -= dy / distance * diff;
+}
+
+// Negative velocity: Entities are moving away from eachother
+// Positive velocity: Entities are moving towards eachother
+// A collision is not guaranteed if entities are moving towards eachother
+static double entity_relative_velocity(Entity *e1, Entity *e2) {
+        double dx = e2->pos.x - e1->pos.x;
+        double dy = e2->pos.y - e1->pos.y;
+        double distance = fmax(sqrt(dx * dx + dy * dy), 0.01);
+
+        double dvx = e1->v.x - e2->v.x;
+        double dvy = e1->v.y - e2->v.y;
+
+        return dvx * (dx / distance) + dvy * (dy / distance);
 }
 
 void entity_physics_step(Entity *entity, World *world) {
