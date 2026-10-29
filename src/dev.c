@@ -149,6 +149,6 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                                  "Only \"on\" and \"off\" are allowed.");
                 }
         } else {
-                snprintf(output_buffer, output_buffer_size, "Unknown command");
+                snprintf(output_buffer, output_buffer_size, "Unknown command %s, type 'help' for\n a list of available commands", command_name);
         }
 }
