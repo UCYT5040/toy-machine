@@ -7,15 +7,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void append_output(char *buffer, size_t buffer_size, size_t *used, 
-        const char *format, ...) {
+static void append_output(char *buffer, size_t buffer_size, size_t *used,
+                          const char *format, ...) {
         if (*used >= buffer_size) {
                 return;
         }
 
         va_list args;
         va_start(args, format);
-        int written = vsnprintf(buffer + *used, buffer_size - *used, format, args);
+        int written =
+            vsnprintf(buffer + *used, buffer_size - *used, format, args);
         va_end(args);
 
         if (written < 0) {
@@ -32,17 +33,18 @@ static void dev_command_help(char *output_buffer, size_t output_buffer_size) {
         size_t used = 0;
         output_buffer[0] = '\0';
 
-        append_output(output_buffer, output_buffer_size, &used,
-                        "Commands:\n"
-                        " help - show this help message\n"
-                        " spawn <emoji> <x> <y> - spawn an emoji at given coords\n"
-                        " speed <value> - set simulation speed\n"
-                        " hitboxes <on/off> - toggle hitboxes\n\n"
-                        "Emojis: ");
+        append_output(
+            output_buffer, output_buffer_size, &used,
+            "Commands:\n"
+            " help - show this help message\n"
+            " spawn <emoji> <x> <y> - spawn an emoji at given coords\n"
+            " speed <value> - set simulation speed\n"
+            " hitboxes <on/off> - toggle hitboxes\n\n"
+            "Emojis: ");
 
-        for (int i = 1; i< EMOJI_COUNT; i++) {
+        for (int i = 1; i < EMOJI_COUNT; i++) {
                 append_output(output_buffer, output_buffer_size, &used, " %s",
-                                EMOJI_DEFINITIONS[i].name);
+                              EMOJI_DEFINITIONS[i].name);
         }
 }
 
@@ -119,7 +121,7 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                                  "Speed must be non-negative");
                         return;
                 }
-                
+
                 world->speed = speed;
                 snprintf(output_buffer, output_buffer_size, "Speed set to %.2f",
                          speed);
@@ -149,6 +151,9 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                                  "Only \"on\" and \"off\" are allowed.");
                 }
         } else {
-                snprintf(output_buffer, output_buffer_size, "Unknown command %s, type 'help' for\n a list of available commands", command_name);
+                snprintf(output_buffer, output_buffer_size,
+                         "Unknown command %s, type 'help' for\n a list of "
+                         "available commands",
+                         command_name);
         }
 }

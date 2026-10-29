@@ -33,7 +33,9 @@ void world_init(World *world, SDL_Renderer *renderer) {
 }
 
 void world_update(World *world, double dt) {
-        double scaled_dt = dt * world->speed; // TODO: Is it necessary to do this in the parent loop? (i.e., is dt referenced anywhere else)
+        double scaled_dt =
+            dt * world->speed; // TODO: Is it necessary to do this in the parent
+                               // loop? (i.e., is dt referenced anywhere else)
 
         for (int i = 0; i < MAX_ENTITIES; i++) {
                 Entity *entity = &world->entities[i];
@@ -43,7 +45,6 @@ void world_update(World *world, double dt) {
 
                 // TODO: Run update function for each entity, if it has one
         }
-
 
         double substep_dt = scaled_dt / (double)PHYSICS_SUBSTEPS;
         for (int step = 0; step < PHYSICS_SUBSTEPS; step++) {
@@ -98,6 +99,8 @@ void world_render(World *world, SDL_Renderer *renderer) {
                                        radius * 2.0};
 
                 SDL_RenderCopyF(renderer, texture, NULL, &dest_rect);
+
+                // TODO: Render hitboxes
         }
 }
 
@@ -109,9 +112,7 @@ void world_handle_mouse_down(World *world) {
         }
 }
 
-void world_handle_mouse_up(World *world) {
-        world->dragged_entity_index = -1;
-}
+void world_handle_mouse_up(World *world) { world->dragged_entity_index = -1; }
 
 int world_get_entity_at(World *world, Vec2 pos) {
         int nearest = -1;
