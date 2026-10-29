@@ -1,9 +1,50 @@
 #include "dev.h"
 #include "emoji_registry.h"
 #include "entities.h"
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
+static void append_output(char *buffer, size_t buffer_size, size_t *used, 
+        const char *format, ...) {
+        if (*used >= buffer_size) {
+                return;
+        }
+
+        va_list args;
+        va_start(args, format);
+        int written = vsnprintf(buffer + *used, buffer_size - *used, format, args);
+        va_ends(args);
+
+        if (written < 0) {
+                return;
+        }
+
+        *used += (size_t)written;
+        if (*used >= buffer_size) {
+                *used = buffer_size - 1;
+        }
+}
+
+static void dev_command_help(char *output_buffer, size_t output_buffer_size) {
+        size_t used = 0;
+        output_buffer[0] = '\0';
+
+        append_output(output_buffer, output_buffer_size, &used,
+                        "Commands:\n"
+                        " help - show this help message\n"
+                        " spawn <emoji> <x> <y> - spawn an emoji at given coords\n"
+                        " speed <value> - set simulation speed\n"
+                        " hitboxes <on/off> - toggle hitboxes\n\n"
+                        "Emojis: ");
+
+        for (int i = 1; i< EMOJI_COUNT; i++) {
+                append_output(output_buffer, output_buffer_size, &used, " %s",
+                                EMOJI_DEFINITIONS[i].name);
+        }
+}
 
 void run_dev_command(World *world, char *command, char *output_buffer,
                      size_t output_buffer_size) {
@@ -13,8 +54,9 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                          "No command entered.");
                 return;
         }
-
-        if (strcmp(command_name, "spawn") == 0) {
+        if (strcmp(command_name, "help") == 0) {
+                dev_command_help(output_buffer, output_buffer_size);
+        } else if (strcmp(command_name, "spawn") == 0) {
                 char *emoji_name = strtok(NULL, " \t\n");
                 if (emoji_name == NULL) {
                         snprintf(output_buffer, output_buffer_size,
@@ -75,8 +117,10 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                 if (speed < 0.0) {
                         snprintf(output_buffer, output_buffer_size,
                                  "Speed must be non-negative");
+                        return;
                 }
-
+                
+                world->speed = speed;
                 snprintf(output_buffer, output_buffer_size, "Speed set to %.2f",
                          speed);
         } else if (strcmp(command_name, "hitboxes") == 0) {
@@ -105,6 +149,6 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                                  "Only \"on\" and \"off\" are allowed.");
                 }
         } else {
-                snprintf(output_buffer, output_buffer_size, "Unknown command");
+                snprintf(output_buffer, output_buffer_size, "Unknown command %s, type 'help' for\n a list of available commands", command_name);
         }
 }
