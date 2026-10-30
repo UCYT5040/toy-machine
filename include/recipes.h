@@ -20,7 +20,7 @@ typedef struct {
                                                 // entity instance (recommended
                                                 // true for most cases)
                 } tags;
-                bool (*predicate)(struct Entity *entity);
+                bool (*predicate)(const struct Entity *entity);
         };
 } IngredientCriterion;
 
@@ -47,3 +47,16 @@ typedef struct {
 
         int specificity; // Higher values evaluated first
 } Recipe;
+
+void recipes_init(void);
+
+bool recipe_criterion_matches(const IngredientCriterion *criterion,
+                              const Entity *entity);
+
+const Recipe *recipe_find_match(
+    const Entity *a, const Entity *b, const Entity **out_a,
+    const Entity **out_b); // Sets out_a and out_b to the entities that matched
+                           // the recipe criteria, in order
+
+EmojiType recipe_resolve_output(const Recipe *recipe, const Entity *a,
+                                const Entity *b);
