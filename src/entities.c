@@ -89,8 +89,33 @@ static void entity_handle_collision(World *world, Entity *e1, Entity *e2) {
         if (e2->definition->collide)
                 e2->definition->collide(world, e2, e1);
 
-        e1->v = (Vec2){0.0, 0.0};
-        e2->v = (Vec2){0.0, 0.0};
+        double theta_1 = atan2(e1->v.y, e1->v.x);
+        double theta_2 = atan2(e2->v.y, e2->v.x);
+        double phi = atan2(e2->pos.y - e1->pos.y, e2->pos.x - e1->pos.x);
+        double v1 = sqrt(e1->v.x * e1->v.x + e1->v.y * e1->v.y);
+        double v2 = sqrt(e2->v.x * e2->v.x + e2->v.y * e2->v.y);
+        double m1 = e1->definition->mass;
+        double m2 = e2->definition->mass;
+
+        e1->v.x = (v1 * cos(theta_1 - phi) * (m1 - m2) +
+                   2 * m2 * v2 * cos(theta_2 - phi)) /
+                      (m1 + m2) * cos(phi) +
+                  v1 * sin(theta_1 - phi) * cos(phi + M_PI_2);
+
+        e1->v.y = (v1 * cos(theta_1 - phi) * (m1 - m2) +
+                   2 * m2 * v2 * cos(theta_2 - phi)) /
+                      (m1 + m2) * sin(phi) +
+                  v1 * sin(theta_1 - phi) * sin(phi + M_PI_2);
+
+        e2->v.x = (v2 * cos(theta_2 - phi) * (m2 - m1) +
+                   2 * m1 * v1 * cos(theta_1 - phi)) /
+                      (m1 + m2) * cos(phi) +
+                  v2 * sin(theta_2 - phi) * cos(phi + M_PI_2);
+
+        e2->v.y = (v2 * cos(theta_2 - phi) * (m2 - m1) +
+                   2 * m1 * v1 * cos(theta_1 - phi)) /
+                      (m1 + m2) * sin(phi) +
+                  v2 * sin(theta_2 - phi) * sin(phi + M_PI_2);
 }
 
 void entity_physics_step(Entity *entity, World *world) {
