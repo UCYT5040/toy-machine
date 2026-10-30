@@ -63,6 +63,9 @@ typedef struct {
         EmojiCollideFunction collide;
 } EmojiDefinition;
 
+typedef struct Recipe
+    Recipe; // Forward declaration to prevent circular dependency
+
 typedef struct Entity {
         EmojiDefinition *definition;
 
@@ -70,8 +73,11 @@ typedef struct Entity {
         int index;
         EmojiType type;
 
-        bool processing; // Only applies to TAG_PROCESSOR emojis
-        struct Entity *processing_entities;
+        bool processing;        // Only applies to TAG_PROCESSOR emojis
+        int *processing_inputs; // Only 2 for the factory, but could be more for
+                                // other processors
+        double processing_timer;
+        const Recipe *current_recipe;
 
         Vec2 pos;
         Vec2 v;
