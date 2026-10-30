@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #define MAX_ENTITIES 1024
 
@@ -80,10 +81,10 @@ typedef struct Entity {
         const Recipe *current_recipe;
 
         Vec2 pos;
-        Vec2 last_pos; 
+        Vec2 last_pos;
         Vec2 v;
         Vec2 a;
-        double angle;
+        double angle; // In radians
 
         double scale; // To scale individual entities
 
@@ -104,6 +105,8 @@ typedef struct World {
 
         Vec2 mouse_pos;
         bool mouse_down;
+        uint32_t last_mouse_move;
+        Vec2 mouse_speed;
         int dragged_entity_index; // -1 if no entity is being dragged
 
         double speed; // Currently used only for dev commands, but could

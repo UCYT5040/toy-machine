@@ -117,7 +117,13 @@ void world_handle_mouse_down(World *world) {
         }
 }
 
-void world_handle_mouse_up(World *world) { world->dragged_entity_index = -1; }
+void world_handle_mouse_up(World *world) {
+        Entity *dragged = &world->entities[world->dragged_entity_index];
+        if (dragged)
+                dragged->v = world->mouse_speed;
+
+        world->dragged_entity_index = -1;
+}
 
 int world_get_entity_at(World *world, Vec2 pos) {
         int nearest = -1;
