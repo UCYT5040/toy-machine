@@ -80,6 +80,7 @@ typedef struct Entity {
         const Recipe *current_recipe;
 
         Vec2 pos;
+        Vec2 last_pos; 
         Vec2 v;
         Vec2 a;
         double angle;
