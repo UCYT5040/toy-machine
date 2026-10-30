@@ -40,17 +40,28 @@ static bool entity_is_colliding(Entity *e1, Entity *e2) {
                    e2->definition->radius * e2->scale;
 }
 
-static void entity_fix_overlap(Entity *self, Entity *other) {
-        double dx = other->pos.x - self->pos.x;
-        double dy = other->pos.y - self->pos.y;
+static void entity_fix_overlap(Entity *e1, Entity *e2) {
+        double dx = e2->pos.x - e1->pos.x;
+        double dy = e2->pos.y - e1->pos.y;
 
         double distance = fmax(sqrt(dx * dx + dy * dy), 0.01);
 
-        double diff = self->definition->radius * self->scale +
-                      other->definition->radius * other->scale - distance;
+        double diff = e1->definition->radius * e1->scale +
+                      e2->definition->radius * e2->scale - distance;
 
-        self->pos.x -= dx / distance * diff;
-        self->pos.y -= dy / distance * diff;
+        double nx = dx / distance;
+        double ny = dy / distance;
+
+        double total_mass = e1->definition->mass + e2->definition->mass;
+        if (total_mass <= 0.0)
+                return; // Both are immovable
+        double e1share = e2->definition->mass / total_mass;
+        double e2share = e1->definition->mass / total_mass;
+
+        e1->pos.x -= nx * diff * e1share;
+        e1->pos.y -= ny * diff * e1share;
+        e2->pos.x += nx * diff * e2share;
+        e2->pos.y += ny * diff * e2share;
 }
 
 // Negative velocity: Entities are moving away from eachother
@@ -67,21 +78,26 @@ static double entity_relative_velocity(Entity *e1, Entity *e2) {
         return dvx * (dx / distance) + dvy * (dy / distance);
 }
 
+static void entity_resolve_collision(Entity *e1, Entity *e2) {}
+
 void entity_physics_step(Entity *entity, World *world) {
         if (entity->definition->mass <= 0.0)
                 return; // Object is immovable
 
         // Detect and handle collisions
         for (int i = 0; i < MAX_ENTITIES; i++) {
-                Entity *other = &world->entities[i];
-                if (entity == other || !other->active)
+                Entity *a = &world->entities[i];
+                if (!a->active)
                         continue;
 
-                if (entity_is_colliding(entity, other)) {
-                        entity->v.x *= -1.0;
-                        entity->v.y *= -1.0;
+                for (int j = i + 1; j < MAX_ENTITIES; j++) {
+                        Entity *b = &world->entities[j];
+                        if (!b->active)
+                                continue;
 
-                        entity_fix_overlap(entity, other);
+                        if (entity_is_colliding(a, b)) {
+                                entity_fix_overlap(a, b);
+                        }
                 }
         }
 
