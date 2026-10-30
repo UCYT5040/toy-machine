@@ -38,15 +38,6 @@ void world_update(World *world, double dt) {
             dt * world->speed; // TODO: Is it necessary to do this in the parent
                                // loop? (i.e., is dt referenced anywhere else)
 
-        for (int i = 0; i < MAX_ENTITIES; i++) {
-                Entity *entity = &world->entities[i];
-                if (!entity->active) {
-                        continue;
-                }
-
-                // TODO: Run update function for each entity, if it has one
-        }
-
         double substep_dt = scaled_dt / (double)PHYSICS_SUBSTEPS;
         for (int step = 0; step < PHYSICS_SUBSTEPS; step++) {
                 // Calculate `a` for all entities
@@ -77,6 +68,16 @@ void world_update(World *world, double dt) {
 
                         entity_physics_integrate(entity, &substep_dt);
                 }
+        }
+
+        for (int i = 0; i < MAX_ENTITIES; i++) {
+                Entity *entity = &world->entities[i];
+
+                if (!entity->active || !entity->definition->update) {
+                        continue;
+                }
+
+                entity->definition->update(world, entity, scaled_dt);
         }
 }
 
