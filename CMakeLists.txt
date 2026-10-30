@@ -9,7 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2 SDL2_image SDL2_ttf)
 
-file(GLOB SOURCES "src/*.c")
+file(GLOB SOURCES CONFIGURE_DEPENDS "src/*.c" "src/emojis/*.c")
 add_executable(toy_machine ${SOURCES})
 
 target_include_directories(toy_machine PRIVATE include ${SDL2_INCLUDE_DIRS})
