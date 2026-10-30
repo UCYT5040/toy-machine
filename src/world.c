@@ -1,4 +1,5 @@
 #include "world.h"
+#include "dev.h"
 #include "emoji_registry.h"
 #include "entities.h"
 #include <SDL2/SDL.h>
@@ -99,6 +100,9 @@ void world_render(World *world, SDL_Renderer *renderer) {
                                        radius * 2.0};
 
                 SDL_RenderCopyF(renderer, texture, NULL, &dest_rect);
+
+                if (world->dev_show_velocity_vectors)
+                        render_velocity_vector(renderer, entity);
 
                 // TODO: Render hitboxes
         }

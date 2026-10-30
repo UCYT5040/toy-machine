@@ -1,6 +1,9 @@
 #include "dev.h"
+#include "SDL_render.h"
 #include "emoji_registry.h"
 #include "entities.h"
+
+#include <SDL2/SDL.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -159,10 +162,42 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                 }
         } else if (strcmp(command_name, "exit") == 0) {
                 exit(0);
+        } else if (strcmp(command, "velocity") == 0) {
+                char *option_str = strtok(NULL, " \t\n");
+                if (option_str == NULL) {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Usage: velocity <on/off>");
+                        return;
+                }
+
+                // Skips any whitespace
+                while (option_str[0] == ' ')
+                        option_str++;
+
+                if (strcmp(option_str, "on") == 0) {
+                        world->dev_show_velocity_vectors = true;
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Enabled velocity vectors");
+                } else if (strcmp(option_str, "off") == 0) {
+                        world->dev_show_velocity_vectors = false;
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Disabled velocity vectors");
+                } else {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Invalid argument to command \"velocity\". "
+                                 "Only \"on\" and \"off\" are allowed.");
+                }
         } else {
                 snprintf(output_buffer, output_buffer_size,
                          "Unknown command %s, type 'help' for\n a list of "
                          "available commands",
                          command_name);
         }
+}
+
+void render_velocity_vector(SDL_Renderer *renderer, Entity *entity) {
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_RenderDrawLine(renderer, entity->pos.x, entity->pos.y,
+                           entity->pos.x + entity->v.x,
+                           entity->pos.y + entity->v.y);
 }
