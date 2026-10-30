@@ -87,6 +87,9 @@ static void entity_handle_collision(World *world, Entity *e1, Entity *e2) {
                 e1->definition->collide(world, e1, e2);
         if (e2->definition->collide)
                 e2->definition->collide(world, e2, e1);
+
+        e1->v = (Vec2){0.0, 0.0};
+        e2->v = (Vec2){0.0, 0.0};
 }
 
 void entity_physics_step(Entity *entity, World *world) {

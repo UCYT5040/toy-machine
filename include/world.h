@@ -105,6 +105,7 @@ typedef struct World {
         bool dev_command_mode; // If true, the dev command window is open (game
                                // is paused)
         bool dev_show_hitboxes;
+        bool dev_show_velocity_vectors;
         // TODO: Add more developer/debugging features
 } World;
 
