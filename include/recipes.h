@@ -36,7 +36,7 @@ typedef struct {
         };
 } RecipeOutput;
 
-typedef struct {
+typedef struct Recipe {
         const char *id;
         IngredientCriterion inputs[2];
         RecipeOutput output;
