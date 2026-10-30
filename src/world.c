@@ -1,9 +1,11 @@
 #include "world.h"
+#include "SDL_timer.h"
 #include "dev.h"
 #include "emoji_registry.h"
 #include "entities.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <stdint.h>
 
 #define PHYSICS_SUBSTEPS 8
 
@@ -118,8 +120,12 @@ void world_handle_mouse_down(World *world) {
 }
 
 void world_handle_mouse_up(World *world) {
+        uint32_t time = SDL_GetTicks();
+        double mouse_dt =
+            (double)time / 1000.0 - (double)world->last_mouse_move / 1000.0;
+
         Entity *dragged = &world->entities[world->dragged_entity_index];
-        if (dragged)
+        if (dragged && mouse_dt < 0.1)
                 dragged->v = world->mouse_speed;
 
         world->dragged_entity_index = -1;
