@@ -1,4 +1,4 @@
-#include "computer_mouse.h"
+#include "emojis/computer_mouse.h"
 #include <SDL2/SDL.h>
 
 void emoji_computer_mouse_update(World *world, Entity *self, double dt) {
@@ -6,6 +6,7 @@ void emoji_computer_mouse_update(World *world, Entity *self, double dt) {
         
         if (world->dragged_entity_index != -1) {
                 self->last_pos = self->pos;
+                return;
         }
 
         SDL_Window *window = SDL_GetMouseFocus();

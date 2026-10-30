@@ -1,5 +1,5 @@
 #include "world.h"
-#include "emojis/computer_mouse"
+#include "emojis/computer_mouse.h"
 
 EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
     [EMOJI_COMPUTER_MOUSE] = {.name = "computer_mouse",
