@@ -78,7 +78,16 @@ static double entity_relative_velocity(Entity *e1, Entity *e2) {
         return dvx * (dx / distance) + dvy * (dy / distance);
 }
 
-static void entity_resolve_collision(Entity *e1, Entity *e2) {}
+static void entity_handle_collision(World *world, Entity *e1, Entity *e2) {
+        if (entity_relative_velocity(e1, e2) <= 0.0)
+                return; /* Entities are moving away from eachother or relative
+                           velocity is zero */
+
+        if (e1->definition->collide)
+                e1->definition->collide(world, e1, e2);
+        if (e2->definition->collide)
+                e2->definition->collide(world, e2, e1);
+}
 
 void entity_physics_step(Entity *entity, World *world) {
         if (entity->definition->mass <= 0.0)
@@ -97,6 +106,7 @@ void entity_physics_step(Entity *entity, World *world) {
 
                         if (entity_is_colliding(a, b)) {
                                 entity_fix_overlap(a, b);
+                                entity_handle_collision(world, a, b);
                         }
                 }
         }

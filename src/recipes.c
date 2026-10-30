@@ -78,6 +78,8 @@ bool recipe_criterion_matches(const IngredientCriterion *criterion,
         case CRITERION_PREDICATE:
                 return criterion->predicate(entity);
         }
+
+        return false;
 }
 
 const Recipe *recipe_find_match(const Entity *a, const Entity *b,
