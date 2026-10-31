@@ -20,6 +20,17 @@ void entity_create_default(Entity *entity, int definition_index, Vec2 pos,
         entity->a = (Vec2){0.0, 0.0};
 }
 
+Entity *entity_spawn(World *world, EmojiType type, Vec2 pos) {
+        for (int i = 0; i < MAX_ENTITIES; i++) {
+                if (!world->entities[i].active) {
+                        entity_create_default(&world->entities[i], type, pos,
+                                              i);
+                        return &world->entities[i];
+                }
+        }
+        return NULL; // No available entity slots
+}
+
 // Calculates the gravitational field strengh of `other` on `self`
 static Vec2 entity_gravitational_field_strength(Entity *self, Entity *other) {
         double dx = other->pos.x - self->pos.x;

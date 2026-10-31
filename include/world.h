@@ -76,11 +76,12 @@ typedef struct Entity {
         bool processing;        // Only applies to TAG_PROCESSOR emojis
         int *processing_inputs; // Only 2 for the factory, but could be more for
                                 // other processors
+        int processing_input_count;
         double processing_timer;
         const Recipe *current_recipe;
 
         Vec2 pos;
-        Vec2 last_pos; 
+        Vec2 last_pos;
         Vec2 v;
         Vec2 a;
         double angle;
