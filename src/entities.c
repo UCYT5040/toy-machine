@@ -7,6 +7,7 @@
 void entity_create_default(Entity *entity, int definition_index, Vec2 pos,
                            int entity_index) {
         entity->active = true;
+        entity->collect = false;
         entity->definition = &EMOJI_DEFINITIONS[definition_index];
         entity->type = (EmojiType)definition_index;
         entity->pos = pos;
@@ -21,7 +22,7 @@ void entity_create_default(Entity *entity, int definition_index, Vec2 pos,
 
 Entity *entity_spawn(World *world, EmojiType type, Vec2 pos) {
         for (int i = 0; i < MAX_ENTITIES; i++) {
-                if (!world->entities[i].active) {
+                if (world->entities[i].collect) {
                         entity_create_default(&world->entities[i], type, pos,
                                               i);
                         return &world->entities[i];

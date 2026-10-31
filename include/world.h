@@ -71,7 +71,8 @@ typedef struct Recipe
 typedef struct Entity {
         EmojiDefinition *definition;
 
-        bool active; /* Entity slot is free if false */
+        bool active;  /* Ignore this entity if false (but do not overwrite!) */
+        bool collect; /* Entity slot is free if true */
         int index;
         EmojiType type;
 

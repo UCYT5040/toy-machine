@@ -87,25 +87,21 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                                 double x = strtof(x_str, NULL);
                                 double y = strtof(y_str, NULL);
 
-                                // Find an inactive entity slot
-                                for (int j = 0; j < MAX_ENTITIES; j++) {
-                                        Entity *entity = &world->entities[j];
-                                        if (!entity->active) {
-                                                entity_create_default(
-                                                    entity, i, (Vec2){x, y}, j);
+                                Entity *entity =
+                                    entity_spawn(world, i, (Vec2){x, y});
+                                if (entity != NULL) {
+                                        snprintf(output_buffer,
+                                                 output_buffer_size,
+                                                 "Spawned %s at (%.2f, "
+                                                 "%.2f)",
+                                                 emoji_name, x, y);
 
-                                                snprintf(output_buffer,
-                                                         output_buffer_size,
-                                                         "Spawned %s at (%.2f, "
-                                                         "%.2f)",
-                                                         emoji_name, x, y);
-                                                return;
-                                        }
+                                } else {
+                                        snprintf(
+                                            output_buffer, output_buffer_size,
+                                            "No available slots to spawn new "
+                                            "entities.");
                                 }
-
-                                snprintf(output_buffer, output_buffer_size,
-                                         "No available slots to spawn new "
-                                         "entities.");
                                 return;
                         }
                 }
