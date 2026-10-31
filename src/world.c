@@ -53,6 +53,9 @@ void world_init(World *world, SDL_Renderer *renderer) {
         SDL_FreeSurface(bg_box_surface);
         SDL_FreeSurface(bg_space_surface);
 
+        SDL_SetTextureColorMod(world->bg_box, 190, 190,
+                               190); // Dim the box background
+
         // Set all entities to inactive and collectable
         for (int i = 0; i < MAX_ENTITIES; i++) {
                 world->entities[i].active = false;
