@@ -82,6 +82,7 @@ typedef struct Entity {
         int processing_input_count;
         double processing_timer;
         const Recipe *current_recipe;
+        EmojiProcessingDisplay processing_display;
 
         Vec2 pos;
         Vec2 last_pos;
