@@ -11,6 +11,7 @@ void entity_create_default(Entity *entity, int definition_index, Vec2 pos,
         entity->type = (EmojiType)definition_index;
         entity->pos = pos;
         entity->last_pos = pos;
+        entity->shake_last_delta = (Vec2){0.0, 0.0};
         entity->v = (Vec2){0.0, 0.0};
         entity->angle = 0.0;
         entity->scale = 1.0;
