@@ -4,9 +4,9 @@
 
 static Recipe RECIPES[] = {{
     .id = "test_recipe",
-    .inputs = {{.mode = CRITERION_EXACT, .type = EMOJI_COMPUTER_MOUSE},
-               {.mode = CRITERION_EXACT, .type = EMOJI_SOCCER_BALL}},
-    .output = {.mode = OUTPUT_STATIC, .static_output = EMOJI_EARTH},
+    .inputs = {{.mode = CRITERION_EXACT, .type = EMOJI_STONE},
+               {.mode = CRITERION_EXACT, .type = EMOJI_WOOD}},
+    .output = {.mode = OUTPUT_STATIC, .static_output = EMOJI_HAMMER},
 
     .processing_time = 5.0,
     .consume_a = true,

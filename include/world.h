@@ -21,6 +21,8 @@ typedef enum {
         EMOJI_WATER,
         EMOJI_WOOD,
         EMOJI_WIND,
+        EMOJI_HAMMER,
+        EMOJI_GEAR,
         EMOJI_COUNT
 } EmojiType;
 
