@@ -123,6 +123,8 @@ void emoji_factory_update(World *world, Entity *self, double dt) {
         }
 }
 
+#define MIN_THROW_VELOCITY 100.0
+
 void emoji_factory_collide(World *world, Entity *self, Entity *other) {
         if (self->processing || self->ejecting ||
             other->type == EMOJI_FACTORY) {
@@ -130,11 +132,18 @@ void emoji_factory_collide(World *world, Entity *self, Entity *other) {
         }
 
         if (other->type == EMOJI_STONE) {
-                // Drop (throw) all processing inputs!
-                self->ejecting = true;
-                self->eject_timer = 0.0;
+                // Enforce a minimum velocity to ensure the stone was thrown
 
-                return;
+                double velocity_magnitude =
+                    sqrt(other->v.x * other->v.x + other->v.y * other->v.y);
+                if (velocity_magnitude >= MIN_THROW_VELOCITY) {
+
+                        // Drop (throw) all processing inputs!
+                        self->ejecting = true;
+                        self->eject_timer = 0.0;
+
+                        return;
+                }
         }
 
         other->active = false;

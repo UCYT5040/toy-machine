@@ -34,7 +34,7 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                      .radius = 100.0,
                      .mass = 5.974e17, // Too small on purpose
                      .restitution = 0.0,
-                     .default_tags = TAG_NONE,
+                     .default_tags = TAG_SPACE,
                      .update = NULL,
                      .collide = NULL},
     [EMOJI_STONE] = {.name = "stone",

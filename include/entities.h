@@ -14,3 +14,5 @@ Entity *entity_spawn(World *world, EmojiType type, Vec2 pos);
 void entity_physics_step(Entity *entity, World *world);
 
 void entity_physics_integrate(Entity *entity, double *dt);
+
+void entity_constrain_to_bounds(Entity *entity, World *world);

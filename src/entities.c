@@ -153,6 +153,12 @@ void entity_physics_step(Entity *entity, World *world) {
                 }
         }
 
+        // If not in space mode, apply world gravity
+        if (!world->space_mode) {
+                entity->a.x += world->gravity.x;
+                entity->a.y += world->gravity.y;
+        }
+
         // Calculate gravitational field stregth of all other entities
         for (int i = 0; i < MAX_ENTITIES; i++) {
                 Entity *other = &world->entities[i];
@@ -171,4 +177,40 @@ void entity_physics_integrate(Entity *entity, double *dt) {
 
         entity->pos.x += entity->v.x * *dt;
         entity->pos.y += entity->v.y * *dt;
+}
+
+void entity_constrain_to_bounds(Entity *entity, World *world) {
+        if (!entity->active || entity->definition->mass <= 0.0)
+                return;
+
+        double radius = entity->definition->radius * entity->scale;
+        double restitution = entity->definition->restitution;
+
+        if (entity->pos.y + radius > world->height) {
+                entity->pos.y = world->height - radius;
+
+                // To prevent jittering
+                if (fabs(entity->v.y) < 25.0) {
+                        entity->v.y = 0.0;
+                } else {
+                        entity->v.y = -entity->v.y * restitution;
+                }
+
+                entity->v.x *= 0.96; // Ground friction
+        }
+
+        if (entity->pos.y - radius < 0) {
+                entity->pos.y = radius;
+                entity->v.y = -entity->v.y * restitution;
+        }
+
+        if (entity->pos.x + radius > world->width) {
+                entity->pos.x = world->width - radius;
+                entity->v.x = -entity->v.x * restitution;
+        }
+
+        if (entity->pos.x - radius < 0) {
+                entity->pos.x = radius;
+                entity->v.x = -entity->v.x * restitution;
+        }
 }

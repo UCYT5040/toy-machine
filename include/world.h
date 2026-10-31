@@ -34,7 +34,8 @@ typedef enum {
         TAG_BURNING = 1ULL << 5,
         TAG_WET = 1ULL << 6,
         TAG_ELECTRIC = 1ULL << 7,
-        TAG_PROCESSOR = 1ULL << 8
+        TAG_PROCESSOR = 1ULL << 8,
+        TAG_SPACE = 1ULL << 9 // E.g., planets, starts, etc.
 } EmojiTag;
 
 struct World;
@@ -105,12 +106,14 @@ typedef struct World {
         Entity entities[MAX_ENTITIES];
         SDL_Texture *textures[EMOJI_COUNT];
 
+        SDL_Texture *bg_box;
+        SDL_Texture *bg_space;
+
         int width, height;
 
-        /*
-        Using passive object with large mass to create gravity
-        double gravity;
-        */
+        Vec2 gravity; // in px/s^2
+        bool space_mode;
+        double space_mode_transition;
 
         bool emoji_unlocks[EMOJI_COUNT - 1]; // Exclude EMOJI_NONE
         bool emoji_picker_open;
