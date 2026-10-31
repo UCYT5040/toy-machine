@@ -35,6 +35,12 @@ void world_init(World *world, SDL_Renderer *renderer) {
                         }
                 }
         }
+
+        // Set all entities to inactive and collectable
+        for (int i = 0; i < MAX_ENTITIES; i++) {
+                world->entities[i].active = false;
+                world->entities[i].collect = true;
+        }
 }
 
 void world_update(World *world, double dt) {
