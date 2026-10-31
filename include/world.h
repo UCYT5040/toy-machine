@@ -18,6 +18,7 @@ typedef enum {
         EMOJI_SOCCER_BALL,
         EMOJI_FACTORY,
         EMOJI_EARTH,
+        EMOJI_STONE,
         EMOJI_COUNT
 } EmojiType;
 
@@ -83,6 +84,8 @@ typedef struct Entity {
         double processing_timer;
         const Recipe *current_recipe;
         EmojiProcessingDisplay processing_display;
+        bool ejecting;
+        double eject_timer;
 
         Vec2 pos;
         Vec2 last_pos;
@@ -94,7 +97,6 @@ typedef struct Entity {
         double scale; // To scale individual entities
 
         uint64_t tags;
-        double timer; // Can be used for various purposes
 } Entity;
 
 typedef struct World {

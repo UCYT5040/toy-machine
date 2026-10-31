@@ -55,4 +55,12 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                      .restitution = 0.0,
                      .default_tags = TAG_NONE,
                      .update = NULL,
+                     .collide = NULL},
+    [EMOJI_STONE] = {.name = "stone",
+                     .svg_path = "assets/emojis/stone.svg",
+                     .radius = 15.0,
+                     .mass = 0.8,
+                     .restitution = 0.5,
+                     .default_tags = TAG_NONE,
+                     .update = NULL,
                      .collide = NULL}};

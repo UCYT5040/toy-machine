@@ -2,7 +2,61 @@
 #include "entities.h"
 #include "recipes.h"
 
+#define EJECT_INTERVAL 0.25;
+
 void emoji_factory_update(World *world, Entity *self, double dt) {
+        if (self->ejecting) {
+                self->eject_timer -= dt;
+                if (self->eject_timer <= 0.0) {
+                        if (self->processing_input_count > 0) {
+                                self->processing_input_count--;
+                                int ejected_index =
+                                    self->processing_inputs
+                                        [self->processing_input_count];
+                                Entity *ejected_entity =
+                                    &world->entities[ejected_index];
+                                ejected_entity->active = true;
+
+                                double launch_offset =
+                                    (self->definition->radius * self->scale) +
+                                    (ejected_entity->definition->radius *
+                                     ejected_entity->scale) +
+                                    5.0;
+
+                                ejected_entity->pos.x =
+                                    self->pos.x +
+                                    launch_offset * cos(self->angle);
+                                ejected_entity->pos.y =
+                                    self->pos.y +
+                                    launch_offset * sin(self->angle);
+                                ejected_entity->last_pos = ejected_entity->pos;
+                                ejected_entity->active = true;
+
+                                // Apply a random spread
+                                double spread =
+                                    ((double)rand() / RAND_MAX - 0.5) * M_PI /
+                                    6.0; // +/- 15 degrees
+                                double launch_angle = self->angle + spread;
+                                double launch_speed = 200.0; // Arbitrary speed
+                                ejected_entity->v.x =
+                                    launch_speed * cos(launch_angle);
+                                ejected_entity->v.y =
+                                    launch_speed * sin(launch_angle);
+
+                                self->eject_timer +=
+                                    EJECT_INTERVAL; // Adds instead of setting
+                                                    // in case the timer is
+                                                    // negative
+                        }
+
+                        if (self->processing_input_count == 0) {
+                                self->ejecting = false;
+                                free(self->processing_inputs);
+                                self->processing_inputs = NULL;
+                        }
+                }
+        }
+
         if (self->processing && self->processing_timer > 0.0) {
                 self->processing_timer -= dt;
                 if (self->processing_timer <= 0.0) {
@@ -62,8 +116,18 @@ void emoji_factory_update(World *world, Entity *self, double dt) {
 }
 
 void emoji_factory_collide(World *world, Entity *self, Entity *other) {
-        if (self->processing)
+        if (self->processing || self->ejecting ||
+            other->type == EMOJI_FACTORY) {
                 return;
+        }
+
+        if (other->type == EMOJI_STONE) {
+                // Drop (throw) all processing inputs!
+                self->ejecting = true;
+                self->eject_timer = 0.0;
+
+                return;
+        }
 
         other->active = false;
 

@@ -16,7 +16,6 @@ void entity_create_default(Entity *entity, int definition_index, Vec2 pos,
         entity->angle = 0.0;
         entity->scale = 1.0;
         entity->tags = entity->definition->default_tags;
-        entity->timer = 0.0;
         entity->index = entity_index;
         entity->a = (Vec2){0.0, 0.0};
 }
