@@ -192,9 +192,13 @@ void world_handle_mouse_up(World *world) {
         double mouse_dt =
             (double)time / 1000.0 - (double)world->last_mouse_move / 1000.0;
 
-        Entity *dragged = &world->entities[world->dragged_entity_index];
-        if (dragged && mouse_dt < 0.1)
-                dragged->v = world->mouse_speed;
+        if (world->dragged_entity_index != -1) {
+                Entity *dragged = &world->entities[world->dragged_entity_index];
+                if (mouse_dt < 0.1)
+                        dragged->v = world->mouse_speed;
+                else
+                        dragged->v = (Vec2){0.0, 0.0};
+        }
 
         world->dragged_entity_index = -1;
 }
