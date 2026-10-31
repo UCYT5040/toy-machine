@@ -17,6 +17,10 @@ typedef enum {
         EMOJI_FACTORY,
         EMOJI_EARTH,
         EMOJI_STONE,
+        EMOJI_FIRE,
+        EMOJI_WATER,
+        EMOJI_WOOD,
+        EMOJI_WIND,
         EMOJI_COUNT
 } EmojiType;
 
