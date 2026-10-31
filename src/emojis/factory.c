@@ -63,10 +63,18 @@ void emoji_factory_update(World *world, Entity *self, double dt) {
                         self->processing = false;
 
                         int new_entities = 1;
-                        if (!self->current_recipe->consume_a) {
+                        if (self->current_recipe->consume_a) {
+                                // Mark to be collected
+                                world->entities[self->processing_inputs[0]]
+                                    .collect = true;
+                        } else {
                                 new_entities++;
                         }
-                        if (!self->current_recipe->consume_b) {
+                        if (self->current_recipe->consume_b) {
+                                // Mark to be collected
+                                world->entities[self->processing_inputs[1]]
+                                    .collect = true;
+                        } else {
                                 new_entities++;
                         }
 
