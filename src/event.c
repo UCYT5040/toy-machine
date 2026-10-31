@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <stdint.h>
 
+#include "emoji_picker.h"
 #include "event.h"
 
 void handle_event(World *world, SDL_Event *event, bool *running) {
@@ -34,7 +35,11 @@ void handle_event(World *world, SDL_Event *event, bool *running) {
                 if (event->button.button == SDL_BUTTON_LEFT) {
                         world->mouse_down =
                             true; // TODO: Consider adding a mouse button state
-                        world_handle_mouse_down(world);
+                        if (world->emoji_picker_open) {
+                                emoji_picker_handle_mouse_down(world);
+                        } else {
+                                world_handle_mouse_down(world);
+                        }
                 }
                 break;
         }
@@ -43,6 +48,8 @@ void handle_event(World *world, SDL_Event *event, bool *running) {
                 if (event->button.button == SDL_BUTTON_LEFT) {
                         world->mouse_down = false;
                         world_handle_mouse_up(world);
+                } else if (event->button.button == SDL_BUTTON_MIDDLE) {
+                        emoji_picker_toggle(world);
                 }
                 break;
         }
@@ -50,6 +57,9 @@ void handle_event(World *world, SDL_Event *event, bool *running) {
         case SDL_KEYDOWN: {
                 if (event->key.keysym.sym == SDLK_F1) {
                         world->dev_command_mode = !world->dev_command_mode;
+                } else if (!world->dev_command_mode &&
+                           event->key.keysym.sym == SDLK_SPACE) {
+                        emoji_picker_toggle(world);
                 }
         }
         }

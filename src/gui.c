@@ -1,8 +1,10 @@
 #include "gui.h"
 #include "dev.h"
+#include "emoji_picker.h"
 #include "event.h"
 #include <SDL2/SDL_image.h>
 #include <string.h>
+
 
 /* App GUI stuff */
 bool app_init(App *app, const char *title, int width, int height) {
@@ -64,6 +66,8 @@ void app_run(App *app, World *world) {
                 SDL_RenderClear(app->renderer);
 
                 world_render(world, app->renderer);
+
+                emoji_picker_render(world, app->renderer);
 
                 if (world->dev_command_mode) {
                         gui_console_render(&app->dev_console, app->renderer);
