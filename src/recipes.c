@@ -2,7 +2,18 @@
 #include "emoji_registry.h"
 #include <stdlib.h>
 
-static Recipe RECIPES[] = {};
+static Recipe RECIPES[] = {{
+    .id = "test_recipe",
+    .inputs = {{.mode = CRITERION_EXACT, .type = EMOJI_COMPUTER_MOUSE},
+               {.mode = CRITERION_EXACT, .type = EMOJI_SOCCER_BALL}},
+    .output = {.mode = OUTPUT_STATIC, .static_output = EMOJI_EARTH},
+
+    .processing_time = 5.0,
+    .consume_a = true,
+    .consume_b = true,
+
+    .specificity = 0 // Will be calculated in recipes_init()
+}};
 
 static const size_t RECIPE_COUNT = sizeof(RECIPES) / sizeof(RECIPES[0]);
 
@@ -64,7 +75,7 @@ bool recipe_criterion_matches(const IngredientCriterion *criterion,
                         ? EMOJI_DEFINITIONS[entity->type].default_tags
                         : entity->tags;
 
-                if ((tags * criterion->tags.required_tags) !=
+                if ((tags & criterion->tags.required_tags) !=
                     criterion->tags.required_tags) {
                         return false;
                 }

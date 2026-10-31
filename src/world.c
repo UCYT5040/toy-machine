@@ -96,11 +96,79 @@ void world_render(World *world, SDL_Renderer *renderer) {
 
                 double radius = entity->definition->radius * entity->scale;
 
-                SDL_FRect dest_rect = {entity->pos.x - radius,
-                                       entity->pos.y - radius, radius * 2.0,
-                                       radius * 2.0};
+                if (entity->tags & TAG_PROCESSOR && entity->processing) {
+                        // from 0 to 1
+                        double tilt = fmod(entity->processing_timer, 1.0);
+                        double x_offset =
+                            radius * 0.1 *
+                            sin(tilt * M_PI * 2.0); // Opposite for top/bottom
 
-                SDL_RenderCopyF(renderer, texture, NULL, &dest_rect);
+                        SDL_FPoint top_left = {entity->pos.x - radius +
+                                                   x_offset,
+                                               entity->pos.y - radius};
+                        SDL_FPoint top_right = {entity->pos.x + radius +
+                                                    x_offset,
+                                                entity->pos.y - radius};
+                        SDL_FPoint bottom_left = {entity->pos.x - radius -
+                                                      x_offset,
+                                                  entity->pos.y + radius};
+                        SDL_FPoint bottom_right = {entity->pos.x + radius -
+                                                       x_offset,
+                                                   entity->pos.y + radius};
+
+                        SDL_Color color = {255, 255, 255,
+                                           255}; // Retains texture
+
+                        SDL_Vertex vertices[4] = {
+                            {top_left, color, {0.0, 0.0}},
+                            {top_right, color, {1.0, 0.0}},
+                            {bottom_right, color, {1.0, 1.0}},
+                            {bottom_left, color, {0.0, 1.0}}};
+                        int indices[6] = {0, 1, 2, 2, 3, 0};
+
+                        SDL_RenderGeometry(renderer, texture, vertices, 4,
+                                           indices, 6);
+                } else {
+
+                        SDL_FRect dest_rect = {entity->pos.x - radius,
+                                               entity->pos.y - radius,
+                                               radius * 2.0, radius * 2.0};
+
+                        SDL_RenderCopyF(renderer, texture, NULL, &dest_rect);
+                }
+
+                if (entity->tags & TAG_PROCESSOR &&
+                    entity->processing_input_count > 0) {
+                        for (int j = 0; j < entity->processing_input_count;
+                             j++) {
+                                int input_index = entity->processing_inputs[j];
+                                if (input_index >= 0 &&
+                                    input_index < MAX_ENTITIES) {
+                                        Entity *input_entity =
+                                            &world->entities[input_index];
+
+                                        SDL_Texture *input_texture =
+                                            world->textures[input_entity
+                                                                ->definition
+                                                                ->index];
+                                        if (input_texture == NULL) {
+                                                continue;
+                                        }
+
+                                        double input_radius = 0.5 * radius;
+
+                                        SDL_FRect input_dest_rect = {
+                                            entity->pos.x - input_radius * 1.5 +
+                                                j * input_radius * 3.0,
+                                            entity->pos.y - input_radius * 1.5,
+                                            input_radius * 2.0,
+                                            input_radius * 2.0};
+
+                                        SDL_RenderCopyF(renderer, input_texture,
+                                                        NULL, &input_dest_rect);
+                                }
+                        }
+                }
 
                 if (world->dev_show_velocity_vectors)
                         render_velocity_vector(renderer, entity);
