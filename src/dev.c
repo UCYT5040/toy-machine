@@ -212,6 +212,14 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                         snprintf(output_buffer, output_buffer_size,
                                  "Emoji not found");
                 }
+        } else if (strcmp(command_name, "unlockall") == 0) {
+                for (int i = 1; i < EMOJI_COUNT; i++) {
+
+                        world->emoji_unlocks[i - 1] = true;
+                }
+
+                snprintf(output_buffer, output_buffer_size,
+                         "Unlocked all emojis");
         } else {
                 snprintf(output_buffer, output_buffer_size,
                          "Unknown command %s, type 'help' for\n a list of "
