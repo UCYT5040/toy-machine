@@ -3,14 +3,14 @@
 
 void emoji_computer_mouse_update(World *world, Entity *self, double dt) {
         (void)dt;
-        
+
         if (world->dragged_entity_index != -1) {
                 self->last_pos = self->pos;
                 return;
         }
 
         SDL_Window *window = SDL_GetMouseFocus();
-        if (window == NULL || 
+        if (window == NULL ||
             !(SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS)) {
                 self->last_pos = self->pos;
                 return;

@@ -1,3 +1,6 @@
+#include <SDL2/SDL.h>
+#include <stdint.h>
+
 #include "event.h"
 
 void handle_event(World *world, SDL_Event *event, bool *running) {
@@ -7,8 +10,23 @@ void handle_event(World *world, SDL_Event *event, bool *running) {
                 break;
 
         case SDL_MOUSEMOTION: {
+                uint32_t time = SDL_GetTicks();
+
                 world->mouse_pos.x = (double)event->motion.x;
                 world->mouse_pos.y = (double)event->motion.y;
+
+                if (world->last_mouse_move != 0) {
+                        double dt = (double)time / 1000.0 -
+                                    (double)world->last_mouse_move / 1000.0;
+                        if (dt > 0.0) {
+                                world->mouse_speed.x =
+                                    (double)event->motion.xrel / dt * 2.0;
+                                world->mouse_speed.y =
+                                    (double)event->motion.yrel / dt * 2.0;
+                        }
+                }
+                world->last_mouse_move = time;
+
                 break;
         }
 
