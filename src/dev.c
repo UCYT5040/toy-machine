@@ -187,6 +187,31 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                                  "Invalid argument to command \"velocity\". "
                                  "Only \"on\" and \"off\" are allowed.");
                 }
+        } else if (strcmp(command_name, "unlock") == 0) {
+                char *emoji_name = strtok(NULL, " \t\n");
+                if (emoji_name == NULL) {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Usage: unlock <emoji_name>");
+                        return;
+                }
+
+                bool found = false;
+                for (int i = 1; i < EMOJI_COUNT && !found; i++) {
+                        found =
+                            strcmp(emoji_name, EMOJI_DEFINITIONS[i].name) == 0;
+                        if (found) {
+                                world->emoji_unlocks[i - 1] = true;
+
+                                snprintf(output_buffer, output_buffer_size,
+                                         "Unlocked %s", emoji_name);
+                                return;
+                        }
+                }
+
+                if (!found) {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Emoji not found");
+                }
         } else {
                 snprintf(output_buffer, output_buffer_size,
                          "Unknown command %s, type 'help' for\n a list of "

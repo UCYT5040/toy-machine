@@ -108,6 +108,9 @@ typedef struct World {
         double gravity;
         */
 
+        bool emoji_unlocks[EMOJI_COUNT - 1]; // Exclude EMOJI_NONE
+        bool emoji_picker_open;
+
         Vec2 mouse_pos;
         bool mouse_down;
         uint32_t last_mouse_move;

@@ -12,6 +12,8 @@
 void world_init(World *world, SDL_Renderer *renderer) {
         *world = (World){0};
 
+        SDL_GetRendererOutputSize(renderer, &world->width, &world->height);
+
         world->dragged_entity_index =
             -1; // First element will be in a dragging state if not set to `-1`
         world->speed = 1.0; // If left unset, the game will be frozen (0.0)
