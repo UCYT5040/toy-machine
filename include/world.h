@@ -12,6 +12,8 @@ typedef struct {
 
 typedef enum {
         EMOJI_NONE = 0,
+        EMOJI_BANK,
+        EMOJI_COIN,
         EMOJI_COMPUTER_MOUSE,
         EMOJI_SOCCER_BALL,
         EMOJI_FACTORY,
