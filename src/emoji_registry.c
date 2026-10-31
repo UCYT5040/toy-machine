@@ -1,5 +1,6 @@
 #include "emojis/computer_mouse.h"
 #include "emojis/factory.h"
+#include "emojis/bank.h"
 #include "world.h"
 
 EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
@@ -10,7 +11,7 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
          .mass = 2.0,
          .restitution = 0.3,
          .default_tags = TAG_NONE,
-         .update = NULL,
+         .update = emoji_bank_update,
          .collide = NULL},
     [EMOJI_COIN] =
         {.name = "coin",
