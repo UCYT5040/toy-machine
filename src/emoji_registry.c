@@ -3,6 +3,24 @@
 #include "world.h"
 
 EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
+    [EMOJI_BANK] = 
+        {.name = "bank",
+         .svg_path = "assets/emojis/bank.svg",
+         .radius = 20.0,
+         .mass = 2.0,
+         .restitution = 0.3,
+         .default_tags = TAG_NONE,
+         .update = NULL,
+         .collide = NULL},
+    [EMOJI_COIN] =
+        {.name = "coin",
+         .svg_path = "assets/emojis/coin.svg",
+         .radius = 15.0,
+         .mass = 1.0,
+         .restitution = 0.4,
+         .default_tags = TAG_NONE,
+         .update = NULL,
+         .collide = NULL},
     [EMOJI_COMPUTER_MOUSE] =
         {.name = "computer_mouse",
          .svg_path = "assets/emojis/computer_mouse.svg",
