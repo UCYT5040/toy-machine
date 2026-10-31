@@ -87,6 +87,7 @@ typedef struct Entity {
         Vec2 last_pos;
         Vec2 v;
         Vec2 a;
+        Vec2 shake_last_delta;
         double angle; // In radians
 
         double scale; // To scale individual entities
