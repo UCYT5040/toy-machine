@@ -141,34 +141,46 @@ void world_render(World *world, SDL_Renderer *renderer) {
 
                 if (entity->tags & TAG_PROCESSOR &&
                     entity->processing_input_count > 0) {
-                        for (int j = 0; j < entity->processing_input_count;
-                             j++) {
-                                int input_index = entity->processing_inputs[j];
-                                if (input_index >= 0 &&
-                                    input_index < MAX_ENTITIES) {
-                                        Entity *input_entity =
-                                            &world->entities[input_index];
+                        switch (entity->processing_display) {
+                        case EMOJI_PROCESSING_DISPLAY_SUM:
+                        default:
+                                for (int j = 0;
+                                     j < entity->processing_input_count; j++) {
+                                        int input_index =
+                                            entity->processing_inputs[j];
+                                        if (input_index >= 0 &&
+                                            input_index < MAX_ENTITIES) {
+                                                Entity *input_entity =
+                                                    &world->entities
+                                                         [input_index];
 
-                                        SDL_Texture *input_texture =
-                                            world->textures[input_entity
-                                                                ->definition
-                                                                ->index];
-                                        if (input_texture == NULL) {
-                                                continue;
+                                                SDL_Texture *input_texture =
+                                                    world->textures
+                                                        [input_entity
+                                                             ->definition
+                                                             ->index];
+                                                if (input_texture == NULL) {
+                                                        continue;
+                                                }
+
+                                                double input_radius =
+                                                    0.5 * radius;
+
+                                                SDL_FRect input_dest_rect = {
+                                                    entity->pos.x -
+                                                        input_radius * 1.5 +
+                                                        j * input_radius * 3.0,
+                                                    entity->pos.y -
+                                                        input_radius * 1.5,
+                                                    input_radius * 2.0,
+                                                    input_radius * 2.0};
+
+                                                SDL_RenderCopyF(
+                                                    renderer, input_texture,
+                                                    NULL, &input_dest_rect);
                                         }
-
-                                        double input_radius = 0.5 * radius;
-
-                                        SDL_FRect input_dest_rect = {
-                                            entity->pos.x - input_radius * 1.5 +
-                                                j * input_radius * 3.0,
-                                            entity->pos.y - input_radius * 1.5,
-                                            input_radius * 2.0,
-                                            input_radius * 2.0};
-
-                                        SDL_RenderCopyF(renderer, input_texture,
-                                                        NULL, &input_dest_rect);
                                 }
+                                break;
                         }
                 }
 
