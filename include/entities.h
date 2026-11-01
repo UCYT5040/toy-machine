@@ -1,9 +1,9 @@
 #pragma once
 
-#include <stdbool.h>
+#include "collision.h"
 #include "emoji_registry.h"
 #include "types.h"
-#include "collision.h"
+#include <stdbool.h>
 
 struct Entity {
         EmojiDefinition *definition;
@@ -34,7 +34,7 @@ struct Entity {
         Vec2 v;
         Vec2 a;
         Vec2 shake_last_delta;
-        double shake_cooldown;
+        double shake_distance;
         double despawn_timer;
         double angle; // In radians
         double omega; // This symbol represents angular velocity

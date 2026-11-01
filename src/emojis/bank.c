@@ -6,26 +6,18 @@
 #include "emoji_registry.h"
 #include "entities.h"
 
-#define BANK_SHAKE_SPEED 400.0 /* Minimum speed for the emoji to be moving for coin drop to trigger */
-#define BANK_SHAKE_COOLDOWN 1.5 /* In seconds, after a coin drop, bank can't drop another coin until cooldown ends */
-#define BANK_COIN_DOWN_SPEED 220.0 
+#define BANK_SHAKE_SPEED                                                       \
+        400.0 /* Minimum speed for the emoji to be moving for coin drop to     \
+                 trigger */
+#define BANK_SHAKE_DISTANCE                                                    \
+        4000.0 /* Minimum distance for the emoji to be moving for coin drop to \
+                  trigger */
+#define BANK_AUTOMATED_SHAKE_PENALTY                                           \
+        0.5 /* For when the shake does not originate from the player */
+#define BANK_COIN_DOWN_SPEED 220.0
 #define BANK_COIN_SIDE_SPEED 80.0
 
 void emoji_bank_update(World *world, Entity *self, double dt) {
-        if (self->shake_cooldown > 0.0) {
-                self->shake_cooldown -= dt;
-                /* 0 is the floor */
-                if (self->shake_cooldown < 0.0) {
-                        self->shake_cooldown = 0.0;
-                }
-        }
-
-        if (world->dragged_entity_index != self->index) {
-                self->last_pos = self->pos;
-                self->shake_last_delta = (Vec2){0.0, 0.0};
-                return;
-        }
-
         Vec2 delta = vec2_sub(self->pos, self->last_pos);
         self->last_pos = self->pos;
 
@@ -37,18 +29,30 @@ void emoji_bank_update(World *world, Entity *self, double dt) {
                 return;
         }
 
+        double distance = vec2_length(delta);
+
+        if (world->dragged_entity_index != self->index) {
+                distance *= BANK_AUTOMATED_SHAKE_PENALTY;
+        }
+
+        self->shake_distance += distance;
+
+        if (self->shake_distance < BANK_SHAKE_DISTANCE) {
+                return;
+        }
+
         double dot = vec2_dot(delta, self->shake_last_delta);
         bool reversed = dot < 0.0;
         self->shake_last_delta = delta;
 
-        if (!reversed || self->shake_cooldown > 0.0) {
+        if (!reversed) {
                 return;
         }
 
         double bank_radius = self->definition->radius * self->scale;
         double coin_radius = EMOJI_DEFINITIONS[EMOJI_COIN].radius;
-        Vec2 spawn_pos = vec2_add(
-            self->pos, (Vec2){0.0, bank_radius + coin_radius + 2.0});
+        Vec2 spawn_pos =
+            vec2_add(self->pos, (Vec2){0.0, bank_radius + coin_radius + 2.0});
 
         Entity *coin = entity_spawn(world, EMOJI_COIN, spawn_pos);
         if (!coin) {
@@ -62,8 +66,8 @@ void emoji_bank_update(World *world, Entity *self, double dt) {
                 side_dir = -1.0;
         }
 
-        coin->v = (Vec2){-side_dir * BANK_COIN_SIDE_SPEED, 
-                         BANK_COIN_DOWN_SPEED};
+        coin->v =
+            (Vec2){-side_dir * BANK_COIN_SIDE_SPEED, BANK_COIN_DOWN_SPEED};
 
-        self->shake_cooldown = BANK_SHAKE_COOLDOWN;
+        self->shake_distance -= BANK_SHAKE_DISTANCE;
 }
