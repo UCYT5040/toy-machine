@@ -33,6 +33,8 @@ void handle_event(World *world, SDL_Event *event, bool *running) {
 
         case SDL_MOUSEBUTTONDOWN: {
                 if (event->button.button == SDL_BUTTON_LEFT) {
+                        world->mouse_pos.x = (double)event->button.x;
+                        world->mouse_pos.y = (double)event->button.y;
                         world->mouse_down =
                             true; // TODO: Consider adding a mouse button state
                         if (world->emoji_picker_open) {

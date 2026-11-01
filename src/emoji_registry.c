@@ -1,6 +1,6 @@
+#include "emojis/bank.h"
 #include "emojis/computer_mouse.h"
 #include "emojis/factory.h"
-#include "emojis/bank.h"
 #include "emojis/pin.h"
 #include "world.h"
 
@@ -10,26 +10,7 @@
                                     .angle = 0.0,                              \
                                     .circle = {.radius = r}}}
 
-
 EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
-    [EMOJI_BANK] = 
-        {.name = "bank",
-         .svg_path = "assets/emojis/bank.svg",
-         .radius = 20.0,
-         .mass = 2.0,
-         .restitution = 0.3,
-         .default_tags = TAG_NONE,
-         .update = emoji_bank_update,
-         .collide = NULL},
-    [EMOJI_COIN] =
-        {.name = "coin",
-         .svg_path = "assets/emojis/coin.svg",
-         .radius = 15.0,
-         .mass = 1.0,
-         .restitution = 0.4,
-         .default_tags = TAG_NONE,
-         .update = NULL,
-         .collide = NULL},
     [EMOJI_COMPUTER_MOUSE] =
         {.name = "computer_mouse",
          .svg_path = "assets/emojis/computer_mouse.svg",
@@ -80,14 +61,6 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                      .default_tags = TAG_NONE,
                      .update = NULL,
                      .collide = NULL},
-    [EMOJI_STONE] = {.name = "stone",
-                     .svg_path = "assets/emojis/stone.svg",
-                     .radius = 15.0,
-                     .mass = 0.8,
-                     .restitution = 0.5,
-                     .default_tags = TAG_NONE,
-                     .update = NULL,
-                     .collide = NULL}};
     [EMOJI_FIRE] = {.name = "fire",
                     .svg_path = "assets/emojis/fire.svg",
                     CIRCULAR_EMOJI(15.0),
@@ -164,4 +137,20 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                    .default_tags = TAG_NONE,
                    .update = emoji_pin_update,
                    .collide = emoji_pin_collide},
+    [EMOJI_BANK] = {.name = "bank",
+                    .svg_path = "assets/emojis/bank.svg",
+                    CIRCULAR_EMOJI(20.0),
+                    .mass = 2.0,
+                    .restitution = 0.3,
+                    .default_tags = TAG_NONE,
+                    .update = emoji_bank_update,
+                    .collide = NULL},
+    [EMOJI_COIN] = {.name = "coin",
+                    .svg_path = "assets/emojis/coin.svg",
+                    CIRCULAR_EMOJI(15.0),
+                    .mass = 1.0,
+                    .restitution = 0.4,
+                    .default_tags = TAG_NONE,
+                    .update = NULL,
+                    .collide = NULL},
 };

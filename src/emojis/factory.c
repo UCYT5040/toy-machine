@@ -132,11 +132,6 @@ void emoji_factory_collide(World *world, Entity *self, Entity *other) {
         }
 
         if (other->type == EMOJI_STONE) {
-                // Drop (throw) all processing inputs!
-                self->ejecting = true;
-                self->eject_timer = 0.0;
-
-                return;
                 // Enforce a minimum velocity to ensure the stone was thrown
 
                 double velocity_magnitude =

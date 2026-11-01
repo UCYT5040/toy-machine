@@ -13,6 +13,7 @@ void entity_create_default(Entity *entity, int definition_index, Vec2 pos,
         entity->pos = pos;
         entity->last_pos = pos;
         entity->shake_last_delta = (Vec2){0.0, 0.0};
+        entity->shake_cooldown = 0.0;
         entity->v = (Vec2){0.0, 0.0};
         entity->angle = 0.0;
         entity->scale = 1.0;
@@ -23,17 +24,6 @@ void entity_create_default(Entity *entity, int definition_index, Vec2 pos,
         entity->pinned_target_index = -1;
         entity->pinned_by_index = -1;
         entity->pinned_offset = (Vec2){0.0, 0.0};
-}
-
-Entity *entity_spawn(World *world, EmojiType type, Vec2 pos) {
-        for (int i = 0; i < MAX_ENTITIES; i++) {
-                if (world->entities[i].collect) {
-                        entity_create_default(&world->entities[i], type, pos,
-                                              i);
-                        return &world->entities[i];
-                }
-        }
-        return NULL; // No available entity slots
 }
 
 Entity *entity_spawn(World *world, EmojiType type, Vec2 pos) {
@@ -402,35 +392,27 @@ static void entity_handle_collision(World *world, Entity *e1, Entity *e2,
         if (e2->definition->collide)
                 e2->definition->collide(world, e2, e1);
 
-        double theta_1 = atan2(e1->v.y, e1->v.x);
-        double theta_2 = atan2(e2->v.y, e2->v.x);
-        double phi = atan2(e2->pos.y - e1->pos.y, e2->pos.x - e1->pos.x);
-        double v1 = sqrt(e1->v.x * e1->v.x + e1->v.y * e1->v.y);
-        double v2 = sqrt(e2->v.x * e2->v.x + e2->v.y * e2->v.y);
-        double m1 = e1->definition->mass;
-        double m2 = e2->definition->mass;
-        double e = (e1->definition->restitution + e2->definition->restitution) /
-                   2; // Average the restitutions
+        if (e1->pinned && e2->pinned)
+                return; // Both entities are pinned, do not move them
 
-        e1->v.x = (v1 * cos(theta_1 - phi) * (m1 - e * m2) +
-                   (1 + e) * m2 * v2 * cos(theta_2 - phi)) /
-                      (m1 + m2) * cos(phi) +
-                  v1 * sin(theta_1 - phi) * cos(phi + M_PI_2);
+        double e =
+            (e1->definition->restitution + e2->definition->restitution) / 2.0;
 
-        e1->v.y = (v1 * cos(theta_1 - phi) * (m1 - e * m2) +
-                   (1 + e) * m2 * v2 * cos(theta_2 - phi)) /
-                      (m1 + m2) * sin(phi) +
-                  v1 * sin(theta_1 - phi) * sin(phi + M_PI_2);
+        double inv_m1 = e1->pinned ? 0.0
+                                   : (e1->definition->mass > 0.0
+                                          ? 1.0 / e1->definition->mass
+                                          : 0.0);
+        double inv_m2 = e2->pinned ? 0.0
+                                   : (e2->definition->mass > 0.0
+                                          ? 1.0 / e2->definition->mass
+                                          : 0.0);
 
-        e2->v.x = (v2 * cos(theta_2 - phi) * (m2 - e * m1) +
-                   (1 + e) * m1 * v1 * cos(theta_1 - phi)) /
-                      (m1 + m2) * cos(phi) +
-                  v2 * sin(theta_2 - phi) * cos(phi + M_PI_2);
+        double j = -(1.0 + e) * vel_along_normal / (inv_m1 + inv_m2);
 
-        e2->v.y = (v2 * cos(theta_2 - phi) * (m2 - e * m1) +
-                   (1 + e) * m1 * v1 * cos(theta_1 - phi)) /
-                      (m1 + m2) * sin(phi) +
-                  v2 * sin(theta_2 - phi) * sin(phi + M_PI_2);
+        e1->v.x -= j * inv_m1 * manifold->normal.x;
+        e1->v.y -= j * inv_m1 * manifold->normal.y;
+        e2->v.x += j * inv_m2 * manifold->normal.x;
+        e2->v.y += j * inv_m2 * manifold->normal.y;
 }
 
 void entity_physics_step(Entity *entity, World *world) {
