@@ -18,6 +18,10 @@ void entity_create_default(Entity *entity, int definition_index, Vec2 pos,
         entity->tags = entity->definition->default_tags;
         entity->index = entity_index;
         entity->a = (Vec2){0.0, 0.0};
+        entity->pinned = false;
+        entity->pinned_target_index = -1;
+        entity->pinned_by_index = -1;
+        entity->pinned_offset = (Vec2){0.0, 0.0};
 }
 
 Entity *entity_spawn(World *world, EmojiType type, Vec2 pos) {
@@ -53,6 +57,10 @@ static bool entity_is_colliding(Entity *e1, Entity *e2) {
 }
 
 static void entity_fix_overlap(Entity *e1, Entity *e2) {
+        if (e1->pinned && e2->pinned) {
+                return; // Both entities are pinned, do not move them
+        }
+
         double dx = e2->pos.x - e1->pos.x;
         double dy = e2->pos.y - e1->pos.y;
 
@@ -67,8 +75,12 @@ static void entity_fix_overlap(Entity *e1, Entity *e2) {
         double total_mass = e1->definition->mass + e2->definition->mass;
         if (total_mass <= 0.0)
                 return; // Both are immovable
-        double e1share = e2->definition->mass / total_mass;
-        double e2share = e1->definition->mass / total_mass;
+        double e1share =
+            e1->pinned ? 0.0
+                       : (e2->pinned ? 1.0 : e2->definition->mass / total_mass);
+        double e2share =
+            e2->pinned ? 0.0
+                       : (e1->pinned ? 1.0 : e1->definition->mass / total_mass);
 
         e1->pos.x -= nx * diff * e1share;
         e1->pos.y -= ny * diff * e1share;
@@ -99,6 +111,47 @@ static void entity_handle_collision(World *world, Entity *e1, Entity *e2) {
                 e1->definition->collide(world, e1, e2);
         if (e2->definition->collide)
                 e2->definition->collide(world, e2, e1);
+
+        if (e1->pinned && e2->pinned)
+                return; // Both entities are pinned, do not move them
+
+        if (e1->pinned) {
+                double theta_2 = atan2(e2->v.y, e2->v.x);
+                double phi =
+                    atan2(e2->pos.y - e1->pos.y, e2->pos.x - e1->pos.x);
+                double v2 = sqrt(e2->v.x * e2->v.x + e2->v.y * e2->v.y);
+                double e = (e1->definition->restitution +
+                            e2->definition->restitution) /
+                           2.0;
+
+                double v2_normal = v2 * cos(theta_2 - phi);
+                double v2_tangent = v2 * sin(theta_2 - phi);
+
+                e2->v.x =
+                    -e * v2_normal * cos(phi) + v2_tangent * cos(phi + M_PI_2);
+                e2->v.y =
+                    -e * v2_normal * sin(phi) + v2_tangent * sin(phi + M_PI_2);
+                return;
+        }
+
+        if (e2->pinned) {
+                double theta_1 = atan2(e1->v.y, e1->v.x);
+                double phi =
+                    atan2(e1->pos.y - e2->pos.y, e1->pos.x - e2->pos.x);
+                double v1 = sqrt(e1->v.x * e1->v.x + e1->v.y * e1->v.y);
+                double e = (e1->definition->restitution +
+                            e2->definition->restitution) /
+                           2.0;
+
+                double v1_normal = v1 * cos(theta_1 - phi);
+                double v1_tangent = v1 * sin(theta_1 - phi);
+
+                e1->v.x =
+                    -e * v1_normal * cos(phi) + v1_tangent * cos(phi + M_PI_2);
+                e1->v.y =
+                    -e * v1_normal * sin(phi) + v1_tangent * sin(phi + M_PI_2);
+                return;
+        }
 
         double theta_1 = atan2(e1->v.y, e1->v.x);
         double theta_2 = atan2(e2->v.y, e2->v.x);
@@ -132,7 +185,7 @@ static void entity_handle_collision(World *world, Entity *e1, Entity *e2) {
 }
 
 void entity_physics_step(Entity *entity, World *world) {
-        if (entity->definition->mass <= 0.0)
+        if (entity->definition->mass <= 0.0 || entity->pinned)
                 return; // Object is immovable
 
         // Detect and handle collisions

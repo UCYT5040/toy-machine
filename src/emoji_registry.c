@@ -93,4 +93,12 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                     .default_tags = TAG_NONE,
                     .update = NULL,
                     .collide = NULL},
+    [EMOJI_PIN] = {.name = "pin",
+                   .svg_path = "assets/emojis/pin.svg",
+                   CIRCULAR_EMOJI(10.0),
+                   .mass = 1.0,
+                   .restitution = 0.7,
+                   .default_tags = TAG_NONE,
+                   .update = emoji_pin_update,
+                   .collide = emoji_pin_collide},
 };

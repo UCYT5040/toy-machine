@@ -23,6 +23,7 @@ typedef enum {
         EMOJI_WIND,
         EMOJI_HAMMER,
         EMOJI_GEAR,
+        EMOJI_PIN,
         EMOJI_COUNT
 } EmojiType;
 
@@ -82,6 +83,12 @@ typedef struct Entity {
         bool collect; /* Entity slot is free if true */
         int index;
         EmojiType type;
+
+        bool pinned;
+        int pinned_target_index;
+        int pinned_by_index;
+
+        Vec2 pinned_offset;
 
         bool processing;        // Only applies to TAG_PROCESSOR emojis
         int *processing_inputs; // Only 2 for the factory, but could be more for
