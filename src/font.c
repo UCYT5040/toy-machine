@@ -56,6 +56,36 @@ void font_draw(FontAtlas *atlas, SDL_Renderer *renderer, const char *text,
                 cursor_x += atlas->widths[c];
         }
 }
+
+/* You can figure this out, I believe in you */
+int font_measure_text(const FontAtlas *atlas, const char *text) {
+        int width = 0;
+        int line_width = 0;
+
+        for (const char *p = text; *p; p++) {
+                if (*p == '\n') {
+                        if (line_width > width) {
+                                width = line_width;
+                        }
+                        line_width = 0;
+                        continue;
+                }
+
+                unsigned char c = (unsigned char)*p;
+                if (c < 32 || c >= 127 || !atlas->glyphs[c]) {
+                        continue;
+                }
+
+                line_width += atlas->widths[c];
+        }
+
+        if (line_width > width) {
+                width = line_width;
+        }
+
+        return width;
+}
+
 void font_destroy(FontAtlas *atlas) {
         for (int c = 32; c < 127; c++) {
                 if (atlas->glyphs[c]) {
