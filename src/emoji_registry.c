@@ -1,4 +1,5 @@
 #include "emojis/bank.h"
+#include "emojis/coin.h"
 #include "emojis/computer_mouse.h"
 #include "emojis/factory.h"
 #include "emojis/pin.h"
@@ -151,6 +152,6 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                     .mass = 1.0,
                     .restitution = 0.4,
                     .default_tags = TAG_NONE,
-                    .update = NULL,
+                    .update = emoji_coin_update,
                     .collide = NULL},
 };
