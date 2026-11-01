@@ -82,11 +82,17 @@ static Vec2 entity_gravitational_field_strength(Entity *self, Entity *other) {
 
 void entity_handle_collision(World *world, Entity *e1, Entity *e2,
                              const CollisionManifold *manifold) {
-        Vec2 rel_v = vec2_sub(e2->v, e1->v);
+
+        Vec2 r1 = vec2_sub(manifold->contact_point, e1->pos);
+        Vec2 r2 = vec2_sub(manifold->contact_point, e2->pos);
+
+        Vec2 vp1 = vec2_add(e1->v, vec2_scale((Vec2){-r1.y, r1.x}, e1->omega));
+        Vec2 vp2 = vec2_add(e2->v, vec2_scale((Vec2){-r2.y, r2.x}, e2->omega));
+        Vec2 rel_v = vec2_sub(vp2, vp1);
 
         double vel_along_normal = vec2_dot(rel_v, manifold->normal);
 
-        if (vel_along_normal > 0) {
+        if (vel_along_normal > 0.0) {
                 return; // Entities are moving away from eachother
         }
 
@@ -98,9 +104,6 @@ void entity_handle_collision(World *world, Entity *e1, Entity *e2,
         if (e1->pinned && e2->pinned)
                 return; // Both entities are pinned, do not move them
 
-        double e =
-            (e1->definition->restitution + e2->definition->restitution) / 2.0;
-
         double inv_m1 = e1->pinned ? 0.0
                                    : (e1->definition->mass > 0.0
                                           ? 1.0 / e1->definition->mass
@@ -110,11 +113,50 @@ void entity_handle_collision(World *world, Entity *e1, Entity *e2,
                                           ? 1.0 / e2->definition->mass
                                           : 0.0);
 
-        double j = -(1.0 + e) * vel_along_normal / (inv_m1 + inv_m2);
+        double inv_I1 = e1->pinned ? 0.0 : e1->inv_inertia;
+        double inv_I2 = e2->pinned ? 0.0 : e2->inv_inertia;
 
-        Vec2 impulse = vec2_scale(manifold->normal, j);
+        double rn1 = vec2_cross(r1, manifold->normal);
+        double rn2 = vec2_cross(r2, manifold->normal);
+        double kn =
+            inv_m1 + inv_m2 + (rn1 * rn1) * inv_I1 + (rn2 * rn2) * inv_I2;
+
+        if (kn <= 0.0) {
+                return;
+        }
+
+        double e =
+            (e1->definition->restitution + e2->definition->restitution) / 2.0;
+        double jn = -(1.0 + e) * vel_along_normal / kn;
+
+        Vec2 tangent = {-manifold->normal.y, manifold->normal.x};
+        double vel_along_tangent = vec2_dot(rel_v, tangent);
+
+        double rt1 = vec2_cross(r1, tangent);
+        double rt2 = vec2_cross(r2, tangent);
+        double kt =
+            inv_m1 + inv_m2 + (rt1 * rt1) * inv_I1 + (rt2 * rt2) * inv_I2;
+
+        double jt = 0.0;
+        if (kt > 0.0) {
+                jt = -vel_along_tangent / kt;
+                double mu = 0.35; // Friction coefficient
+                double max_jt = mu * jn;
+                if (jt > max_jt) {
+                        jt = max_jt;
+                } else if (jt < -max_jt) {
+                        jt = -max_jt;
+                }
+        }
+
+        Vec2 impulse =
+            vec2_add(vec2_scale(manifold->normal, jn), vec2_scale(tangent, jt));
+
         e1->v = vec2_sub(e1->v, vec2_scale(impulse, inv_m1));
+        e1->omega -= vec2_cross(r1, impulse) * inv_I1;
+
         e2->v = vec2_add(e2->v, vec2_scale(impulse, inv_m2));
+        e2->omega += vec2_cross(r2, impulse) * inv_I2;
 }
 
 void entity_physics_integrate(Entity *entity, double *dt) {
@@ -168,27 +210,42 @@ void entity_constrain_to_bounds(Entity *entity, World *world) {
                         }
 
                         // Ground friction
-                        entity->v.x *= 0.96; // TODO: Make this a constant
-                        entity->omega *= 0.96;
-                }
+                        double v_contact_x = entity->v.x - entity->omega * r.y;
+                        double inv_mass_tangent =
+                            inv_m + (r.y * r.y) * entity->inv_inertia;
 
-                // Ceiling and side walls
-                double radius = entity->definition->radius * entity->scale;
-                if (entity->pos.x - radius < 0) {
-                        entity->pos.x = radius;
-                        entity->v.x =
-                            -entity->v.x * entity->definition->restitution;
+                        double jt = -v_contact_x / inv_mass_tangent;
+
+                        double mu = 0.45;
+                        double max_jt = mu * j;
+                        if (jt > max_jt) {
+                                jt = max_jt;
+                        } else if (jt < -max_jt) {
+                                jt = -max_jt;
+                        }
+
+                        entity->v.x += jt * inv_m;
+                        entity->omega -= (jt * r.y) * entity->inv_inertia;
+
+                        // Little resistance so it comes to a rest eventually
+                        entity->v.x *= 0.995;
+                        entity->omega *= 0.995;
                 }
-                if (entity->pos.x + radius > world->width) {
-                        entity->pos.x = world->width - radius;
-                        entity->v.x =
-                            -entity->v.x * entity->definition->restitution;
-                }
-                if (entity->pos.y - radius < 0) {
-                        entity->pos.y = radius;
-                        entity->v.y =
-                            -entity->v.y * entity->definition->restitution;
-                }
+        }
+
+        // Ceiling and side walls
+        double radius = entity->definition->radius * entity->scale;
+        if (entity->pos.x - radius < 0) {
+                entity->pos.x = radius;
+                entity->v.x = -entity->v.x * entity->definition->restitution;
+        }
+        if (entity->pos.x + radius > world->width) {
+                entity->pos.x = world->width - radius;
+                entity->v.x = -entity->v.x * entity->definition->restitution;
+        }
+        if (entity->pos.y - radius < 0) {
+                entity->pos.y = radius;
+                entity->v.y = -entity->v.y * entity->definition->restitution;
         }
 }
 
