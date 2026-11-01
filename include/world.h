@@ -41,6 +41,24 @@ typedef enum {
         TAG_SPACE = 1ULL << 9 // E.g., planets, starts, etc.
 } EmojiTag;
 
+typedef enum { COLLIDER_NONE, COLLIDER_CIRCLE, COLLIDER_BOX } ColliderType;
+
+typedef struct {
+        ColliderType type;
+        Vec2 offset;
+        double angle;
+        union {
+                struct {
+                        double radius;
+                } circle;
+                struct {
+                        double width, height;
+                } box;
+        };
+} Collider;
+
+#define MAX_COLLIDERS 4
+
 struct World;
 struct Entity;
 
@@ -62,9 +80,10 @@ typedef struct {
 
         int index;
 
-        double radius; /* TODO: Consider allowing custom shapes for non-circular
-                       emojis, or perhaps auto-detecting the shape */
-        double mass;   /* Immovable if 0.0 */
+        double radius; // Essentially a bounding radius, holding all colliders
+                       // within it
+        Collider colliders[MAX_COLLIDERS];
+        double mass;           /* Immovable if 0.0 */
         double restitution;    /* Bounciness, from 0.0 (no bounce) to 1.0
                                (perfectly elastic) */
         uint64_t default_tags; // Supports up to 64 tags

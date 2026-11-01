@@ -246,7 +246,8 @@ void world_render(World *world, SDL_Renderer *renderer) {
                 if (world->dev_show_velocity_vectors)
                         render_velocity_vector(renderer, entity);
 
-                // TODO: Render hitboxes
+                if (world->dev_show_hitboxes)
+                        render_hitbox(renderer, entity);
         }
 }
 
