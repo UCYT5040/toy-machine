@@ -16,13 +16,17 @@ void emoji_picker_render(World *world, SDL_Renderer *renderer) {
         if (!world->emoji_picker_open)
                 return;
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
-        SDL_Rect picker_rect = {0, 0, world->width, world->height};
-        SDL_RenderFillRect(renderer, &picker_rect);
-
         double size = (double)world->width / (EMOJI_PICKER_COLUMNS + 1);
+        double screen_padding =
+            (world->width - (EMOJI_PICKER_COLUMNS * size)) / 2.0;
         double actual_size = size * 0.8;
         double padding = (size - actual_size) / 2.0;
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
+        SDL_Rect picker_rect = {screen_padding, 0,
+                                world->width - 2 * screen_padding,
+                                world->height};
+        SDL_RenderFillRect(renderer, &picker_rect);
 
         int unlocked_emoji_count = 0;
 
@@ -39,7 +43,7 @@ void emoji_picker_render(World *world, SDL_Renderer *renderer) {
                 int row = (unlocked_emoji_count - 1) / EMOJI_PICKER_COLUMNS;
                 int col = (unlocked_emoji_count - 1) % EMOJI_PICKER_COLUMNS;
 
-                SDL_FRect dest_rect = {col * size + padding,
+                SDL_FRect dest_rect = {col * size + padding + screen_padding,
                                        row * size + padding, actual_size,
                                        actual_size};
 
@@ -53,20 +57,28 @@ void emoji_picker_handle_mouse_down(World *world) {
         printf("Mouse down in emoji picker");
 
         double size = (double)world->width / (EMOJI_PICKER_COLUMNS + 1);
+        double screen_padding =
+            (world->width - (EMOJI_PICKER_COLUMNS * size)) / 2.0;
 
         int unlocked_emoji_count = 0;
 
-        int col = (int)(world->mouse_pos.x / size);
-        int row = (int)(world->mouse_pos.y / size);
+        double rel_x = world->mouse_pos.x - screen_padding;
+        double rel_y = world->mouse_pos.y;
 
-        if (col < 0 || col >= EMOJI_PICKER_COLUMNS || row < 0) {
+        if (rel_x < 0.0 || rel_y < 0.0)
+                return;
+
+        int col = (int)(rel_x / size);
+        int row = (int)(rel_y / size);
+
+        if (col < 0 || col >= EMOJI_PICKER_COLUMNS) {
                 return;
         }
 
         int target_emoji_index = row * EMOJI_PICKER_COLUMNS + col;
 
         for (int i = 1; i < EMOJI_COUNT; i++) {
-                if (!world->emoji_unlocks[i - 1]) {
+                if (!world->emoji_unlocks[i - 1] || !world->textures[i]) {
                         continue;
                 }
 
@@ -78,6 +90,7 @@ void emoji_picker_handle_mouse_down(World *world) {
                             entity_spawn(world, (EmojiType)i, world->mouse_pos);
                         if (new_entity) {
                                 world->dragged_entity_index = new_entity->index;
+                                world->drag_local_offset = (Vec2){0.0, 0.0};
                         }
 
                         world->emoji_picker_open = false;
