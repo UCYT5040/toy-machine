@@ -58,7 +58,7 @@ void vault_render(const Vault *vault, SDL_Renderer *renderer,
         snprintf(text, sizeof text, "%d", vault->balance);
 
         int text_width = font_measure_text(font, text);
-        double text_x = icon.x - VUALT_TEXT_GAP - (double)text_width;
+        double text_x = icon.x - VAULT_TEXT_GAP - (double)text_width;
         double text_y = 
            icon.y + (VAULT_ICON_SIZE - (double)font->line_height) / 2.0;
 
