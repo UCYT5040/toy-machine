@@ -28,6 +28,29 @@ void entity_create_default(Entity *entity, int definition_index, Vec2 pos,
         entity->pinned_offset = (Vec2){0.0, 0.0};
 }
 
+void entity_update_inertia(Entity *entity) {
+        double mass = entity->definition->mass;
+        if (mass <= 0.0 || entity->pinned)
+                entity->inv_inertia = 0.0;
+        else {
+                double I; // should we rename this? since it's a capital
+                          // variable but not a constant
+                if (entity->definition->colliders[0].type == COLLIDER_BOX) {
+                        double w = entity->definition->colliders[0].box.width *
+                                   entity->scale;
+                        double h = entity->definition->colliders[0].box.height *
+                                   entity->scale;
+                        I = (1.0 / 12.0) * mass * (w * w + h * h);
+                } else {
+                        double r =
+                            entity->definition->colliders[0].circle.radius *
+                            entity->scale;
+                        I = 0.5 * mass * r * r;
+                }
+                entity->inv_inertia = 1.0 / I;
+        }
+}
+
 Entity *entity_spawn(World *world, EmojiType type, Vec2 pos) {
         Entity *entity = NULL;
         for (int i = 0; i < MAX_ENTITIES; i++) {
@@ -40,31 +63,7 @@ Entity *entity_spawn(World *world, EmojiType type, Vec2 pos) {
         }
 
         if (entity) {
-                // This should be recalculated each time scale changes. Consider
-                // moving to a helper
-                double mass = entity->definition->mass;
-                if (mass <= 0.0 || entity->pinned)
-                        entity->inv_inertia = 0.0;
-                else {
-                        double I; // should we rename this? since it's a capital
-                                  // variable but not a constant
-                        if (entity->definition->colliders[0].type ==
-                            COLLIDER_BOX) {
-                                double w =
-                                    entity->definition->colliders[0].box.width *
-                                    entity->scale;
-                                double h = entity->definition->colliders[0]
-                                               .box.height *
-                                           entity->scale;
-                                I = (1.0 / 12.0) * mass * (w * w + h * h);
-                        } else {
-                                double r = entity->definition->colliders[0]
-                                               .circle.radius *
-                                           entity->scale;
-                                I = 0.5 * mass * r * r;
-                        }
-                        entity->inv_inertia = 1.0 / I;
-                }
+                entity_update_inertia(entity);
         }
 
         return entity; // No available entity slots
