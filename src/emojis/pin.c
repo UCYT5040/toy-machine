@@ -54,10 +54,14 @@ void emoji_pin_collide(World *world, Entity *self, Entity *other) {
         self->pinned_target_index = other->index;
         self->pinned_offset = vec2_sub(self->pos, other->pos);
         self->v = (Vec2){0.0, 0.0};
+        self->a = (Vec2){0.0, 0.0};
+        self->omega = 0.0;
 
         other->pinned = true;
         other->pinned_by_index = self->index;
         other->v = (Vec2){0.0, 0.0};
+        other->a = (Vec2){0.0, 0.0};
+        other->omega = 0.0;
 
         if (world->dragged_entity_index == self->index) {
                 world->dragged_entity_index = -1;

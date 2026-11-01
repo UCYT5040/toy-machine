@@ -92,8 +92,9 @@ void world_update(World *world, double dt) {
             dt * world->speed; // TODO: Is it necessary to do this in the parent
                                // loop? (i.e., is dt referenced anywhere else)
 
-        Vec2 raw_mouse_accel = vec2_scale(
-            vec2_sub(world->mouse_speed, world->last_mouse_speed), 1.0 / scaled_dt);
+        Vec2 raw_mouse_accel =
+            vec2_scale(vec2_sub(world->mouse_speed, world->last_mouse_speed),
+                       1.0 / scaled_dt);
         world->last_mouse_speed = world->mouse_speed;
 
         // Smooth mouse acceleration to avoid jittery behavior
@@ -118,6 +119,12 @@ void world_update(World *world, double dt) {
 
                                 entity->v = world->mouse_speed;
 
+                                if (entity->pinned) {
+                                        entity->omega = 0.0;
+                                        entity->torque = 0.0;
+                                        continue;
+                                }
+
                                 double ax = fmax(
                                     -MAX_A,
                                     fmin(MAX_A, (world->mouse_accel.x * -1.0)));
@@ -136,9 +143,9 @@ void world_update(World *world, double dt) {
                                 Vec2 total_force =
                                     vec2_add(grav_force, accel_force);
 
-                                double swing_torque = vec2_cross(
-                                    vec2_scale(relative_grab, -1.0),
-                                    total_force);
+                                double swing_torque =
+                                    vec2_cross(vec2_scale(relative_grab, -1.0),
+                                               total_force);
 
                                 entity->torque = swing_torque;
 
@@ -167,7 +174,7 @@ void world_update(World *world, double dt) {
                         Entity *entity = &world->entities[i];
 
                         if (!entity->active ||
-                            entity->definition->mass <= 0.0 ||
+                            entity->definition->mass <= 0.0 || entity->pinned ||
                             i == world->dragged_entity_index)
                                 continue;
 
@@ -329,7 +336,7 @@ void world_handle_mouse_up(World *world) {
 
         if (world->dragged_entity_index != -1) {
                 Entity *dragged = &world->entities[world->dragged_entity_index];
-                if (mouse_dt < 0.1)
+                if (!dragged->pinned && mouse_dt < 0.1)
                         dragged->v = world->mouse_speed;
                 else
                         dragged->v = (Vec2){0.0, 0.0};
