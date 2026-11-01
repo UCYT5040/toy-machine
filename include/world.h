@@ -12,6 +12,8 @@ typedef struct {
 
 typedef enum {
         EMOJI_NONE = 0,
+        EMOJI_BANK,
+        EMOJI_COIN,
         EMOJI_COMPUTER_MOUSE,
         EMOJI_SOCCER_BALL,
         EMOJI_FACTORY,
@@ -123,6 +125,8 @@ typedef struct Entity {
         Vec2 last_pos;
         Vec2 v;
         Vec2 a;
+        Vec2 shake_last_delta;
+        double shake_cooldown;
         double angle; // In radians
 
         double scale; // To scale individual entities
@@ -142,6 +146,9 @@ typedef struct World {
         Vec2 gravity; // in px/s^2
         bool space_mode;
         double space_mode_transition;
+
+        bool emoji_unlocks[EMOJI_COUNT - 1]; // Exclude EMOJI_NONE
+        bool emoji_picker_open;
 
         bool emoji_unlocks[EMOJI_COUNT - 1]; // Exclude EMOJI_NONE
         bool emoji_picker_open;
