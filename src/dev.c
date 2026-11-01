@@ -50,13 +50,16 @@ static void dev_command_help(char *output_buffer, size_t output_buffer_size) {
             " velocity <on/off> - toggle velocity vectors\n"
             " unlock <emoji> - unlock a specific emoji\n"
             " unlockall - unlock all emojis\n"
-            " exit - exit the game\n\n"
+            " exit - exit the game\n");
+        /*
+        This is commented out because there are way too many emojis now, just use unlockall and browse with emoji picker 
             "Emojis: ");
 
         for (int i = 1; i < EMOJI_COUNT; i++) {
                 append_output(output_buffer, output_buffer_size, &used, " %s",
                               EMOJI_DEFINITIONS[i].name);
         }
+        */
 }
 
 void run_dev_command(World *world, char *command, char *output_buffer,
