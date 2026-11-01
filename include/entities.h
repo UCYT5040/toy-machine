@@ -55,6 +55,8 @@ void entity_update_inertia(Entity *entity);
 
 Entity *entity_spawn(World *world, EmojiType type, Vec2 pos);
 
+void entity_remove(World *world, Entity *entity);
+
 // void entity_physics_step(Entity *entity, World *world);
 void entity_apply_forces(Entity *entity, World *world);
 void world_resolve_collisions(World *world);
