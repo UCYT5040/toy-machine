@@ -5,7 +5,6 @@
 #include "world.h"
 
 #include <SDL2/SDL.h>
-#include <linux/limits.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
