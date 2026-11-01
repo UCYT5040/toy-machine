@@ -3,6 +3,7 @@
 #include "dev.h"
 #include "emoji_registry.h"
 #include "entities.h"
+#include "vault.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <stdint.h>
@@ -20,6 +21,8 @@ void world_init(World *world, SDL_Renderer *renderer) {
         world->dragged_entity_index =
             -1; // First element will be in a dragging state if not set to `-1`
         world->speed = 1.0; // If left unset, the game will be frozen (0.0)
+
+        vault_init(&world->vault, renderer);
 
         for (int i = 1; i < EMOJI_COUNT; i++) {
                 EmojiDefinition *definition = &EMOJI_DEFINITIONS[i];
