@@ -81,20 +81,6 @@ static Vec2 entity_gravitational_field_strength(Entity *self, Entity *other) {
         return (Vec2){a * dx / distance, a * dy / distance};
 }
 
-// Negative velocity: Entities are moving away from eachother
-// Positive velocity: Entities are moving towards eachother
-// A collision is not guaranteed if entities are moving towards eachother
-static double entity_relative_velocity(Entity *e1, Entity *e2) {
-        double dx = e2->pos.x - e1->pos.x;
-        double dy = e2->pos.y - e1->pos.y;
-        double distance = fmax(sqrt(dx * dx + dy * dy), 0.01);
-
-        double dvx = e1->v.x - e2->v.x;
-        double dvy = e1->v.y - e2->v.y;
-
-        return dvx * (dx / distance) + dvy * (dy / distance);
-}
-
 void entity_handle_collision(World *world, Entity *e1, Entity *e2,
                              const CollisionManifold *manifold) {
         Vec2 rel_v = {e2->v.x - e1->v.x, e2->v.y - e1->v.y};
@@ -132,47 +118,6 @@ void entity_handle_collision(World *world, Entity *e1, Entity *e2,
         e1->v.y -= j * inv_m1 * manifold->normal.y;
         e2->v.x += j * inv_m2 * manifold->normal.x;
         e2->v.y += j * inv_m2 * manifold->normal.y;
-}
-
-void entity_physics_step(Entity *entity, World *world) {
-        if (entity->definition->mass <= 0.0 || entity->pinned)
-                return; // Object is immovable
-
-        // Detect and handle collisions
-        for (int i = 0; i < MAX_ENTITIES; i++) {
-                Entity *a = &world->entities[i];
-                if (!a->active)
-                        continue;
-
-                for (int j = i + 1; j < MAX_ENTITIES; j++) {
-                        Entity *b = &world->entities[j];
-                        if (!b->active)
-                                continue;
-
-                        CollisionManifold manifold;
-                        if (entity_is_colliding(a, b, &manifold)) {
-                                entity_fix_overlap(a, b, &manifold);
-                                entity_handle_collision(world, a, b, &manifold);
-                        }
-                }
-        }
-
-        // If not in space mode, apply world gravity
-        if (!world->space_mode) {
-                entity->a.x += world->gravity.x;
-                entity->a.y += world->gravity.y;
-        }
-
-        // Calculate gravitational field stregth of all other entities
-        for (int i = 0; i < MAX_ENTITIES; i++) {
-                Entity *other = &world->entities[i];
-                if (entity == other || !other->active)
-                        continue;
-
-                Vec2 a = entity_gravitational_field_strength(entity, other);
-                entity->a.x += a.x;
-                entity->a.y += a.y;
-        }
 }
 
 void entity_physics_integrate(Entity *entity, double *dt) {
@@ -251,37 +196,6 @@ void entity_constrain_to_bounds(Entity *entity, World *world) {
                         entity->v.y =
                             -entity->v.y * entity->definition->restitution;
                 }
-        }
-
-        double radius = entity->definition->radius * entity->scale;
-        double restitution = entity->definition->restitution;
-
-        if (entity->pos.y + radius > world->height) {
-                entity->pos.y = world->height - radius;
-
-                // To prevent jittering
-                if (fabs(entity->v.y) < 25.0) {
-                        entity->v.y = 0.0;
-                } else {
-                        entity->v.y = -entity->v.y * restitution;
-                }
-
-                entity->v.x *= 0.96; // Ground friction
-        }
-
-        if (entity->pos.y - radius < 0) {
-                entity->pos.y = radius;
-                entity->v.y = -entity->v.y * restitution;
-        }
-
-        if (entity->pos.x + radius > world->width) {
-                entity->pos.x = world->width - radius;
-                entity->v.x = -entity->v.x * restitution;
-        }
-
-        if (entity->pos.x - radius < 0) {
-                entity->pos.x = radius;
-                entity->v.x = -entity->v.x * restitution;
         }
 }
 
