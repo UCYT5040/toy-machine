@@ -195,7 +195,9 @@ void world_render(World *world, SDL_Renderer *renderer) {
                                                entity->pos.y - radius,
                                                radius * 2.0, radius * 2.0};
 
-                        SDL_RenderCopyF(renderer, texture, NULL, &dest_rect);
+                        SDL_RenderCopyExF(renderer, texture, NULL, &dest_rect,
+                                          entity->angle * (180.0 / M_PI), NULL,
+                                          SDL_FLIP_NONE);
                 }
 
                 if (entity->tags & TAG_PROCESSOR &&
