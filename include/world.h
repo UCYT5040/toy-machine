@@ -1,15 +1,12 @@
 #pragma once
 
 #include "vault.h"
+#include "vec2.h"
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 #include <stdint.h>
 
 #define MAX_ENTITIES 1024
-
-typedef struct {
-        double x, y;
-} Vec2;
 
 typedef enum {
         EMOJI_NONE = 0,

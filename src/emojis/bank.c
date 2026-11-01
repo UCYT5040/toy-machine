@@ -11,11 +11,6 @@
 #define BANK_COIN_DOWN_SPEED 220.0 
 #define BANK_COIN_SIDE_SPEED 80.0
 
-static double vec2_length(Vec2 v) {
-        /* a * a+b * b */
-        return sqrt(v.x * v.x + v.y * v.y);
-}
-
 void emoji_bank_update(World *world, Entity *self, double dt) {
         if (self->shake_cooldown > 0.0) {
                 self->shake_cooldown -= dt;
@@ -31,8 +26,7 @@ void emoji_bank_update(World *world, Entity *self, double dt) {
                 return;
         }
 
-        Vec2 delta = {self->pos.x - self->last_pos.x,
-                      self->pos.y - self->last_pos.y};
+        Vec2 delta = vec2_sub(self->pos, self->last_pos);
         self->last_pos = self->pos;
 
         if (dt <= 0.0) {
@@ -43,8 +37,7 @@ void emoji_bank_update(World *world, Entity *self, double dt) {
                 return;
         }
 
-        double dot = delta.x * self->shake_last_delta.x +
-                     delta.y * self->shake_last_delta.y;
+        double dot = vec2_dot(delta, self->shake_last_delta);
         bool reversed = dot < 0.0;
         self->shake_last_delta = delta;
 
@@ -54,9 +47,8 @@ void emoji_bank_update(World *world, Entity *self, double dt) {
 
         double bank_radius = self->definition->radius * self->scale;
         double coin_radius = EMOJI_DEFINITIONS[EMOJI_COIN].radius;
-        Vec2 spawn_pos = {
-                self->pos.x, self->pos.y + bank_radius + coin_radius + 2.0
-        };
+        Vec2 spawn_pos = vec2_add(
+            self->pos, (Vec2){0.0, bank_radius + coin_radius + 2.0});
 
         Entity *coin = entity_spawn(world, EMOJI_COIN, spawn_pos);
         if (!coin) {

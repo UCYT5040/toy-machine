@@ -23,12 +23,10 @@ void emoji_factory_update(World *world, Entity *self, double dt) {
                                      ejected_entity->scale) +
                                     5.0;
 
-                                ejected_entity->pos.x =
-                                    self->pos.x +
-                                    launch_offset * cos(self->angle);
-                                ejected_entity->pos.y =
-                                    self->pos.y +
-                                    launch_offset * sin(self->angle);
+                                ejected_entity->pos = vec2_add(
+                                    self->pos,
+                                    vec2_rotate((Vec2){launch_offset, 0.0},
+                                                self->angle));
                                 ejected_entity->last_pos = ejected_entity->pos;
                                 ejected_entity->active = true;
 
@@ -38,10 +36,8 @@ void emoji_factory_update(World *world, Entity *self, double dt) {
                                     6.0; // +/- 15 degrees
                                 double launch_angle = self->angle + spread;
                                 double launch_speed = 200.0; // Arbitrary speed
-                                ejected_entity->v.x =
-                                    launch_speed * cos(launch_angle);
-                                ejected_entity->v.y =
-                                    launch_speed * sin(launch_angle);
+                                ejected_entity->v = vec2_rotate(
+                                    (Vec2){launch_speed, 0.0}, launch_angle);
 
                                 self->eject_timer +=
                                     EJECT_INTERVAL; // Adds instead of setting
@@ -134,8 +130,7 @@ void emoji_factory_collide(World *world, Entity *self, Entity *other) {
         if (other->type == EMOJI_STONE) {
                 // Enforce a minimum velocity to ensure the stone was thrown
 
-                double velocity_magnitude =
-                    sqrt(other->v.x * other->v.x + other->v.y * other->v.y);
+                double velocity_magnitude = vec2_length(other->v);
                 if (velocity_magnitude >= MIN_THROW_VELOCITY) {
 
                         // Drop (throw) all processing inputs!

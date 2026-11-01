@@ -71,21 +71,20 @@ Entity *entity_spawn(World *world, EmojiType type, Vec2 pos) {
 
 // Calculates the gravitational field strengh of `other` on `self`
 static Vec2 entity_gravitational_field_strength(Entity *self, Entity *other) {
-        double dx = other->pos.x - self->pos.x;
-        double dy = other->pos.y - self->pos.y;
-        double distance = fmax(sqrt(dx * dx + dy * dy), 0.01);
+        Vec2 delta = vec2_sub(other->pos, self->pos);
+        double distance_sq = vec2_length_squared(delta);
+        double distance = fmax(sqrt(distance_sq), 0.01);
 
         double a = G * other->definition->mass / (distance * distance);
 
-        return (Vec2){a * dx / distance, a * dy / distance};
+        return vec2_scale(delta, a / distance);
 }
 
 void entity_handle_collision(World *world, Entity *e1, Entity *e2,
                              const CollisionManifold *manifold) {
-        Vec2 rel_v = {e2->v.x - e1->v.x, e2->v.y - e1->v.y};
+        Vec2 rel_v = vec2_sub(e2->v, e1->v);
 
-        double vel_along_normal =
-            rel_v.x * manifold->normal.x + rel_v.y * manifold->normal.y;
+        double vel_along_normal = vec2_dot(rel_v, manifold->normal);
 
         if (vel_along_normal > 0) {
                 return; // Entities are moving away from eachother
@@ -113,18 +112,14 @@ void entity_handle_collision(World *world, Entity *e1, Entity *e2,
 
         double j = -(1.0 + e) * vel_along_normal / (inv_m1 + inv_m2);
 
-        e1->v.x -= j * inv_m1 * manifold->normal.x;
-        e1->v.y -= j * inv_m1 * manifold->normal.y;
-        e2->v.x += j * inv_m2 * manifold->normal.x;
-        e2->v.y += j * inv_m2 * manifold->normal.y;
+        Vec2 impulse = vec2_scale(manifold->normal, j);
+        e1->v = vec2_sub(e1->v, vec2_scale(impulse, inv_m1));
+        e2->v = vec2_add(e2->v, vec2_scale(impulse, inv_m2));
 }
 
 void entity_physics_integrate(Entity *entity, double *dt) {
-        entity->v.x += entity->a.x * *dt;
-        entity->v.y += entity->a.y * *dt;
-
-        entity->pos.x += entity->v.x * *dt;
-        entity->pos.y += entity->v.y * *dt;
+        entity->v = vec2_add(entity->v, vec2_scale(entity->a, *dt));
+        entity->pos = vec2_add(entity->pos, vec2_scale(entity->v, *dt));
 
         entity->omega += (entity->torque * entity->inv_inertia) * *dt;
         entity->angle += entity->omega * *dt;
@@ -145,8 +140,7 @@ void entity_constrain_to_bounds(Entity *entity, World *world) {
         if (get_lowest_point(entity, &contact_point, &penetration, floor_y)) {
                 entity->pos.y -= penetration;
 
-                Vec2 r = {contact_point.x - entity->pos.x,
-                          contact_point.y - entity->pos.y};
+                Vec2 r = vec2_sub(contact_point, entity->pos);
 
                 double v_contact_y = entity->v.y + entity->omega * r.x;
 
@@ -223,13 +217,11 @@ void entity_apply_forces(Entity *entity, World *world) {
             entity->pinned)
                 return;
 
-        entity->a.x = 0.0;
-        entity->a.y = 0.0;
+        entity->a = (Vec2){0.0, 0.0};
 
         // If not in space mode, apply world gravity
         if (!world->space_mode) {
-                entity->a.x += world->gravity.x;
-                entity->a.y += world->gravity.y;
+                entity->a = vec2_add(entity->a, world->gravity);
         }
 
         // Calculate gravitational field stregth of all other entities
@@ -239,7 +231,6 @@ void entity_apply_forces(Entity *entity, World *world) {
                         continue;
 
                 Vec2 a = entity_gravitational_field_strength(entity, other);
-                entity->a.x += a.x;
-                entity->a.y += a.y;
+                entity->a = vec2_add(entity->a, a);
         }
 }

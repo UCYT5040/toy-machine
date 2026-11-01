@@ -279,9 +279,9 @@ void run_dev_command(World *world, char *command, char *output_buffer,
 
 void render_velocity_vector(SDL_Renderer *renderer, Entity *entity) {
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_RenderDrawLine(renderer, entity->pos.x, entity->pos.y,
-                           entity->pos.x + entity->v.x,
-                           entity->pos.y + entity->v.y);
+        Vec2 end = vec2_add(entity->pos, entity->v);
+        SDL_RenderDrawLine(renderer, (int)entity->pos.x, (int)entity->pos.y,
+                           (int)end.x, (int)end.y);
 }
 
 #define CIRCLE_SEGMENTS 32
@@ -294,17 +294,21 @@ void render_hitbox(SDL_Renderer *renderer, Entity *entity) {
                         continue;
                 }
 
+                Vec2 center = vec2_add(
+                    entity->pos,
+                    vec2_rotate(collider->offset, entity->angle));
+
                 if (collider->type == COLLIDER_CIRCLE) {
                         double radius = collider->circle.radius;
-
-                        double cx = entity->pos.x + collider->offset.x;
-                        double cy = entity->pos.y + collider->offset.y;
 
                         SDL_Point points[CIRCLE_SEGMENTS + 1];
                         for (int j = 0; j <= CIRCLE_SEGMENTS; j++) {
                                 double phi = 2.0 * M_PI * j / CIRCLE_SEGMENTS;
-                                points[j].x = (int)(cx + radius * cos(phi));
-                                points[j].y = (int)(cy + radius * sin(phi));
+                                Vec2 pt = vec2_add(
+                                    center,
+                                    (Vec2){radius * cos(phi), radius * sin(phi)});
+                                points[j].x = (int)pt.x;
+                                points[j].y = (int)pt.y;
                         }
 
                         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
@@ -312,40 +316,27 @@ void render_hitbox(SDL_Renderer *renderer, Entity *entity) {
                                             CIRCLE_SEGMENTS + 1);
 
                         // Draw a line indicating the angle of the collider
-                        double angle_line_length = radius;
                         double angle = entity->angle + collider->angle;
-                        int x2 = (int)(cx + angle_line_length * cos(angle));
-                        int y2 = (int)(cy + angle_line_length * sin(angle));
-                        SDL_RenderDrawLine(renderer, (int)cx, (int)cy, x2, y2);
+                        Vec2 p2 = vec2_add(
+                            center, vec2_rotate((Vec2){radius, 0.0}, angle));
+                        SDL_RenderDrawLine(renderer, (int)center.x, (int)center.y,
+                                           (int)p2.x, (int)p2.y);
 
                 } else if (collider->type == COLLIDER_BOX) {
                         double hw = collider->box.width / 2.0;
                         double hh = collider->box.height / 2.0;
 
                         double total_angle = entity->angle + collider->angle;
-                        double cos_a = cos(total_angle);
-                        double sin_a = sin(total_angle);
-
-                        double cos_e = cos(entity->angle);
-                        double sin_e = sin(entity->angle);
-
-                        double cx =
-                            entity->pos.x + (collider->offset.x * cos_e -
-                                             collider->offset.y * sin_e);
-                        double cy =
-                            entity->pos.y + (collider->offset.x * sin_e +
-                                             collider->offset.y * cos_e);
+                        Vec2 local_corners[4] = {
+                            {-hw, -hh}, {hw, -hh}, {hw, hh}, {-hw, hh}};
 
                         SDL_Point points[5];
                         for (int j = 0; j < 4; j++) {
-                                double local_x = (j == 0 || j == 3) ? -hw : hw;
-                                double local_y = (j == 0 || j == 1) ? -hh : hh;
-
-                                double rx = local_x * cos_a - local_y * sin_a;
-                                double ry = local_x * sin_a + local_y * cos_a;
-
-                                points[j].x = (int)(cx + rx);
-                                points[j].y = (int)(cy + ry);
+                                Vec2 pt = vec2_add(
+                                    center,
+                                    vec2_rotate(local_corners[j], total_angle));
+                                points[j].x = (int)pt.x;
+                                points[j].y = (int)pt.y;
                         }
                         points[4] = points[0]; // Close the box
 

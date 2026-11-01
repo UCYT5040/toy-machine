@@ -19,8 +19,7 @@ void emoji_pin_unpin(World *world, Entity *pin) {
         double spread =
             ((double)rand() / RAND_MAX - 0.5) * M_PI / 6.0; // +/- 15 degrees
         double launch_angle = pin->angle + spread;
-        pin->v.x = 200.0 * cos(launch_angle);
-        pin->v.y = 200.0 * sin(launch_angle);
+        pin->v = vec2_rotate((Vec2){200.0, 0.0}, launch_angle);
 }
 
 void emoji_pin_update(World *world, Entity *self, double dt) {
@@ -32,16 +31,14 @@ void emoji_pin_update(World *world, Entity *self, double dt) {
                         return;
                 }
 
-                self->pos.x = target->pos.x + self->pinned_offset.x;
-                self->pos.y = target->pos.y + self->pinned_offset.y;
+                self->pos = vec2_add(target->pos, self->pinned_offset);
         }
 }
 
 void emoji_pin_collide(World *world, Entity *self, Entity *other) {
         if (self->pinned_target_index >= 0) {
                 if (other->type == EMOJI_STONE) {
-                        double velocity_magnitude = sqrt(
-                            other->v.x * other->v.x + other->v.y * other->v.y);
+                        double velocity_magnitude = vec2_length(other->v);
                         if (velocity_magnitude >= MIN_THROW_VELOCITY) {
                                 emoji_pin_unpin(world, self);
                         }
@@ -55,8 +52,7 @@ void emoji_pin_collide(World *world, Entity *self, Entity *other) {
 
         self->pinned = true;
         self->pinned_target_index = other->index;
-        self->pinned_offset.x = self->pos.x - other->pos.x;
-        self->pinned_offset.y = self->pos.y - other->pos.y;
+        self->pinned_offset = vec2_sub(self->pos, other->pos);
         self->v = (Vec2){0.0, 0.0};
 
         other->pinned = true;
