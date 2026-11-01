@@ -19,6 +19,7 @@ typedef enum {
         EMOJI_BANK,
         EMOJI_COIN,
         EMOJI_FAN,
+        EMOJI_TRASHBIN,
         EMOJI_COUNT
 } EmojiType;
 
@@ -56,6 +57,8 @@ typedef struct {
         double restitution;    /* Bounciness, from 0.0 (no bounce) to 1.0
                                (perfectly elastic) */
         uint64_t default_tags; // Supports up to 64 tags
+
+        int collision_priority; /* Higher values runs first and on contact */
 
         EmojiUpdateFunction update;
         EmojiCollideFunction collide;
