@@ -15,4 +15,5 @@ bool font_init(FontAtlas *atlas, SDL_Renderer *renderer, const char *font_path,
                int font_size);
 void font_draw(FontAtlas *atlas, SDL_Renderer *renderer, const char *text,
                double x, double y, SDL_Color color);
+int font_measure_text(const FontAtlas *atlas, const char *text);
 void font_destroy(FontAtlas *atlas);

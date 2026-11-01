@@ -7,7 +7,7 @@
 #include "world.h"
 
 #define MAX_DEV_COMMAND_LENGTH 256
-#define MAX_DEV_COMMAND_OUTPUT 256
+#define MAX_DEV_COMMAND_OUTPUT 384
 
 typedef struct {
         char command_buffer[MAX_DEV_COMMAND_LENGTH];

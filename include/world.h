@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include "vault.h"
 
 #define MAX_ENTITIES 1024
 
@@ -127,7 +128,7 @@ typedef struct Entity {
         Vec2 a;
         Vec2 shake_last_delta;
         double shake_cooldown;
-
+        double despawn_timer;
         double angle; // In radians
         double omega; // This symbol represents angular velocity
         double torque;
@@ -144,6 +145,7 @@ typedef struct World {
 
         SDL_Texture *bg_box;
         SDL_Texture *bg_space;
+        Vault vault;
 
         int width, height;
 

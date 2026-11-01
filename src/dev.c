@@ -2,9 +2,11 @@
 #include "SDL_render.h"
 #include "emoji_registry.h"
 #include "entities.h"
+#include "vault.h"
 #include "world.h"
 
 #include <SDL2/SDL.h>
+#include <limits.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -42,14 +44,22 @@ static void dev_command_help(char *output_buffer, size_t output_buffer_size) {
             "Commands:\n"
             " help - show this help message\n"
             " spawn <emoji> <x> <y> - spawn an emoji at given coords\n"
+            " vault <add/spend> <amount> - view/modify vault balance\n"
             " speed <value> - set simulation speed\n"
-            " hitboxes <on/off> - toggle hitboxes\n\n"
+            " hitboxes <on/off> - toggle hitboxes\n"
+            " velocity <on/off> - toggle velocity vectors\n"
+            " unlock <emoji> - unlock a specific emoji\n"
+            " unlockall - unlock all emojis\n"
+            " exit - exit the game\n");
+        /*
+        This is commented out because there are way too many emojis now, just use unlockall and browse with emoji picker 
             "Emojis: ");
 
         for (int i = 1; i < EMOJI_COUNT; i++) {
                 append_output(output_buffer, output_buffer_size, &used, " %s",
                               EMOJI_DEFINITIONS[i].name);
         }
+        */
 }
 
 void run_dev_command(World *world, char *command, char *output_buffer,
@@ -110,6 +120,48 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                 if (!found) {
                         snprintf(output_buffer, output_buffer_size,
                                  "Emoji not found");
+                }
+        } else if (strcmp(command_name, "vault") == 0) {
+                char *action = strtok(NULL, " \t\n");
+                /* View Balance */
+                if (action == NULL) {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Vault balance: %d", world->vault.balance);
+                        return;
+                }
+                char *amount_str = strtok(NULL, " \t\n");
+                if (amount_str == NULL) {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Usage: vault add <amount> | vault spend <amount>");
+                        return;
+                }
+
+                char *end = NULL;
+                long amount = strtol(amount_str, &end, 10);
+                if (end == amount_str || *end != '\0' || amount <= 0 ||
+                    amount > INT_MAX) {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Amount must be a positive integer");
+                        return;
+                }
+
+                if (strcmp(action, "add") == 0) {
+                        vault_add(&world->vault, (int)amount);
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Vault balance: %d", world->vault.balance);
+                } else if (strcmp(action, "spend") == 0) {
+                        if (vault_spend(&world->vault, (int)amount)) {
+                                snprintf(output_buffer, output_buffer_size,
+                                         "Vault balance: %d",
+                                         world->vault.balance);
+                        } else {
+                                snprintf(output_buffer, output_buffer_size,
+                                         "Not enough coins (balance: %d)",
+                                         world->vault.balance);
+                        }
+                } else {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Usage: vault add <amount> | vault spend <amount>");
                 }
         } else if (strcmp(command_name, "speed") == 0) {
                 char *speed_str = strtok(NULL, " \t\n");

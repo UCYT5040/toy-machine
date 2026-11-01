@@ -2,6 +2,7 @@
 #include "dev.h"
 #include "emoji_picker.h"
 #include "event.h"
+#include "vault.h"
 #include <SDL2/SDL_image.h>
 #include <string.h>
 
@@ -66,6 +67,8 @@ void app_run(App *app, World *world) {
                 SDL_RenderClear(app->renderer);
 
                 world_render(world, app->renderer);
+                vault_render(&world->vault, app->renderer, 
+                             &app->font_atlas, world->width);
 
                 emoji_picker_render(world, app->renderer);
 
