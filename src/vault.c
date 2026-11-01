@@ -7,7 +7,7 @@
 #define VAULT_MARGIN 16.0
 #define VAULT_TEXT_GAP 8.0
 
-void vault_init(Vault *vault, SDL_Renderer, *renderer) {
+void vault_init(Vault *vault, SDL_Renderer *renderer) {
         SDL_Surface *surface = IMG_Load("assets/vault.png");
 
         if (!surface) {
