@@ -208,7 +208,6 @@ void world_handle_mouse_down(World *world) {
 }
 
 void world_handle_mouse_up(World *world) {
-<<<<<<< HEAD
         uint32_t time = SDL_GetTicks();
         double mouse_dt =
             (double)time / 1000.0 - (double)world->last_mouse_move / 1000.0;
@@ -220,11 +219,6 @@ void world_handle_mouse_up(World *world) {
                 else
                         dragged->v = (Vec2){0.0, 0.0};
         }
-=======
-        Entity *dragged = &world->entities[world->dragged_entity_index];
-        if (dragged)
-                dragged->v = world->mouse_speed;
->>>>>>> a038b98 (feat(world): throw dragged entities on release and start fan emoji)
 
         world->dragged_entity_index = -1;
 }

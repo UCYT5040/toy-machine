@@ -17,11 +17,11 @@ static double vec2_length(Vec2 v) {
 }
 
 void emoji_bank_update(World *world, Entity *self, double dt) {
-        if (self->timer > 0.0) {
-                self->timer -= dt;
+        if (self->shake_cooldown > 0.0) {
+                self->shake_cooldown -= dt;
                 /* 0 is the floor */
-                if (self->timer < 0.0) {
-                        self->timer = 0.0;
+                if (self->shake_cooldown < 0.0) {
+                        self->shake_cooldown = 0.0;
                 }
         }
 
@@ -48,7 +48,7 @@ void emoji_bank_update(World *world, Entity *self, double dt) {
         bool reversed = dot < 0.0;
         self->shake_last_delta = delta;
 
-        if (!reversed || self->timer > 0.0) {
+        if (!reversed || self->shake_cooldown > 0.0) {
                 return;
         }
 
@@ -73,5 +73,5 @@ void emoji_bank_update(World *world, Entity *self, double dt) {
         coin->v = (Vec2){-side_dir * BANK_COIN_SIDE_SPEED, 
                          BANK_COIN_DOWN_SPEED};
 
-        self->timer = BANK_SHAKE_COOLDOWN;
+        self->shake_cooldown = BANK_SHAKE_COOLDOWN;
 }
