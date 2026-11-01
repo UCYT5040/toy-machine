@@ -18,6 +18,7 @@ typedef enum {
         EMOJI_PIN,
         EMOJI_BANK,
         EMOJI_COIN,
+        EMOJI_FAN,
         EMOJI_COUNT
 } EmojiType;
 

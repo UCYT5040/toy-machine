@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Electric desk fan, head pointing to the right, blowing left to right -->
+  <defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E9EDF2"/>
+      <stop offset="1" stop-color="#B8C0CC"/>
+    </linearGradient>
+    <linearGradient id="dark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5B6572"/>
+      <stop offset="1" stop-color="#3A424D"/>
+    </linearGradient>
+    <linearGradient id="blade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8FD3FF"/>
+      <stop offset="1" stop-color="#4FA8E6"/>
+    </linearGradient>
+    <clipPath id="cageClip">
+      <ellipse cx="82" cy="60" rx="13" ry="38"/>
+    </clipPath>
+  </defs>
+
+  <!-- Base -->
+  <ellipse cx="54" cy="110" rx="34" ry="9" fill="#3A424D"/>
+  <ellipse cx="54" cy="107" rx="34" ry="9" fill="url(#dark)"/>
+  <ellipse cx="54" cy="107" rx="26" ry="6" fill="#6E7884" opacity="0.5"/>
+
+  <!-- Stand -->
+  <rect x="49" y="70" width="10" height="38" rx="3" fill="url(#metal)"/>
+  <rect x="46" y="66" width="16" height="10" rx="4" fill="#5B6572"/>
+
+  <!-- Motor housing (side view) -->
+  <rect x="20" y="42" width="56" height="36" rx="16" fill="url(#dark)"/>
+  <rect x="24" y="46" width="42" height="10" rx="5" fill="#6E7884" opacity="0.6"/>
+  <!-- Vents on the back -->
+  <g stroke="#2B313A" stroke-width="2" stroke-linecap="round">
+    <line x1="30" y1="56" x2="30" y2="70"/>
+    <line x1="36" y1="56" x2="36" y2="70"/>
+    <line x1="42" y1="56" x2="42" y2="70"/>
+  </g>
+
+  <!-- Cage back rim -->
+  <ellipse cx="78" cy="60" rx="13" ry="38" fill="#4A535F"/>
+
+  <!-- Blades (inside the cage) -->
+  <g clip-path="url(#cageClip)">
+    <ellipse cx="82" cy="60" rx="12" ry="36" fill="#1F2630"/>
+    <ellipse cx="82" cy="38" rx="6" ry="16" fill="url(#blade)" opacity="0.95"/>
+    <ellipse cx="82" cy="82" rx="6" ry="16" fill="url(#blade)" opacity="0.95"/>
+    <ellipse cx="82" cy="60" rx="7" ry="9" fill="url(#blade)" opacity="0.6"/>
+  </g>
+  <!-- Hub -->
+  <ellipse cx="83" cy="60" rx="4" ry="7" fill="#E9EDF2"/>
+
+  <!-- Front grille -->
+  <g fill="none" stroke="#DDE3EA" stroke-width="2" stroke-linecap="round">
+    <ellipse cx="82" cy="60" rx="13" ry="38"/>
+    <path d="M82 22 v76"/>
+    <path d="M88 26 v68"/>
+    <path d="M76 26 v68"/>
+    <path d="M92.5 36 v48"/>
+    <path d="M71.5 36 v48"/>
+  </g>
+  <!-- Grille ring highlight -->
+  <ellipse cx="82" cy="60" rx="13" ry="38" fill="none" stroke="#F7F9FB" stroke-width="3"/>
+</svg>

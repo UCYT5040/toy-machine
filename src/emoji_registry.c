@@ -154,4 +154,11 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                     .default_tags = TAG_NONE,
                     .update = emoji_coin_update,
                     .collide = NULL},
-};
+    [EMOJI_FAN] = {.name = "fan",
+                   .svg_path = "assets/emojis/fan.svg",
+                   CIRCULAR_EMOJI(15.0),
+                   .mass = 2.0,
+                   .restitution = 0.3,
+                   .default_tags = TAG_NONE,
+                   .update = NULL,
+                   .collide = NULL}};
