@@ -2,6 +2,13 @@
 
 A physics and object simulation game.
 
+## How to play
+Your primary progression method will be combining emojis, which gives you coins, acheivements also give you coins and there are other methods as well.
+
+Currently we've implemented a bank emoji which when shaken drops a coin, this is slow and annoying though.
+
+There is a vault system, where all coins get collected and stored, all transactions will occur via the vault
+
 ## Building & Running
 
 ### Dependencies
@@ -20,14 +27,18 @@ This program can run on windows, I've added what would be needed for CMake to do
 make run
 ```
 
-There is currently a developer console implemented in the game, you can access it by pressing F1 in the game window.  
+There is currently a developer console implemented in the game, you can access it by pressing F1 in the game window. 
+
 Available commands:
-- `help` - help message with commands and currently implemented emojis
+- `help` - more detailed help message with commands
 - `spawn` - spawn an emoji at the given coords (e.g. `spawn soccer_ball 50 80`)
+- `vault` - view/modify vault balances (e.g. `vault add/spend 100`)
 - `speed` - set world simulation speed (e.g. `speed 100`)
 - `hitboxes` - enable/disable hitboxes (e.g. `hitboxes on/off`)
-
-You can drag the emojis around but they do not do anything for now.
+- `velocity` - enable/disable velocity vectors (e.g. `velocity on/off`)
+- `unlock` - unlock a specific emoji (e.g. `unlock hammer`)
+- `unlockall` - unlock all available emojis (e.g. `unlockall`)
+- `exit` - exit the game (e.g. `exit`)
 
 ## Contributing
 If you are Jeremiah or Simon, you should read this.  
