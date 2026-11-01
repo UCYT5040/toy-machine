@@ -127,7 +127,11 @@ typedef struct Entity {
         Vec2 a;
         Vec2 shake_last_delta;
         double shake_cooldown;
+
         double angle; // In radians
+        double omega; // This symbol represents angular velocity
+        double torque;
+        double inv_inertia; // This is (moment of intertia)^-1
 
         double scale; // To scale individual entities
 
@@ -153,8 +157,12 @@ typedef struct World {
         Vec2 mouse_pos;
         bool mouse_down;
         uint32_t last_mouse_move;
+        Vec2 last_mouse_speed;
         Vec2 mouse_speed;
+        Vec2 mouse_accel;
         int dragged_entity_index; // -1 if no entity is being dragged
+        Vec2 drag_local_offset; // The point where this entity is being dragged
+                                // from, relative to it's center
 
         double speed; // Currently used only for dev commands, but could
                       // be an effect later on (this is a multiplier for dt)

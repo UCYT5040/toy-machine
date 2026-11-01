@@ -27,14 +27,45 @@ void entity_create_default(Entity *entity, int definition_index, Vec2 pos,
 }
 
 Entity *entity_spawn(World *world, EmojiType type, Vec2 pos) {
+        Entity *entity = NULL;
         for (int i = 0; i < MAX_ENTITIES; i++) {
                 if (world->entities[i].collect) {
                         entity_create_default(&world->entities[i], type, pos,
                                               i);
-                        return &world->entities[i];
+                        entity = &world->entities[i];
+                        break;
                 }
         }
-        return NULL; // No available entity slots
+
+        if (entity) {
+                // This should be recalculated each time scale changes. Consider
+                // moving to a helper
+                double mass = entity->definition->mass;
+                if (mass <= 0.0 || entity->pinned)
+                        entity->inv_inertia = 0.0;
+                else {
+                        double I; // should we rename this? since it's a capital
+                                  // variable but not a constant
+                        if (entity->definition->colliders[0].type ==
+                            COLLIDER_BOX) {
+                                double w =
+                                    entity->definition->colliders[0].box.width *
+                                    entity->scale;
+                                double h = entity->definition->colliders[0]
+                                               .box.height *
+                                           entity->scale;
+                                I = (1.0 / 12.0) * mass * (w * w + h * h);
+                        } else {
+                                double r = entity->definition->colliders[0]
+                                               .circle.radius *
+                                           entity->scale;
+                                I = 0.5 * mass * r * r;
+                        }
+                        entity->inv_inertia = 1.0 / I;
+                }
+        }
+
+        return entity; // No available entity slots
 }
 
 // Calculates the gravitational field strengh of `other` on `self`
@@ -462,11 +493,142 @@ void entity_physics_integrate(Entity *entity, double *dt) {
 
         entity->pos.x += entity->v.x * *dt;
         entity->pos.y += entity->v.y * *dt;
+
+        entity->omega += (entity->torque * entity->inv_inertia) * *dt;
+        entity->angle += entity->omega * *dt;
+
+        // Damping
+        entity->omega *= 0.99;
+        entity->torque = 0.0;
+}
+
+static bool get_lowest_point(Entity *entity, Vec2 *out_point,
+                             double *out_penetration, double floor_y) {
+        double max_y = -INFINITY;
+        Vec2 lowest_point = {0.0, 0.0};
+
+        double cos_e = cos(entity->angle);
+        double sin_e = sin(entity->angle);
+
+        for (int i = 0; i < MAX_COLLIDERS; i++) {
+                Collider *collider = &entity->definition->colliders[i];
+                if (collider->type == COLLIDER_NONE)
+                        continue;
+
+                Vec2 collider_center = {
+                    entity->pos.x + (collider->offset.x * cos_e -
+                                     collider->offset.y * sin_e) *
+                                        entity->scale,
+                    entity->pos.y + (collider->offset.x * sin_e +
+                                     collider->offset.y * cos_e) *
+                                        entity->scale};
+
+                if (collider->type == COLLIDER_CIRCLE) {
+                        double radius = collider->circle.radius * entity->scale;
+
+                        double py = collider_center.y + radius;
+                        if (py > max_y) {
+                                max_y = py;
+                                lowest_point = (Vec2){collider_center.x, py};
+                        }
+                } else if (collider->type == COLLIDER_BOX) {
+                        double hw = (collider->box.width / 2.0) * entity->scale;
+                        double hh =
+                            (collider->box.height / 2.0) * entity->scale;
+
+                        double total_angle = entity->angle + collider->angle;
+                        double cos_a = cos(total_angle);
+                        double sin_a = sin(total_angle);
+
+                        double local_corners[4][2] = {
+                            {-hw, -hh}, {hw, -hh}, {hw, hh}, {-hw, hh}};
+
+                        for (int j = 0; j < 4; j++) {
+                                double px = collider_center.x +
+                                            local_corners[j][0] * cos_a -
+                                            local_corners[j][1] * sin_a;
+                                double py = collider_center.y +
+                                            local_corners[j][0] * sin_a +
+                                            local_corners[j][1] * cos_a;
+                                if (py > max_y) {
+                                        max_y = py;
+                                        lowest_point = (Vec2){px, py};
+                                }
+                        }
+                }
+        }
+
+        if (max_y > floor_y) {
+                *out_point = lowest_point;
+                *out_penetration = max_y - floor_y;
+                return true;
+        } else {
+                return false;
+        }
 }
 
 void entity_constrain_to_bounds(Entity *entity, World *world) {
         if (!entity->active || entity->definition->mass <= 0.0)
                 return;
+
+        double floor_y = (double)world->height;
+        Vec2 contact_point;
+        double penetration;
+
+        if (get_lowest_point(entity, &contact_point, &penetration, floor_y)) {
+                entity->pos.y -= penetration;
+
+                Vec2 r = {contact_point.x - entity->pos.x,
+                          contact_point.y - entity->pos.y};
+
+                double v_contact_y = entity->v.y + entity->omega * r.x;
+
+                if (v_contact_y > 0.0) {
+                        double restitution = entity->definition->restitution;
+
+                        double inv_m = 1.0 / entity->definition->mass;
+                        double inv_mass_eff =
+                            inv_m + (r.x * r.x) * entity->inv_inertia;
+
+                        // Magnitude of upward impulse
+                        double j =
+                            (1.0 + restitution) * v_contact_y / inv_mass_eff;
+
+                        entity->v.y -= j * inv_m;
+
+                        entity->omega -= (j * r.x) * entity->inv_inertia;
+
+                        // To prevent jittering, apply a threshold to velocity
+                        if (fabs(entity->v.y) < 15.0) {
+                                entity->v.y = 0.0;
+                        }
+                        if (fabs(entity->omega) < 0.2) {
+                                entity->omega = 0.0;
+                        }
+
+                        // Ground friction
+                        entity->v.x *= 0.96; // TODO: Make this a constant
+                        entity->omega *= 0.96;
+                }
+
+                // Ceiling and side walls
+                double radius = entity->definition->radius * entity->scale;
+                if (entity->pos.x - radius < 0) {
+                        entity->pos.x = radius;
+                        entity->v.x =
+                            -entity->v.x * entity->definition->restitution;
+                }
+                if (entity->pos.x + radius > world->width) {
+                        entity->pos.x = world->width - radius;
+                        entity->v.x =
+                            -entity->v.x * entity->definition->restitution;
+                }
+                if (entity->pos.y - radius < 0) {
+                        entity->pos.y = radius;
+                        entity->v.y =
+                            -entity->v.y * entity->definition->restitution;
+                }
+        }
 
         double radius = entity->definition->radius * entity->scale;
         double restitution = entity->definition->restitution;

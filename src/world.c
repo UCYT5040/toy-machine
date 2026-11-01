@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #define PHYSICS_SUBSTEPS 8
+#define MAX_A 2500.0
 
 void world_init(World *world, SDL_Renderer *renderer) {
         *world = (World){0};
@@ -87,6 +88,17 @@ void world_update(World *world, double dt) {
             dt * world->speed; // TODO: Is it necessary to do this in the parent
                                // loop? (i.e., is dt referenced anywhere else)
 
+        Vec2 raw_mouse_accel = {
+            (world->mouse_speed.x - world->last_mouse_speed.x) / scaled_dt,
+            (world->mouse_speed.y - world->last_mouse_speed.y) / scaled_dt};
+        world->last_mouse_speed = world->mouse_speed;
+
+        // Smooth mouse acceleration to avoid jittery behavior
+        world->mouse_accel.x =
+            world->mouse_accel.x * 0.85 + raw_mouse_accel.x * 0.15;
+        world->mouse_accel.y =
+            world->mouse_accel.y * 0.85 + raw_mouse_accel.y * 0.15;
+
         double substep_dt = scaled_dt / (double)PHYSICS_SUBSTEPS;
         for (int step = 0; step < PHYSICS_SUBSTEPS; step++) {
                 // Calculate `a` for all entities
@@ -99,7 +111,57 @@ void world_update(World *world, double dt) {
                         entity->a = (Vec2){0.0, 0.0};
 
                         if (i == world->dragged_entity_index) {
-                                entity->pos = world->mouse_pos;
+                                double cos_a = cos(entity->angle);
+                                double sin_a = sin(entity->angle);
+                                Vec2 relative_grab = {
+                                    world->drag_local_offset.x * cos_a -
+                                        world->drag_local_offset.y * sin_a,
+                                    world->drag_local_offset.x * sin_a +
+                                        world->drag_local_offset.y * cos_a};
+
+                                entity->pos.x =
+                                    world->mouse_pos.x - relative_grab.x;
+                                entity->pos.y =
+                                    world->mouse_pos.y - relative_grab.y;
+
+                                entity->v = world->mouse_speed;
+
+                                double ax = fmax(
+                                    -MAX_A,
+                                    fmin(MAX_A, (world->mouse_accel.x * -1.0)));
+                                double ay = fmax(
+                                    -MAX_A,
+                                    fmin(MAX_A, (world->mouse_accel.y * -1.0)));
+
+                                double mass = entity->definition->mass;
+                                Vec2 total_force = {
+                                    (world->space_mode
+                                         ? 0.0
+                                         : world->gravity.x * mass) -
+                                        (ax * 0.25 * mass),
+                                    (world->space_mode
+                                         ? 0.0
+                                         : world->gravity.y * mass) -
+                                        (ay * 0.25 * mass)};
+
+                                double swing_torque =
+                                    (-relative_grab.x) * total_force.y -
+                                    (-relative_grab.y) * total_force.x;
+
+                                entity->torque = swing_torque;
+
+                                entity->omega +=
+                                    (entity->torque * entity->inv_inertia) *
+                                    substep_dt;
+                                // Dampen velocity
+                                double speed_drag =
+                                    1.8 + fabs(entity->omega) * 0.04;
+                                entity->omega *=
+                                    (1.0 - speed_drag * substep_dt);
+                                entity->angle += entity->omega * substep_dt;
+                                entity->torque =
+                                    0.0; // Reset torque after applying it
+
                                 continue;
                         }
 
@@ -258,6 +320,17 @@ void world_handle_mouse_down(World *world) {
 
         if (entity_index != -1) {
                 world->dragged_entity_index = entity_index;
+
+                Entity *dragged = &world->entities[entity_index];
+
+                double dx = world->mouse_pos.x - dragged->pos.x;
+                double dy = world->mouse_pos.y - dragged->pos.y;
+
+                double cos_a = cos(-dragged->angle);
+                double sin_a = sin(-dragged->angle);
+
+                world->drag_local_offset.x = dx * cos_a - dy * sin_a;
+                world->drag_local_offset.y = dx * sin_a + dy * cos_a;
         }
 }
 
