@@ -19,6 +19,13 @@ typedef enum {
         EMOJI_FACTORY,
         EMOJI_EARTH,
         EMOJI_STONE,
+        EMOJI_FIRE,
+        EMOJI_WATER,
+        EMOJI_WOOD,
+        EMOJI_WIND,
+        EMOJI_HAMMER,
+        EMOJI_GEAR,
+        EMOJI_PIN,
         EMOJI_COUNT
 } EmojiType;
 
@@ -32,8 +39,27 @@ typedef enum {
         TAG_BURNING = 1ULL << 5,
         TAG_WET = 1ULL << 6,
         TAG_ELECTRIC = 1ULL << 7,
-        TAG_PROCESSOR = 1ULL << 8
+        TAG_PROCESSOR = 1ULL << 8,
+        TAG_SPACE = 1ULL << 9 // E.g., planets, starts, etc.
 } EmojiTag;
+
+typedef enum { COLLIDER_NONE, COLLIDER_CIRCLE, COLLIDER_BOX } ColliderType;
+
+typedef struct {
+        ColliderType type;
+        Vec2 offset;
+        double angle;
+        union {
+                struct {
+                        double radius;
+                } circle;
+                struct {
+                        double width, height;
+                } box;
+        };
+} Collider;
+
+#define MAX_COLLIDERS 4
 
 struct World;
 struct Entity;
@@ -56,9 +82,10 @@ typedef struct {
 
         int index;
 
-        double radius; /* TODO: Consider allowing custom shapes for non-circular
-                       emojis, or perhaps auto-detecting the shape */
-        double mass;   /* Immovable if 0.0 */
+        double radius; // Essentially a bounding radius, holding all colliders
+                       // within it
+        Collider colliders[MAX_COLLIDERS];
+        double mass;           /* Immovable if 0.0 */
         double restitution;    /* Bounciness, from 0.0 (no bounce) to 1.0
                                (perfectly elastic) */
         uint64_t default_tags; // Supports up to 64 tags
@@ -77,6 +104,12 @@ typedef struct Entity {
         bool collect; /* Entity slot is free if true */
         int index;
         EmojiType type;
+
+        bool pinned;
+        int pinned_target_index;
+        int pinned_by_index;
+
+        Vec2 pinned_offset;
 
         bool processing;        // Only applies to TAG_PROCESSOR emojis
         int *processing_inputs; // Only 2 for the factory, but could be more for
@@ -105,12 +138,17 @@ typedef struct World {
         Entity entities[MAX_ENTITIES];
         SDL_Texture *textures[EMOJI_COUNT];
 
+        SDL_Texture *bg_box;
+        SDL_Texture *bg_space;
+
         int width, height;
 
-        /*
-        Using passive object with large mass to create gravity
-        double gravity;
-        */
+        Vec2 gravity; // in px/s^2
+        bool space_mode;
+        double space_mode_transition;
+
+        bool emoji_unlocks[EMOJI_COUNT - 1]; // Exclude EMOJI_NONE
+        bool emoji_picker_open;
 
         bool emoji_unlocks[EMOJI_COUNT - 1]; // Exclude EMOJI_NONE
         bool emoji_picker_open;

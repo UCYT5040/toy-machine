@@ -10,3 +10,5 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                      size_t output_buffer_size);
 
 void render_velocity_vector(SDL_Renderer *renderer, Entity *entity);
+
+void render_hitbox(SDL_Renderer *renderer, Entity *entity);

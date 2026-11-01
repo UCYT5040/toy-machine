@@ -14,6 +14,9 @@ void world_init(World *world, SDL_Renderer *renderer) {
 
         SDL_GetRendererOutputSize(renderer, &world->width, &world->height);
 
+        world->gravity = (Vec2){0.0, 981.0};
+        world->space_mode = false;
+
         world->dragged_entity_index =
             -1; // First element will be in a dragging state if not set to `-1`
         world->speed = 1.0; // If left unset, the game will be frozen (0.0)
@@ -33,8 +36,25 @@ void world_init(World *world, SDL_Renderer *renderer) {
                                     SDL_CreateTextureFromSurface(renderer,
                                                                  surface);
                         }
+
+                        SDL_FreeSurface(surface);
                 }
         }
+
+        SDL_Surface *bg_box_surface = IMG_Load("assets/box.jpg");
+        SDL_Surface *bg_space_surface = IMG_Load("assets/space.jpg");
+
+        if (!bg_box_surface || !bg_space_surface) {
+                return;
+        }
+        world->bg_box = SDL_CreateTextureFromSurface(renderer, bg_box_surface);
+        world->bg_space =
+            SDL_CreateTextureFromSurface(renderer, bg_space_surface);
+        SDL_FreeSurface(bg_box_surface);
+        SDL_FreeSurface(bg_space_surface);
+
+        SDL_SetTextureColorMod(world->bg_box, 190, 190,
+                               190); // Dim the box background
 
         // Set all entities to inactive and collectable
         for (int i = 0; i < MAX_ENTITIES; i++) {
@@ -44,6 +64,25 @@ void world_init(World *world, SDL_Renderer *renderer) {
 }
 
 void world_update(World *world, double dt) {
+        world->space_mode = false;
+        for (int i = 0; i < MAX_ENTITIES; i++) {
+                if (world->entities[i].active &&
+                    (world->entities[i].tags & TAG_SPACE)) {
+                        world->space_mode = true;
+                        break;
+                }
+        }
+
+        if (world->space_mode) {
+                world->space_mode_transition += dt;
+                if (world->space_mode_transition > 1.0)
+                        world->space_mode_transition = 1.0;
+        } else {
+                world->space_mode_transition -= dt;
+                if (world->space_mode_transition < 0.0)
+                        world->space_mode_transition = 0.0;
+        }
+
         double scaled_dt =
             dt * world->speed; // TODO: Is it necessary to do this in the parent
                                // loop? (i.e., is dt referenced anywhere else)
@@ -77,6 +116,8 @@ void world_update(World *world, double dt) {
                                 continue;
 
                         entity_physics_integrate(entity, &substep_dt);
+
+                        entity_constrain_to_bounds(entity, world);
                 }
         }
 
@@ -92,6 +133,16 @@ void world_update(World *world, double dt) {
 }
 
 void world_render(World *world, SDL_Renderer *renderer) {
+        SDL_RenderCopy(renderer, world->bg_box, NULL, NULL);
+
+        if (world->space_mode_transition > 0.001) {
+                SDL_SetTextureBlendMode(world->bg_space, SDL_BLENDMODE_BLEND);
+                SDL_SetTextureAlphaMod(
+                    world->bg_space,
+                    (Uint8)(255.0 * world->space_mode_transition));
+                SDL_RenderCopy(renderer, world->bg_space, NULL, NULL);
+        }
+
         for (int i = 0; i < MAX_ENTITIES; i++) {
                 Entity *entity = &world->entities[i];
                 if (entity == NULL || !entity->active) {
@@ -195,7 +246,8 @@ void world_render(World *world, SDL_Renderer *renderer) {
                 if (world->dev_show_velocity_vectors)
                         render_velocity_vector(renderer, entity);
 
-                // TODO: Render hitboxes
+                if (world->dev_show_hitboxes)
+                        render_hitbox(renderer, entity);
         }
 }
 

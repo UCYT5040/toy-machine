@@ -14,3 +14,15 @@ Entity *entity_spawn(World *world, EmojiType type, Vec2 pos);
 void entity_physics_step(Entity *entity, World *world);
 
 void entity_physics_integrate(Entity *entity, double *dt);
+
+void entity_constrain_to_bounds(Entity *entity, World *world);
+
+typedef struct {
+        bool colliding;
+
+        Vec2 normal; // Pointing from e1 to e2
+
+        double penetration;
+
+        Vec2 contact_point;
+} CollisionManifold;
