@@ -46,7 +46,11 @@ static void dev_command_help(char *output_buffer, size_t output_buffer_size) {
             " spawn <emoji> <x> <y> - spawn an emoji at given coords\n"
             " vault <add/spend> <amount> - view/modify vault balance\n"
             " speed <value> - set simulation speed\n"
-            " hitboxes <on/off> - toggle hitboxes\n\n"
+            " hitboxes <on/off> - toggle hitboxes\n"
+            " velocity <on/off> - toggle velocity vectors\n"
+            " unlock <emoji> - unlock a specific emoji\n"
+            " unlockall - unlock all emojis\n"
+            " exit - exit the game\n\n"
             "Emojis: ");
 
         for (int i = 1; i < EMOJI_COUNT; i++) {
