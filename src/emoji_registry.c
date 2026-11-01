@@ -4,6 +4,7 @@
 #include "emojis/computer_mouse.h"
 #include "emojis/factory.h"
 #include "emojis/pin.h"
+#include "emojis/trashbin.h"
 
 #define CIRCULAR_EMOJI(r)                                                      \
         .radius = r, .colliders = {{.type = COLLIDER_CIRCLE,                   \
@@ -161,4 +162,14 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                    .restitution = 0.3,
                    .default_tags = TAG_NONE,
                    .update = NULL,
-                   .collide = NULL}};
+                   .collide = NULL},
+    [EMOJI_TRASHBIN] = {.name = "trashbin",
+                        .svg_path = "assets/emojis/trashbin.svg",
+                        CIRCULAR_EMOJI(24.0),
+                        .mass = 2.0;
+                        .restitution = 0.2,
+                        .default_tags = TAG_NONE,
+                        .update = NULL,
+                        .collide = NULL,
+                        .collision_priority = 1},
+};
