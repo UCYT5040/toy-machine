@@ -161,6 +161,28 @@ void world_update(World *world, double dt) {
                                 entity->torque =
                                     0.0; // Reset torque after applying it
 
+                                // Constrain dragged entity to bounds
+                                Vec2 contact_point;
+                                double penetration;
+
+                                if (get_lowest_point(entity, &contact_point,
+                                                     &penetration,
+                                                     (double)world->height)) {
+                                        entity->pos.y -= penetration;
+                                }
+
+                                double radius =
+                                    entity->definition->radius * entity->scale;
+                                if (entity->pos.x - radius < 0) {
+                                        entity->pos.x = radius;
+                                }
+                                if (entity->pos.x + radius > world->width) {
+                                        entity->pos.x = world->width - radius;
+                                }
+                                if (entity->pos.y - radius < 0) {
+                                        entity->pos.y = radius;
+                                }
+
                                 continue;
                         }
 
