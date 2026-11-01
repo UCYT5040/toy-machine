@@ -1,5 +1,5 @@
 #include "collision.h"
-#include "world.h"
+#include "entities.h"
 #include <math.h>
 
 static bool test_circle_vs_circle(Vec2 c1, double r1, Vec2 c2, double r2,

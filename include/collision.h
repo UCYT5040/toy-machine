@@ -1,7 +1,7 @@
 #pragma once
 
-#include "world.h"
 #include <stdbool.h>
+#include "types.h"
 
 typedef struct {
         bool colliding;

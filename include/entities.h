@@ -1,9 +1,50 @@
 #pragma once
 
 #include <stdbool.h>
-
+#include "emoji_registry.h"
+#include "types.h"
 #include "collision.h"
-#include "world.h"
+
+struct Entity {
+        EmojiDefinition *definition;
+
+        bool active;  /* Ignore this entity if false (but do not overwrite!) */
+        bool collect; /* Entity slot is free if true */
+        int index;
+        EmojiType type;
+
+        bool pinned;
+        int pinned_target_index;
+        int pinned_by_index;
+
+        Vec2 pinned_offset;
+
+        bool processing;        // Only applies to TAG_PROCESSOR emojis
+        int *processing_inputs; // Only 2 for the factory, but could be more for
+                                // other processors
+        int processing_input_count;
+        double processing_timer;
+        const Recipe *current_recipe;
+        EmojiProcessingDisplay processing_display;
+        bool ejecting;
+        double eject_timer;
+
+        Vec2 pos;
+        Vec2 last_pos;
+        Vec2 v;
+        Vec2 a;
+        Vec2 shake_last_delta;
+        double shake_cooldown;
+        double despawn_timer;
+        double angle; // In radians
+        double omega; // This symbol represents angular velocity
+        double torque;
+        double inv_inertia; // This is (moment of intertia)^-1
+
+        double scale; // To scale individual entities
+
+        uint64_t tags;
+};
 
 static const double G = 6.67430e-11; /* m^3 / (kg · s^2) */
 

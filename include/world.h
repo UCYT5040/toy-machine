@@ -1,142 +1,16 @@
 #pragma once
 
-#include "vault.h"
 #include "vec2.h"
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 #include <stdint.h>
 
-#define MAX_ENTITIES 1024
+#include "types.h"
+#include "vault.h"
+#include "entities.h"
+#include "emoji_registry.h"
 
-typedef enum {
-        EMOJI_NONE = 0,
-        EMOJI_COMPUTER_MOUSE,
-        EMOJI_SOCCER_BALL,
-        EMOJI_FACTORY,
-        EMOJI_EARTH,
-        EMOJI_STONE,
-        EMOJI_FIRE,
-        EMOJI_WATER,
-        EMOJI_WOOD,
-        EMOJI_WIND,
-        EMOJI_HAMMER,
-        EMOJI_GEAR,
-        EMOJI_PIN,
-        EMOJI_BANK,
-        EMOJI_COIN,
-        EMOJI_COUNT
-} EmojiType;
-
-typedef enum {
-        TAG_NONE = 0,
-        TAG_FLAMMABLE = 1ULL << 0,
-        TAG_CONDUCTIVE = 1ULL << 1,
-        TAG_LIVING = 1ULL << 2,
-        TAG_METALLIC = 1ULL << 3,
-        TAG_HOT = 1ULL << 4,
-        TAG_BURNING = 1ULL << 5,
-        TAG_WET = 1ULL << 6,
-        TAG_ELECTRIC = 1ULL << 7,
-        TAG_PROCESSOR = 1ULL << 8,
-        TAG_SPACE = 1ULL << 9 // E.g., planets, starts, etc.
-} EmojiTag;
-
-typedef enum { COLLIDER_NONE, COLLIDER_CIRCLE, COLLIDER_BOX } ColliderType;
-
-typedef struct {
-        ColliderType type;
-        Vec2 offset;
-        double angle;
-        union {
-                struct {
-                        double radius;
-                } circle;
-                struct {
-                        double width, height;
-                } box;
-        };
-} Collider;
-
-#define MAX_COLLIDERS 4
-
-struct World;
-struct Entity;
-
-typedef void (*EmojiUpdateFunction)(struct World *world, struct Entity *self,
-                                    double dt);
-typedef void (*EmojiCollideFunction)(struct World *world, struct Entity *self,
-                                     struct Entity *other);
-
-typedef enum {
-        EMOJI_PROCESSING_DISPLAY_NONE = 0,
-        EMOJI_PROCESSING_DISPLAY_COUNTER, // Show a list of each input, with
-                                          // similar inputs stacked
-        EMOJI_PROCESSING_DISPLAY_SUM      // Show each input being added
-} EmojiProcessingDisplay;
-
-typedef struct {
-        const char *name;
-        const char *svg_path;
-
-        int index;
-
-        double radius; // Essentially a bounding radius, holding all colliders
-                       // within it
-        Collider colliders[MAX_COLLIDERS];
-        double mass;           /* Immovable if 0.0 */
-        double restitution;    /* Bounciness, from 0.0 (no bounce) to 1.0
-                               (perfectly elastic) */
-        uint64_t default_tags; // Supports up to 64 tags
-
-        EmojiUpdateFunction update;
-        EmojiCollideFunction collide;
-} EmojiDefinition;
-
-typedef struct Recipe
-    Recipe; // Forward declaration to prevent circular dependency
-
-typedef struct Entity {
-        EmojiDefinition *definition;
-
-        bool active;  /* Ignore this entity if false (but do not overwrite!) */
-        bool collect; /* Entity slot is free if true */
-        int index;
-        EmojiType type;
-
-        bool pinned;
-        int pinned_target_index;
-        int pinned_by_index;
-
-        Vec2 pinned_offset;
-
-        bool processing;        // Only applies to TAG_PROCESSOR emojis
-        int *processing_inputs; // Only 2 for the factory, but could be more for
-                                // other processors
-        int processing_input_count;
-        double processing_timer;
-        const Recipe *current_recipe;
-        EmojiProcessingDisplay processing_display;
-        bool ejecting;
-        double eject_timer;
-
-        Vec2 pos;
-        Vec2 last_pos;
-        Vec2 v;
-        Vec2 a;
-        Vec2 shake_last_delta;
-        double shake_cooldown;
-        double despawn_timer;
-        double angle; // In radians
-        double omega; // This symbol represents angular velocity
-        double torque;
-        double inv_inertia; // This is (moment of intertia)^-1
-
-        double scale; // To scale individual entities
-
-        uint64_t tags;
-} Entity;
-
-typedef struct World {
+struct World {
         Entity entities[MAX_ENTITIES];
         SDL_Texture *textures[EMOJI_COUNT];
 
@@ -171,7 +45,7 @@ typedef struct World {
         bool dev_show_hitboxes;
         bool dev_show_velocity_vectors;
         // TODO: Add more developer/debugging features
-} World;
+};
 
 void world_init(World *world, SDL_Renderer *renderer);
 void world_update(World *world, double dt);

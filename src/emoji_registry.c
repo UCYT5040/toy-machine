@@ -1,9 +1,9 @@
+#include "emoji_registry.h"
 #include "emojis/bank.h"
 #include "emojis/coin.h"
 #include "emojis/computer_mouse.h"
 #include "emojis/factory.h"
 #include "emojis/pin.h"
-#include "world.h"
 
 #define CIRCULAR_EMOJI(r)                                                      \
         .radius = r, .colliders = {{.type = COLLIDER_CIRCLE,                   \

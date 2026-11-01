@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 
 #include "world.h"
+#include "emoji_registry.h"
 #include <stddef.h>
 #include <string.h>
 

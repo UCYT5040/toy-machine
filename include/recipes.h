@@ -1,6 +1,11 @@
 #pragma once
-#include "world.h"
+
 #include <stdbool.h>
+#include <stdint.h>
+
+#include "emoji_registry.h"
+#include "types.h"
+#include "entities.h"
 
 typedef enum {
         CRITERION_EXACT,
@@ -36,7 +41,7 @@ typedef struct {
         };
 } RecipeOutput;
 
-typedef struct Recipe {
+struct Recipe {
         const char *id;
         IngredientCriterion inputs[2];
         RecipeOutput output;
@@ -46,7 +51,7 @@ typedef struct Recipe {
         bool consume_b;
 
         int specificity; // Higher values evaluated first
-} Recipe;
+};
 
 void recipes_init(void);
 
