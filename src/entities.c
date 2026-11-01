@@ -95,8 +95,8 @@ static double entity_relative_velocity(Entity *e1, Entity *e2) {
         return dvx * (dx / distance) + dvy * (dy / distance);
 }
 
-static void entity_handle_collision(World *world, Entity *e1, Entity *e2,
-                                    const CollisionManifold *manifold) {
+void entity_handle_collision(World *world, Entity *e1, Entity *e2,
+                             const CollisionManifold *manifold) {
         Vec2 rel_v = {e2->v.x - e1->v.x, e2->v.y - e1->v.y};
 
         double vel_along_normal =
@@ -282,5 +282,51 @@ void entity_constrain_to_bounds(Entity *entity, World *world) {
         if (entity->pos.x - radius < 0) {
                 entity->pos.x = radius;
                 entity->v.x = -entity->v.x * restitution;
+        }
+}
+
+void world_resolve_collisions(World *world) {
+        for (int i = 0; i < MAX_ENTITIES; i++) {
+                Entity *a = &world->entities[i];
+                if (!a->active)
+                        continue;
+
+                for (int j = i + 1; j < MAX_ENTITIES; j++) {
+                        Entity *b = &world->entities[j];
+                        if (!b->active)
+                                continue;
+
+                        CollisionManifold manifold;
+                        if (entity_is_colliding(a, b, &manifold)) {
+                                entity_fix_overlap(a, b, &manifold);
+                                entity_handle_collision(world, a, b, &manifold);
+                        }
+                }
+        }
+}
+
+void entity_apply_forces(Entity *entity, World *world) {
+        if (!entity->active || entity->definition->mass <= 0.0 ||
+            entity->pinned)
+                return;
+
+        entity->a.x = 0.0;
+        entity->a.y = 0.0;
+
+        // If not in space mode, apply world gravity
+        if (!world->space_mode) {
+                entity->a.x += world->gravity.x;
+                entity->a.y += world->gravity.y;
+        }
+
+        // Calculate gravitational field stregth of all other entities
+        for (int i = 0; i < MAX_ENTITIES; i++) {
+                Entity *other = &world->entities[i];
+                if (entity == other || !other->active)
+                        continue;
+
+                Vec2 a = entity_gravitational_field_strength(entity, other);
+                entity->a.x += a.x;
+                entity->a.y += a.y;
         }
 }

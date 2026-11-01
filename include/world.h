@@ -1,9 +1,9 @@
 #pragma once
 
+#include "vault.h"
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "vault.h"
 
 #define MAX_ENTITIES 1024
 

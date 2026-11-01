@@ -1,5 +1,6 @@
 #include "world.h"
 #include "SDL_timer.h"
+#include "collision.h"
 #include "dev.h"
 #include "emoji_registry.h"
 #include "entities.h"
@@ -111,8 +112,6 @@ void world_update(World *world, double dt) {
                         if (!entity->active)
                                 continue;
 
-                        entity->a = (Vec2){0.0, 0.0};
-
                         if (i == world->dragged_entity_index) {
                                 double cos_a = cos(entity->angle);
                                 double sin_a = sin(entity->angle);
@@ -168,8 +167,10 @@ void world_update(World *world, double dt) {
                                 continue;
                         }
 
-                        entity_physics_step(entity, world);
+                        entity_apply_forces(entity, world);
                 }
+
+                world_resolve_collisions(world);
 
                 // Integrate acceleration and velocity
                 for (int i = 0; i < MAX_ENTITIES; i++) {
