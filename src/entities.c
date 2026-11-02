@@ -31,7 +31,7 @@ void entity_create_default(Entity *entity, int definition_index, Vec2 pos,
         entity->current_recipe = NULL;
         entity->processing_display = EMOJI_PROCESSING_DISPLAY_NONE;
         entity->ejecting = false;
-        entity->eject_timer = 0.0l
+        entity->eject_timer = 0.0;
         entity->a = (Vec2){0.0, 0.0};
         entity->pinned = false;
         entity->pinned_target_index = -1;
@@ -143,7 +143,7 @@ void entity_remove(World *world, Entity *entity) {
         entity->despawn_timer = -1.0;
 
         entity->active = false;
-        entity->>collect = true;
+        entity->collect = true;
 }
 
 // Calculates the gravitational field strengh of `other` on `self`
@@ -227,6 +227,9 @@ void entity_handle_collision(World *world, Entity *e1, Entity *e2,
 
         double inv_I1 = e1->pinned ? 0.0 : e1->inv_inertia;
         double inv_I2 = e2->pinned ? 0.0 : e2->inv_inertia;
+
+        Vec2 r1 = vec2_sub(manifold->contact_point, e1->pos);
+        Vec2 r2 = vec2_sub(manifold->contact_point, e2->pos);
 
         double rn1 = vec2_cross(r1, manifold->normal);
         double rn2 = vec2_cross(r2, manifold->normal);

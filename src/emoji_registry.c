@@ -166,7 +166,7 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
     [EMOJI_TRASHBIN] = {.name = "trashbin",
                         .svg_path = "assets/emojis/trashbin.svg",
                         CIRCULAR_EMOJI(24.0),
-                        .mass = 2.0;
+                        .mass = 2.0,
                         .restitution = 0.2,
                         .default_tags = TAG_NONE,
                         .update = NULL,

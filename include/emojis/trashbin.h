@@ -1,6 +1,5 @@
 #pragma once
 
-#include "world.h"
-#include "emoji_registry.h"
+#include "types.h"
 
-void emoji_trashbin_collide
+void emoji_trashbin_collide(World *world, Entity *self, Entity *other);
