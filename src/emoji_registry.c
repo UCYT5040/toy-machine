@@ -178,6 +178,6 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                      .mass = 2.0,
                      .restitution = 0.2,
                      .default_tags = TAG_NONE,
-                     .update = NULL,
+                     .update = emoji_broom_update,
                      .collide = NULL},
 };
