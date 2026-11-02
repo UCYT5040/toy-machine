@@ -170,6 +170,6 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                         .restitution = 0.2,
                         .default_tags = TAG_NONE,
                         .update = NULL,
-                        .collide = NULL,
+                        .collide = emoji_trashbin_collide,
                         .collision_priority = 1},
 };
