@@ -172,4 +172,5 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                         .update = NULL,
                         .collide = emoji_trashbin_collide,
                         .collision_priority = 1},
+    
 };
