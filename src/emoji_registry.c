@@ -172,5 +172,12 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                         .update = NULL,
                         .collide = emoji_trashbin_collide,
                         .collision_priority = 1},
-    
+    [EMOJI_BROOM] = {.name = "broom",
+                     .svg_path = "assets/emojis/broom.svg"
+                     CIRCULAR_EMOJI(24.0),
+                     .mass = 2.0,
+                     .restitution = 0.2,
+                     .default_tags = TAG_NONE,
+                     .update = NULL,
+                     .collide = NULL},
 };
