@@ -54,8 +54,6 @@ void emoji_picker_render(World *world, SDL_Renderer *renderer) {
 void emoji_picker_handle_mouse_down(World *world) {
         // Assume emoji picker is open
 
-        printf("Mouse down in emoji picker");
-
         double size = (double)world->width / (EMOJI_PICKER_COLUMNS + 1);
         double screen_padding =
             (world->width - (EMOJI_PICKER_COLUMNS * size)) / 2.0;
