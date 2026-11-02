@@ -1,10 +1,10 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include <SDL2/SDL.h>
-#include <stdbool.h>
 #include "font.h"
 #include "world.h"
+#include <SDL2/SDL.h>
+#include <stdbool.h>
 
 #define MAX_DEV_COMMAND_LENGTH 256
 #define MAX_DEV_COMMAND_OUTPUT 384
@@ -29,7 +29,8 @@ void app_run(App *app, World *world);
 void app_destroy(App *app);
 
 void gui_console_init(DevConsole *console, FontAtlas *font_atlas);
-void gui_console_handle_event(DevConsole *console, World *world, SDL_Event *event, bool *running);
+void gui_console_handle_event(DevConsole *console, World *world,
+                              SDL_Event *event, bool *running);
 void gui_console_render(DevConsole *console, SDL_Renderer *renderer);
 
 #endif

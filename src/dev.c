@@ -52,8 +52,8 @@ static void dev_command_help(char *output_buffer, size_t output_buffer_size) {
             " unlockall - unlock all emojis\n"
             " exit - exit the game\n");
         /*
-        This is commented out because there are way too many emojis now, just use unlockall and browse with emoji picker 
-            "Emojis: ");
+        This is commented out because there are way too many emojis now, just
+        use unlockall and browse with emoji picker "Emojis: ");
 
         for (int i = 1; i < EMOJI_COUNT; i++) {
                 append_output(output_buffer, output_buffer_size, &used, " %s",
@@ -131,8 +131,9 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                 }
                 char *amount_str = strtok(NULL, " \t\n");
                 if (amount_str == NULL) {
-                        snprintf(output_buffer, output_buffer_size,
-                                 "Usage: vault add <amount> | vault spend <amount>");
+                        snprintf(
+                            output_buffer, output_buffer_size,
+                            "Usage: vault add <amount> | vault spend <amount>");
                         return;
                 }
 
@@ -160,8 +161,9 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                                          world->vault.balance);
                         }
                 } else {
-                        snprintf(output_buffer, output_buffer_size,
-                                 "Usage: vault add <amount> | vault spend <amount>");
+                        snprintf(
+                            output_buffer, output_buffer_size,
+                            "Usage: vault add <amount> | vault spend <amount>");
                 }
         } else if (strcmp(command_name, "speed") == 0) {
                 char *speed_str = strtok(NULL, " \t\n");
@@ -295,8 +297,7 @@ void render_hitbox(SDL_Renderer *renderer, Entity *entity) {
                 }
 
                 Vec2 center = vec2_add(
-                    entity->pos,
-                    vec2_rotate(collider->offset, entity->angle));
+                    entity->pos, vec2_rotate(collider->offset, entity->angle));
 
                 if (collider->type == COLLIDER_CIRCLE) {
                         double radius = collider->circle.radius;
@@ -304,9 +305,9 @@ void render_hitbox(SDL_Renderer *renderer, Entity *entity) {
                         SDL_Point points[CIRCLE_SEGMENTS + 1];
                         for (int j = 0; j <= CIRCLE_SEGMENTS; j++) {
                                 double phi = 2.0 * M_PI * j / CIRCLE_SEGMENTS;
-                                Vec2 pt = vec2_add(
-                                    center,
-                                    (Vec2){radius * cos(phi), radius * sin(phi)});
+                                Vec2 pt =
+                                    vec2_add(center, (Vec2){radius * cos(phi),
+                                                            radius * sin(phi)});
                                 points[j].x = (int)pt.x;
                                 points[j].y = (int)pt.y;
                         }
@@ -319,8 +320,8 @@ void render_hitbox(SDL_Renderer *renderer, Entity *entity) {
                         double angle = entity->angle + collider->angle;
                         Vec2 p2 = vec2_add(
                             center, vec2_rotate((Vec2){radius, 0.0}, angle));
-                        SDL_RenderDrawLine(renderer, (int)center.x, (int)center.y,
-                                           (int)p2.x, (int)p2.y);
+                        SDL_RenderDrawLine(renderer, (int)center.x,
+                                           (int)center.y, (int)p2.x, (int)p2.y);
 
                 } else if (collider->type == COLLIDER_BOX) {
                         double hw = collider->box.width / 2.0;

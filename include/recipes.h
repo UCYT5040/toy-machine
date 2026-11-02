@@ -4,8 +4,8 @@
 #include <stdint.h>
 
 #include "emoji_registry.h"
-#include "types.h"
 #include "entities.h"
+#include "types.h"
 
 typedef enum {
         CRITERION_EXACT,

@@ -6,7 +6,6 @@
 #include <SDL2/SDL_image.h>
 #include <string.h>
 
-
 /* App GUI stuff */
 bool app_init(App *app, const char *title, int width, int height) {
         if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -67,8 +66,8 @@ void app_run(App *app, World *world) {
                 SDL_RenderClear(app->renderer);
 
                 world_render(world, app->renderer);
-                vault_render(&world->vault, app->renderer, 
-                             &app->font_atlas, world->width);
+                vault_render(&world->vault, app->renderer, &app->font_atlas,
+                             world->width);
 
                 emoji_picker_render(world, app->renderer);
 

@@ -89,7 +89,7 @@ void entity_remove(World *world, Entity *entity) {
                 world->dragged_entity_index = -1;
         }
 
-        if (entity->pinned_target_index >= 0 && 
+        if (entity->pinned_target_index >= 0 &&
             entity->pinned_target_index < MAX_ENTITIES) {
                 Entity *target = &world->entities[entity->pinned_target_index];
                 if (target->pinned_by_index == entity->index) {
@@ -135,7 +135,7 @@ void entity_remove(World *world, Entity *entity) {
         entity->pinned_target_index = -1;
         entity->pinned_by_index = -1;
         entity->pinned_offset = (Vec2){0.0, 0.0};
-        
+
         entity->v = (Vec2){0.0, 0.0};
         entity->a = (Vec2){0.0, 0.0};
         entity->omega = 0.0;

@@ -18,9 +18,7 @@ static inline Vec2 vec2_scale(Vec2 v, double s) {
         return (Vec2){v.x * s, v.y * s};
 }
 
-static inline double vec2_dot(Vec2 a, Vec2 b) {
-        return a.x * b.x + a.y * b.y;
-}
+static inline double vec2_dot(Vec2 a, Vec2 b) { return a.x * b.x + a.y * b.y; }
 
 static inline double vec2_cross(Vec2 a, Vec2 b) {
         return a.x * b.y - a.y * b.x;

@@ -1,8 +1,9 @@
-#pragma once 
+#pragma once
 
+#include "vec2.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include "vec2.h"
+
 
 #define MAX_ENTITIES 1024
 
@@ -34,4 +35,3 @@ typedef void (*EmojiUpdateFunction)(struct World *world, struct Entity *self,
                                     double dt);
 typedef void (*EmojiCollideFunction)(struct World *world, struct Entity *self,
                                      struct Entity *other);
-

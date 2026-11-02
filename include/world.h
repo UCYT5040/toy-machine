@@ -4,10 +4,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "emoji_registry.h"
+#include "entities.h"
 #include "types.h"
 #include "vault.h"
-#include "entities.h"
-#include "emoji_registry.h"
 
 struct World {
         Entity entities[MAX_ENTITIES];

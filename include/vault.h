@@ -13,4 +13,5 @@ typedef struct {
 void vault_init(Vault *vault, SDL_Renderer *renderer);
 void vault_add(Vault *vault, int amount);
 bool vault_spend(Vault *vault, int amount);
-void vault_render(const Vault *vault, SDL_Renderer *renderer, FontAtlas *font, int window_width);
+void vault_render(const Vault *vault, SDL_Renderer *renderer, FontAtlas *font,
+                  int window_width);
