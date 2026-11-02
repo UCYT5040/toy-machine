@@ -5,6 +5,7 @@
 #include "emojis/factory.h"
 #include "emojis/pin.h"
 #include "emojis/trashbin.h"
+#include "emojis/broom.h"
 
 #define CIRCULAR_EMOJI(r)                                                      \
         .radius = r, .colliders = {{.type = COLLIDER_CIRCLE,                   \
@@ -173,7 +174,7 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                         .collide = emoji_trashbin_collide,
                         .collision_priority = 1},
     [EMOJI_BROOM] = {.name = "broom",
-                     .svg_path = "assets/emojis/broom.svg"
+                     .svg_path = "assets/emojis/broom.svg",
                      CIRCULAR_EMOJI(24.0),
                      .mass = 2.0,
                      .restitution = 0.2,
