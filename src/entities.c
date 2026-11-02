@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdlib.h>
 
 #include "collision.h"
 #include "emoji_registry.h"
@@ -21,6 +22,16 @@ void entity_create_default(Entity *entity, int definition_index, Vec2 pos,
         entity->scale = 1.0;
         entity->tags = entity->definition->default_tags;
         entity->index = entity_index;
+        entity->omega = 0.0;
+        entity->torque = 0.0;
+        entity->inv_inertia = 0.0;
+        entity->processing = false;
+        entity->processing_inputs = NULL;
+        entity->processing_input_count = 0;
+        entity->current_recipe = NULL;
+        entity->processing_display = EMOJI_PROCESSING_DISPLAY_NONE;
+        entity->ejecting = false;
+        entity->eject_timer = 0.0l
         entity->a = (Vec2){0.0, 0.0};
         entity->pinned = false;
         entity->pinned_target_index = -1;
@@ -69,6 +80,72 @@ Entity *entity_spawn(World *world, EmojiType type, Vec2 pos) {
         return entity; // No available entity slots
 }
 
+void entity_remove(World *world, Entity *entity) {
+        if (!world || !entity || !entity->active) {
+                return;
+        }
+
+        if (world->dragged_entity_index == entity->index) {
+                world->dragged_entity_index = -1;
+        }
+
+        if (entity->pinned_target_index >= 0 && 
+            entity->pinned_target_index < MAX_ENTITIES) {
+                Entity *target = &world->entities[entity->pinned_target_index];
+                if (target->pinned_by_index == entity->index) {
+                        target->pinned = false;
+                        target->pinned_by_index = -1;
+                }
+        }
+
+        if (entity->pinned_by_index >= 0 &&
+            entity->pinned_by_index < MAX_ENTITIES) {
+                Entity *pin = &world->entities[entity->pinned_by_index];
+                if (pin->pinned_target_index == entity->index) {
+                        pin->pinned = false;
+                        pin->pinned_target_index = -1;
+                }
+        }
+
+        if (entity->processing_inputs) {
+                for (int i = 0; i < entity->processing_input_count; i++) {
+                        int input_index = entity->processing_inputs[i];
+                        if (input_index >= 0 && input_index < MAX_ENTITIES &&
+                            input_index != entity->index) {
+                                Entity *input = &world->entities[input_index];
+                                if (!input->active) {
+                                        input->collect = true;
+                                }
+                        }
+                }
+
+                free(entity->processing_inputs);
+                entity->processing_inputs = NULL;
+        }
+
+        entity->processing = false;
+        entity->processing_input_count = 0;
+        entity->processing_timer = 0.0;
+        entity->current_recipe = NULL;
+        entity->processing_display = EMOJI_PROCESSING_DISPLAY_NONE;
+        entity->ejecting = false;
+        entity->eject_timer = 0.0;
+
+        entity->pinned = false;
+        entity->pinned_target_index = -1;
+        entity->pinned_by_index = -1;
+        entity->pinned_offset = (Vec2){0.0, 0.0};
+        
+        entity->v = (Vec2){0.0, 0.0};
+        entity->a = (Vec2){0.0, 0.0};
+        entity->omega = 0.0;
+        entity->torque = 0.0;
+        entity->despawn_timer = -1.0;
+
+        entity->active = false;
+        entity->>collect = true;
+}
+
 // Calculates the gravitational field strengh of `other` on `self`
 static Vec2 entity_gravitational_field_strength(Entity *self, Entity *other) {
         Vec2 delta = vec2_sub(other->pos, self->pos);
@@ -82,13 +159,37 @@ static Vec2 entity_gravitational_field_strength(Entity *self, Entity *other) {
 
 void entity_handle_collision(World *world, Entity *e1, Entity *e2,
                              const CollisionManifold *manifold) {
+        Entity *contact_first = e1;
+        Entity *contact_second = e2;
+        if (contact_second->definition->collision_priority >
+            contact_first->definition->collision_priority) {
+                contact_first = e2;
+                contact_second = e1;
+        }
 
-        Vec2 r1 = vec2_sub(manifold->contact_point, e1->pos);
-        Vec2 r2 = vec2_sub(manifold->contact_point, e2->pos);
+        if (contact_first->active &&
+            contact_first->definition->collision_priority > 0 &&
+            contact_first->definition->collide) {
+                contact_first->definition->collide(world, contact_first,
+                                                   contact_second);
+        }
 
-        Vec2 vp1 = vec2_add(e1->v, vec2_scale((Vec2){-r1.y, r1.x}, e1->omega));
-        Vec2 vp2 = vec2_add(e2->v, vec2_scale((Vec2){-r2.y, r2.x}, e2->omega));
-        Vec2 rel_v = vec2_sub(vp2, vp1);
+        if (!e1->active || !e2->active) {
+                return;
+        }
+
+        if (contact_second->active &&
+            contact_second->definition->collision_priority > 0 &&
+            contact_second->definition->collide) {
+                contact_second->definition->collide(world, contact_second,
+                                                    contact_first);
+        }
+
+        if (!e1->active || !e2->active) {
+                return;
+        }
+
+        Vec2 rel_v = vec2_sub(e2->v, e1->v);
 
         double vel_along_normal = vec2_dot(rel_v, manifold->normal);
 
@@ -96,10 +197,21 @@ void entity_handle_collision(World *world, Entity *e1, Entity *e2,
                 return; // Entities are moving away from eachother
         }
 
-        if (e1->definition->collide)
+        if (e1->definition->collision_priority == 0 &&
+            e1->definition->collide) {
                 e1->definition->collide(world, e1, e2);
-        if (e2->definition->collide)
+        }
+        if (!e1->active || !e2->active) {
+                return;
+        }
+
+        if (e2->definition->collision_priority == 0 &&
+            e2->definition->collide) {
                 e2->definition->collide(world, e2, e1);
+        }
+        if (!e1->active || !e2->active) {
+                return;
+        }
 
         if (e1->pinned && e2->pinned)
                 return; // Both entities are pinned, do not move them
@@ -264,6 +376,9 @@ void world_resolve_collisions(World *world) {
                         if (entity_is_colliding(a, b, &manifold)) {
                                 entity_fix_overlap(a, b, &manifold);
                                 entity_handle_collision(world, a, b, &manifold);
+                                if (!a->active) {
+                                        break;
+                                }
                         }
                 }
         }
