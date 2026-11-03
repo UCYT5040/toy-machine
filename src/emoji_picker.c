@@ -34,7 +34,7 @@ void emoji_picker_render(World *world, SDL_Renderer *renderer) {
                 // EmojiDefinition *definition = &EMOJI_DEFINITIONS[i];
                 SDL_Texture *texture = world->textures[i];
 
-                if (!world->emoji_unlocks[i - 1] || !texture) {
+                if (!EMOJI_DEFINITIONS[i].unlocked || !texture) {
                         continue;
                 }
 
@@ -76,7 +76,7 @@ void emoji_picker_handle_mouse_down(World *world) {
         int target_emoji_index = row * EMOJI_PICKER_COLUMNS + col;
 
         for (int i = 1; i < EMOJI_COUNT; i++) {
-                if (!world->emoji_unlocks[i - 1] || !world->textures[i]) {
+                if (!EMOJI_DEFINITIONS[i].unlocked || !world->textures[i]) {
                         continue;
                 }
 
