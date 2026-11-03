@@ -22,6 +22,7 @@ typedef enum {
         EMOJI_TRASHBIN,
         EMOJI_BROOM,
         EMOJI_STEAM,
+        EMOJI_STEAM_TRAIN,
         EMOJI_COUNT
 } EmojiType;
 
