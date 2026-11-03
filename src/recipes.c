@@ -26,6 +26,18 @@ static Recipe RECIPES[] = {{
 
         .specificity = 0
 },
+{
+        .id = "steam_train",
+        .inputs = {{.mode = CRITERION_EXACT, .type = EMOJI_STEAM},
+                   {.mode = CRITERION_EXACT, .type = EMOJI_GEAR}},
+        .output = {.mode = OUTPUT_STATIC, .static_output = EMOJI_STEAM_TRAIN},
+        
+        .processing_time = 8.0,
+        .consume_a = true,
+        .consume_b = true,
+
+        .specificity = 0
+}
 };
 
 static const size_t RECIPE_COUNT = sizeof(RECIPES) / sizeof(RECIPES[0]);

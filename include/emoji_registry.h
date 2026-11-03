@@ -62,6 +62,7 @@ typedef struct {
         uint64_t default_tags; // Supports up to 64 tags
 
         int collision_priority; /* Higher values runs first and on contact */
+        bool unlocked; /* true = unlocked, false = locked */
 
         EmojiUpdateFunction update;
         EmojiCollideFunction collide;
