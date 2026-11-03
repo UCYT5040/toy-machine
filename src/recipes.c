@@ -15,12 +15,12 @@ static Recipe RECIPES[] = {{
         .specificity = 0 // Will be calculated in recipes_init()
 },
 {
-        .id = "stone",
+        .id = "steam",
         .inputs = {{.mode = CRITERION_EXACT, .type = EMOJI_WATER},
                    {.mode = CRITERION_EXACT, .type = EMOJI_FIRE}},
-        .output = {.mode = OUTPUT_STATIC, .static_output = EMOJI_STONE},
+        .output = {.mode = OUTPUT_STATIC, .static_output = EMOJI_STEAM},
 
-        .processing_time = 3.0,
+        .processing_time = 1.0,
         .consume_a = true,
         .consume_b = true,
 
