@@ -25,7 +25,7 @@ static Recipe RECIPES[] = {{
         .consume_b = true,
 
         .specificity = 0
-}
+},
 };
 
 static const size_t RECIPE_COUNT = sizeof(RECIPES) / sizeof(RECIPES[0]);
