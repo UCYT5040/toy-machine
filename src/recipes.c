@@ -2,7 +2,8 @@
 #include "emoji_registry.h"
 #include <stdlib.h>
 
-static Recipe RECIPES[] = {{
+static Recipe RECIPES[] = {
+    {
         .id = "hammer",
         .inputs = {{.mode = CRITERION_EXACT, .type = EMOJI_STONE},
                    {.mode = CRITERION_EXACT, .type = EMOJI_WOOD}},
@@ -13,32 +14,27 @@ static Recipe RECIPES[] = {{
         .consume_b = true,
 
         .specificity = 0 // Will be calculated in recipes_init()
-},
-{
-        .id = "steam",
-        .inputs = {{.mode = CRITERION_EXACT, .type = EMOJI_WATER},
-                   {.mode = CRITERION_EXACT, .type = EMOJI_FIRE}},
-        .output = {.mode = OUTPUT_STATIC, .static_output = EMOJI_STEAM},
+    },
+    {.id = "steam",
+     .inputs = {{.mode = CRITERION_EXACT, .type = EMOJI_WATER},
+                {.mode = CRITERION_EXACT, .type = EMOJI_FIRE}},
+     .output = {.mode = OUTPUT_STATIC, .static_output = EMOJI_STEAM},
 
-        .processing_time = 1.0,
-        .consume_a = true,
-        .consume_b = true,
+     .processing_time = 1.0,
+     .consume_a = true,
+     .consume_b = true,
 
-        .specificity = 0
-},
-{
-        .id = "steam_train",
-        .inputs = {{.mode = CRITERION_EXACT, .type = EMOJI_STEAM},
-                   {.mode = CRITERION_EXACT, .type = EMOJI_GEAR}},
-        .output = {.mode = OUTPUT_STATIC, .static_output = EMOJI_STEAM_TRAIN},
-        
-        .processing_time = 8.0,
-        .consume_a = true,
-        .consume_b = true,
+     .specificity = 0},
+    {.id = "steam_train",
+     .inputs = {{.mode = CRITERION_EXACT, .type = EMOJI_STEAM},
+                {.mode = CRITERION_EXACT, .type = EMOJI_GEAR}},
+     .output = {.mode = OUTPUT_STATIC, .static_output = EMOJI_STEAM_TRAIN},
 
-        .specificity = 0
-}
-};
+     .processing_time = 8.0,
+     .consume_a = true,
+     .consume_b = true,
+
+     .specificity = 0}};
 
 static const size_t RECIPE_COUNT = sizeof(RECIPES) / sizeof(RECIPES[0]);
 

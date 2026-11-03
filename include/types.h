@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-
 #define MAX_ENTITIES 1024
 
 typedef enum { COLLIDER_NONE, COLLIDER_CIRCLE, COLLIDER_BOX } ColliderType;

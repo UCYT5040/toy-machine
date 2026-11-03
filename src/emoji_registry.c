@@ -189,15 +189,16 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                      .unlocked = false,
                      .update = NULL,
                      .collide = NULL},
-    [EMOJI_STEAM_TRAIN] = {.name = "steam_train",
-                           .svg_path = "assets/emojis/steam_train.svg",
-                           CIRCULAR_EMOJI(24.0), /* TODO: Update this to a rectangular hitbox */
-                           .mass = 5.0,
-                           .restitution = 0.1,
-                           .default_tags = TAG_NONE,
-                           .unlocked = false,
-                           .update = NULL,
-                           .collide = NULL},
+    [EMOJI_STEAM_TRAIN] =
+        {.name = "steam_train",
+         .svg_path = "assets/emojis/steam_train.svg",
+         CIRCULAR_EMOJI(24.0), /* TODO: Update this to a rectangular hitbox */
+         .mass = 5.0,
+         .restitution = 0.1,
+         .default_tags = TAG_NONE,
+         .unlocked = false,
+         .update = NULL,
+         .collide = NULL},
 
     /* Please add all emojis above this line */
     /* These emojis are unlocked by default because they're for cleaning */
