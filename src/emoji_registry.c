@@ -1,11 +1,12 @@
 #include "emoji_registry.h"
 #include "emojis/bank.h"
+#include "emojis/broom.h"
 #include "emojis/coin.h"
 #include "emojis/computer_mouse.h"
 #include "emojis/factory.h"
+#include "emojis/fan.h"
 #include "emojis/pin.h"
 #include "emojis/trashbin.h"
-#include "emojis/broom.h"
 
 #define CIRCULAR_EMOJI(r)                                                      \
         .radius = r, .colliders = {{.type = COLLIDER_CIRCLE,                   \
@@ -158,11 +159,11 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                     .collide = NULL},
     [EMOJI_FAN] = {.name = "fan",
                    .svg_path = "assets/emojis/fan.svg",
-                   CIRCULAR_EMOJI(15.0),
+                   CIRCULAR_EMOJI(30.0),
                    .mass = 2.0,
                    .restitution = 0.3,
                    .default_tags = TAG_NONE,
-                   .update = NULL,
+                   .update = emoji_fan_update,
                    .collide = NULL},
     [EMOJI_TRASHBIN] = {.name = "trashbin",
                         .svg_path = "assets/emojis/trashbin.svg",

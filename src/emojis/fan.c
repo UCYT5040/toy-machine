@@ -1,5 +1,7 @@
 #include <math.h>
 
+#include "emojis/fan.h"
+#include "types.h"
 #include "world.h"
 
 void emoji_fan_update(World *world, Entity *self, double dt) {
@@ -10,6 +12,9 @@ void emoji_fan_update(World *world, Entity *self, double dt) {
         if (fabs(s) < 1e-9) /* Horizontal strip */ {
                 for (int i = 0; i < MAX_ENTITIES; i++) {
                         Entity *other = &world->entities[i];
+
+                        if (!other->active || other == self)
+                                continue;
 
                         double reach = self->definition->radius +
                                        other->definition->radius;
@@ -22,6 +27,9 @@ void emoji_fan_update(World *world, Entity *self, double dt) {
         } else if (fabs(c) < 1e-9) /* Vertical strip */ {
                 for (int i = 0; i < MAX_ENTITIES; i++) {
                         Entity *other = &world->entities[i];
+
+                        if (!other->active || other == self)
+                                continue;
 
                         double reach = self->definition->radius +
                                        other->definition->radius;
@@ -37,6 +45,9 @@ void emoji_fan_update(World *world, Entity *self, double dt) {
 
                 for (int i = 0; i < MAX_ENTITIES; i++) {
                         Entity *other = &world->entities[i];
+
+                        if (!other->active || other == self)
+                                continue;
 
                         double m2 = -(1.0 / m);
                         double b2 = other->pos.y - m2 * other->pos.x;
@@ -54,5 +65,22 @@ void emoji_fan_update(World *world, Entity *self, double dt) {
                                 in_stream_count++;
                         }
                 }
+        }
+
+        double fx = cos(self->angle), fy = sin(self->angle);
+
+        for (int i = 0; i < in_stream_count; i++) {
+                Entity *other = in_stream[i];
+
+                double dx = self->pos.x - other->pos.x;
+                double dy = self->pos.y - other->pos.y;
+
+                double along = dx * fx + dy * fy; /* > 0 front ; < 0 behind */
+
+                double dist = fabs(along);
+                double accel = FAN_ACCEL / (1.0 + dist / FAN_FALLOFF);
+
+                other->v.x += fx * accel * dt;
+                other->v.y += fy * accel * dt;
         }
 }
