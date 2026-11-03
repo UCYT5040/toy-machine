@@ -115,14 +115,14 @@ void emoji_factory_update(World *world, Entity *self, double dt) {
                         free(self->processing_inputs);
                         self->processing_inputs = new_entity_indices;
                         self->processing_input_count = new_entities;
-                        
+
                         self->ejecting = true;
                         self->eject_timer = 0.0;
                 }
         }
 }
 
-#define MIN_THROW_VELOCITY 100.0
+#define MIN_THROW_VELOCITY 200.0
 
 void emoji_factory_collide(World *world, Entity *self, Entity *other) {
         if (self->processing || self->ejecting ||
