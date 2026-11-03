@@ -251,7 +251,7 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                         found =
                             strcmp(emoji_name, EMOJI_DEFINITIONS[i].name) == 0;
                         if (found) {
-                                world->emoji_unlocks[i - 1] = true;
+                                EMOJI_DEFINITIONS[i].unlocked = true;
 
                                 snprintf(output_buffer, output_buffer_size,
                                          "Unlocked %s", emoji_name);
@@ -266,7 +266,7 @@ void run_dev_command(World *world, char *command, char *output_buffer,
         } else if (strcmp(command_name, "unlockall") == 0) {
                 for (int i = 1; i < EMOJI_COUNT; i++) {
 
-                        world->emoji_unlocks[i - 1] = true;
+                        EMOJI_DEFINITIONS[i].unlocked = true;
                 }
 
                 snprintf(output_buffer, output_buffer_size,
