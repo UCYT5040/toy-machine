@@ -3,7 +3,6 @@
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
 
-
 #define VAULT_ICON_SIZE 48.0
 #define VAULT_MARGIN 16.0
 #define VAULT_TEXT_GAP 8.0

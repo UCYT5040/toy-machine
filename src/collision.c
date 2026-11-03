@@ -38,7 +38,8 @@ static bool test_box_vs_circle(Vec2 box_center, double box_width,
         double hw = box_width / 2.0;
         double hh = box_height / 2.0;
 
-        Vec2 closest = {fmax(-hw, fmin(local.x, hw)), fmax(-hh, fmin(local.y, hh))};
+        Vec2 closest = {fmax(-hw, fmin(local.x, hw)),
+                        fmax(-hh, fmin(local.y, hh))};
         Vec2 diff = vec2_sub(local, closest);
         double diff_sq = vec2_length_squared(diff);
 
@@ -79,14 +80,15 @@ static bool test_box_vs_circle(Vec2 box_center, double box_width,
         }
 
         Vec2 world_normal = vec2_rotate(local_normal, box_angle);
-        Vec2 world_closest = vec2_add(box_center, vec2_rotate(closest, box_angle));
+        Vec2 world_closest =
+            vec2_add(box_center, vec2_rotate(closest, box_angle));
 
         if (out_manifold) {
-                *out_manifold = (CollisionManifold){
-                    .colliding = true,
-                    .penetration = penetration,
-                    .normal = world_normal,
-                    .contact_point = world_closest};
+                *out_manifold =
+                    (CollisionManifold){.colliding = true,
+                                        .penetration = penetration,
+                                        .normal = world_normal,
+                                        .contact_point = world_closest};
         }
 
         return true;
@@ -94,8 +96,7 @@ static bool test_box_vs_circle(Vec2 box_center, double box_width,
 
 void get_box_corners(Vec2 center, double hw, double hh, double angle,
                      Vec2 out_corners[4]) {
-        Vec2 local_corners[4] = {
-            {-hw, -hh}, {hw, -hh}, {hw, hh}, {-hw, hh}};
+        Vec2 local_corners[4] = {{-hw, -hh}, {hw, -hh}, {hw, hh}, {-hw, hh}};
 
         for (int i = 0; i < 4; i++) {
                 out_corners[i] =
@@ -131,11 +132,10 @@ static bool test_box_vs_box(Vec2 center_a, double width_a, double height_a,
         get_box_corners(center_b, width_b / 2.0, height_b / 2.0, angle_b,
                         corners_b);
 
-        Vec2 axes[4] = {
-            vec2_rotate((Vec2){1.0, 0.0}, angle_a),
-            vec2_rotate((Vec2){0.0, 1.0}, angle_a),
-            vec2_rotate((Vec2){1.0, 0.0}, angle_b),
-            vec2_rotate((Vec2){0.0, 1.0}, angle_b)};
+        Vec2 axes[4] = {vec2_rotate((Vec2){1.0, 0.0}, angle_a),
+                        vec2_rotate((Vec2){0.0, 1.0}, angle_a),
+                        vec2_rotate((Vec2){1.0, 0.0}, angle_b),
+                        vec2_rotate((Vec2){0.0, 1.0}, angle_b)};
 
         double min_overlap = INFINITY;
         Vec2 best_axis = {0.0, 0.0};
@@ -163,8 +163,7 @@ static bool test_box_vs_box(Vec2 center_a, double width_a, double height_a,
                 best_axis = vec2_scale(best_axis, -1.0);
         }
 
-        Vec2 contact =
-            vec2_add(center_a, vec2_scale(best_axis, width_a / 2.0));
+        Vec2 contact = vec2_add(center_a, vec2_scale(best_axis, width_a / 2.0));
 
         if (out_manifold) {
                 *out_manifold = (CollisionManifold){.colliding = true,
@@ -295,8 +294,9 @@ bool get_lowest_point(Entity *entity, Vec2 *out_point, double *out_penetration,
                 if (collider->type == COLLIDER_NONE)
                         continue;
 
-                Vec2 col_offset = vec2_scale(
-                    vec2_rotate(collider->offset, entity->angle), entity->scale);
+                Vec2 col_offset =
+                    vec2_scale(vec2_rotate(collider->offset, entity->angle),
+                               entity->scale);
                 Vec2 collider_center = vec2_add(entity->pos, col_offset);
 
                 if (collider->type == COLLIDER_CIRCLE) {
@@ -317,8 +317,9 @@ bool get_lowest_point(Entity *entity, Vec2 *out_point, double *out_penetration,
                             {-hw, -hh}, {hw, -hh}, {hw, hh}, {-hw, hh}};
 
                         for (int j = 0; j < 4; j++) {
-                                Vec2 pt = vec2_add(collider_center,
-                                                   vec2_rotate(local_corners[j], total_angle));
+                                Vec2 pt = vec2_add(
+                                    collider_center,
+                                    vec2_rotate(local_corners[j], total_angle));
                                 if (pt.y > max_y) {
                                         max_y = pt.y;
                                         lowest_point = pt;

@@ -10,7 +10,8 @@ void emoji_trashbin_collide(World *world, Entity *self, Entity *other) {
         }
 
         if (other->type == EMOJI_TRASHBIN) {
-                /* So that alot of trashbins can clear everything including themselves */
+                /* So that alot of trashbins can clear everything including
+                 * themselves */
                 entity_remove(world, self);
                 entity_remove(world, other);
                 return;
