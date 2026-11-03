@@ -191,7 +191,7 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                      .update = NULL,
                      .collide = NULL},
     [EMOJI_STEAM_TRAIN] = {.name = "steam_train",
-                           .svg_path = "assets/emojis/steam_train.svg"
+                           .svg_path = "assets/emojis/steam_train.svg",
                            CIRCULAR_EMOJI(24.0), /* TODO: Update this to a rectangular hitbox */
                            .mass = 5.0,
                            .restitution = 0.1,
