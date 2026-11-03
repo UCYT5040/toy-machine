@@ -126,7 +126,8 @@ void emoji_factory_update(World *world, Entity *self, double dt) {
 
 void emoji_factory_collide(World *world, Entity *self, Entity *other) {
         if (self->processing || self->ejecting ||
-            other->type == EMOJI_FACTORY) {
+            other->type == EMOJI_FACTORY ||
+            other->tags & TAG_INVENTORY_IMMUNE) {
                 return;
         }
 

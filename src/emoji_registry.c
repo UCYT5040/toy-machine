@@ -1,11 +1,12 @@
 #include "emoji_registry.h"
 #include "emojis/bank.h"
 #include "emojis/broom.h"
-#include "emojis/coin.h"
 #include "emojis/computer_mouse.h"
 #include "emojis/factory.h"
 #include "emojis/fan.h"
+#include "emojis/money_bag.h"
 #include "emojis/pin.h"
+#include "emojis/purse.h"
 #include "emojis/trashbin.h"
 
 #define CIRCULAR_EMOJI(r)                                                      \
@@ -48,10 +49,11 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                                       .angle = 0.0}},
                        .mass = 5.0,
                        .restitution = 0.5,
-                       .default_tags = TAG_PROCESSOR,
+                       .default_tags = TAG_INVENTORY,
                        .unlocked = true,
                        .update = emoji_factory_update,
-                       .collide = emoji_factory_collide},
+                       .collide = emoji_factory_collide,
+                       .processing_display = EMOJI_PROCESSING_DISPLAY_SUM},
     [EMOJI_EARTH] = {.name = "earth",
                      .svg_path = "assets/emojis/earth.svg",
                      CIRCULAR_EMOJI(100.0),
@@ -169,7 +171,7 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                     .restitution = 0.4,
                     .default_tags = TAG_NONE,
                     .unlocked = false,
-                    .update = emoji_coin_update,
+                    .update = NULL,
                     .collide = NULL},
     [EMOJI_FAN] = {.name = "fan",
                    .svg_path = "assets/emojis/fan.svg",
@@ -221,4 +223,59 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                      .unlocked = true,
                      .update = emoji_broom_update,
                      .collide = NULL},
+    [EMOJI_CREDIT_CARD] = {.name = "credit_card",
+                           .svg_path = "assets/emojis/credit_card.svg",
+                           .radius = 20.0,
+                           .colliders = {{.type = COLLIDER_BOX,
+                                          .offset = {0.0, 0.0},
+                                          .angle = 0.0,
+                                          .box = {.width = 36.0,
+                                                  .height = 24.0}}},
+                           .mass = 1.0,
+                           .restitution = 0.1,
+                           .default_tags = TAG_NONE,
+                           .update = NULL,
+                           .collide = NULL},
+    [EMOJI_MONEY_BAG] = {.name = "money_bag",
+                         .svg_path = "assets/emojis/money_bag.svg",
+                         .radius = 20.0,
+                         .colliders = {{.type = COLLIDER_CIRCLE,
+                                        .offset = {0.0, 4.0},
+                                        .angle = 0.0,
+                                        .circle = {.radius = 16.0}},
+                                       {
+                                           .type = COLLIDER_CIRCLE,
+                                           .offset = {6.0, -12.0},
+                                           .angle = 0.0,
+                                           .circle = {.radius = 8.0},
+                                       }},
+                         .mass = 1.0,
+                         .restitution = 0.1,
+                         .default_tags = TAG_NONE,
+                         .update = emoji_money_bag_update,
+                         .collide = emoji_money_bag_collide,
+                         .processing_display = EMOJI_PROCESSING_DISPLAY_COUNTER
+
+    },
+    [EMOJI_PURSE] = {.name = "purse",
+                     .svg_path = "assets/emojis/purse.svg",
+                     CIRCULAR_EMOJI(20.0),
+                     .mass = 1.0,
+                     .restitution = 0.1,
+                     .default_tags = TAG_INVENTORY | TAG_INVENTORY_IMMUNE,
+                     .update = emoji_purse_update,
+                     .collide = emoji_purse_collide,
+                     .processing_display = EMOJI_PROCESSING_DISPLAY_COUNTER},
+    [EMOJI_DOLLAR] = {.name = "dollar",
+                      .svg_path = "assets/emojis/dollar.svg",
+                      .radius = 20.0,
+                      .colliders = {{.type = COLLIDER_BOX,
+                                     .offset = {0.0, 0.0},
+                                     .angle = 0.0,
+                                     .box = {.width = 36.0, .height = 24.0}}},
+                      .mass = 1.0,
+                      .restitution = 0.1,
+                      .default_tags = TAG_NONE,
+                      .update = NULL,
+                      .collide = NULL},
 };

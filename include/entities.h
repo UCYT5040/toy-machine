@@ -19,15 +19,17 @@ struct Entity {
 
         Vec2 pinned_offset;
 
-        bool processing;        // Only applies to TAG_PROCESSOR emojis
+        bool processing;        // Only applies to TAG_INVENTORY emojis
         int *processing_inputs; // Only 2 for the factory, but could be more for
                                 // other processors
         int processing_input_count;
         double processing_timer;
         const Recipe *current_recipe;
-        EmojiProcessingDisplay processing_display;
         bool ejecting;
         double eject_timer;
+
+        int needs_coins; // If this is an inventory, and it wants coins, any
+                         // adjacent currency inventories will empty into it.
 
         Vec2 pos;
         Vec2 last_pos;

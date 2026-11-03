@@ -242,7 +242,7 @@ void world_render(World *world, SDL_Renderer *renderer) {
 
                 double radius = entity->definition->radius * entity->scale;
 
-                if (entity->tags & TAG_PROCESSOR && entity->processing) {
+                if (entity->tags & TAG_INVENTORY && entity->processing) {
                         // from 0 to 1
                         double tilt = fmod(entity->processing_timer, 1.0);
                         double x_offset =
@@ -285,9 +285,9 @@ void world_render(World *world, SDL_Renderer *renderer) {
                                           SDL_FLIP_NONE);
                 }
 
-                if (entity->tags & TAG_PROCESSOR &&
+                if (entity->tags & TAG_INVENTORY &&
                     entity->processing_input_count > 0) {
-                        switch (entity->processing_display) {
+                        switch (entity->definition->processing_display) {
                         case EMOJI_PROCESSING_DISPLAY_SUM:
                         default:
                                 for (int j = 0;

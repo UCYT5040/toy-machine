@@ -29,7 +29,6 @@ void entity_create_default(Entity *entity, int definition_index, Vec2 pos,
         entity->processing_inputs = NULL;
         entity->processing_input_count = 0;
         entity->current_recipe = NULL;
-        entity->processing_display = EMOJI_PROCESSING_DISPLAY_NONE;
         entity->ejecting = false;
         entity->eject_timer = 0.0;
         entity->a = (Vec2){0.0, 0.0};
@@ -127,7 +126,6 @@ void entity_remove(World *world, Entity *entity) {
         entity->processing_input_count = 0;
         entity->processing_timer = 0.0;
         entity->current_recipe = NULL;
-        entity->processing_display = EMOJI_PROCESSING_DISPLAY_NONE;
         entity->ejecting = false;
         entity->eject_timer = 0.0;
 
