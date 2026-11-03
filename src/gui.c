@@ -2,7 +2,9 @@
 #include "dev.h"
 #include "emoji_picker.h"
 #include "event.h"
+#include "sidebar.h"
 #include "vault.h"
+
 #include <SDL2/SDL_image.h>
 #include <string.h>
 
@@ -73,6 +75,11 @@ void app_run(App *app, World *world) {
 
                 if (world->dev_command_mode) {
                         gui_console_render(&app->dev_console, app->renderer);
+                }
+
+                world->sidebar_shown = true;
+                if (world->sidebar_shown) {
+                        draw_sidebar(app->renderer, world, &app->font_atlas);
                 }
 
                 SDL_RenderPresent(app->renderer);

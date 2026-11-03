@@ -1,10 +1,10 @@
 #include "world.h"
-#include "SDL_timer.h"
 #include "collision.h"
 #include "dev.h"
 #include "emoji_registry.h"
 #include "entities.h"
 #include "vault.h"
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <stdint.h>

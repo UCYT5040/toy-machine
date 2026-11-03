@@ -44,6 +44,8 @@ struct World {
         bool dev_show_hitboxes;
         bool dev_show_velocity_vectors;
         // TODO: Add more developer/debugging features
+
+        bool sidebar_shown;
 };
 
 void world_init(World *world, SDL_Renderer *renderer);
