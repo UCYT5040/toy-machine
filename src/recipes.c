@@ -3,17 +3,30 @@
 #include <stdlib.h>
 
 static Recipe RECIPES[] = {{
-    .id = "test_recipe",
-    .inputs = {{.mode = CRITERION_EXACT, .type = EMOJI_STONE},
-               {.mode = CRITERION_EXACT, .type = EMOJI_WOOD}},
-    .output = {.mode = OUTPUT_STATIC, .static_output = EMOJI_HAMMER},
+        .id = "hammer",
+        .inputs = {{.mode = CRITERION_EXACT, .type = EMOJI_STONE},
+                   {.mode = CRITERION_EXACT, .type = EMOJI_WOOD}},
+        .output = {.mode = OUTPUT_STATIC, .static_output = EMOJI_HAMMER},
 
-    .processing_time = 5.0,
-    .consume_a = true,
-    .consume_b = true,
+        .processing_time = 5.0,
+        .consume_a = true,
+        .consume_b = true,
 
-    .specificity = 0 // Will be calculated in recipes_init()
-}};
+        .specificity = 0 // Will be calculated in recipes_init()
+},
+{
+        .id = "stone",
+        .inputs = {{.mode = CRITERION_EXACT, .type = EMOJI_WATER},
+                   {.mode = CRITERION_EXACT, .type = EMOJI_FIRE}},
+        .output = {.mode = OUTPUT_STATIC, .static_output = EMOJI_STONE},
+
+        .processing_time = 3.0,
+        .consume_a = true,
+        .consume_b = true,
+
+        .specificity = 0
+}
+};
 
 static const size_t RECIPE_COUNT = sizeof(RECIPES) / sizeof(RECIPES[0]);
 
