@@ -182,4 +182,12 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                      .default_tags = TAG_NONE,
                      .update = emoji_broom_update,
                      .collide = NULL},
+    [EMOJI_STEAM] = {.name = "steam",
+                     .svg_path = "assets/emojis/steam.svg",
+                     CIRCULAR_EMOJI(24.0),
+                     .mass = 0.5,
+                     .restitution = 0.5,
+                     .defaul_tags = TAG_NONE,
+                     .update = NULL,
+                     .collide = NULL},
 };
