@@ -2,7 +2,7 @@
 #include "entities.h"
 #include "recipes.h"
 
-#define EJECT_INTERVAL 0.25;
+#define EJECT_INTERVAL 0.25
 
 void emoji_factory_update(World *world, Entity *self, double dt) {
         if (self->ejecting) {
@@ -115,6 +115,9 @@ void emoji_factory_update(World *world, Entity *self, double dt) {
                         free(self->processing_inputs);
                         self->processing_inputs = new_entity_indices;
                         self->processing_input_count = new_entities;
+                        
+                        self->ejecting = true;
+                        self->eject_timer = 0.0;
                 }
         }
 }
