@@ -49,6 +49,7 @@ typedef struct World {
         // TODO: Add more developer/debugging features
 
         bool sidebar_shown;
+        double sidebar_scroll_px;
 } World;
 
 void world_init(World *world, SDL_Renderer *renderer);

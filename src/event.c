@@ -83,6 +83,14 @@ void handle_event(World *world, SDL_Renderer *renderer, SDL_Event *event,
                            event->key.keysym.sym == SDLK_SPACE) {
                         world->sidebar_shown = !world->sidebar_shown;
                 }
+                break;
+        }
+
+        case SDL_MOUSEWHEEL: {
+                if (world->sidebar_shown &&
+                    pos_in_sidebar(renderer, world->mouse_pos.x)) {
+                        sidebar_handle_scroll(renderer, world, event->wheel.y);
+                }
         }
         }
 }

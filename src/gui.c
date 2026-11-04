@@ -77,7 +77,6 @@ void app_run(App *app, World *world) {
                         gui_console_render(&app->dev_console, app->renderer);
                 }
 
-                world->sidebar_shown = true;
                 if (world->sidebar_shown) {
                         draw_sidebar(app->renderer, world, &app->font_atlas);
                 }

@@ -1,5 +1,6 @@
 #include "sidebar.h"
 #include "emoji_registry.h"
+#include "entities.h"
 #include "font.h"
 #include "types.h"
 
@@ -23,12 +24,14 @@ void draw_sidebar(SDL_Renderer *renderer, World *world, FontAtlas *font) {
 
         SDL_Color font_color = {.r = 255, .g = 255, .b = 255, .a = 255};
 
-        font_draw(font, renderer, "Your Items",
-                  sidebar_x + (float)sidebar_width / 2 -
-                      (float)title_width / 2.0,
-                  10.0, font_color);
+        // Only draws the title if not scrolled
+        if (world->sidebar_scroll_px <= 1.0)
+                font_draw(font, renderer, "Your Items",
+                          sidebar_x + (float)sidebar_width / 2 -
+                              (float)title_width / 2.0,
+                          10.0, font_color);
 
-        float item_y = 40.0;
+        float item_y = 40.0 - world->sidebar_scroll_px;
         for (int i = 0; i < EMOJI_COUNT; i++) {
                 EmojiDefinition *definition = &EMOJI_DEFINITIONS[i];
                 SDL_Texture *texture = world->textures[i];
@@ -46,21 +49,44 @@ void draw_sidebar(SDL_Renderer *renderer, World *world, FontAtlas *font) {
                         ? definition->colliders->box.width
                         : definition->colliders->circle.radius * 2.0;
 
-                SDL_FRect emoji_rect = {(float)sidebar_x + 20.0, item_y,
-                                        emoji_w, emoji_h};
+                if (item_y + 35.0 + emoji_h > 0.0 &&
+                    item_y - (35.0 + emoji_h) < renderer_h) {
+                        SDL_FRect emoji_rect = {(float)sidebar_x + 20.0, item_y,
+                                                emoji_w, emoji_h};
 
-                SDL_RenderCopyF(renderer, texture, NULL, &emoji_rect);
+                        SDL_RenderCopyF(renderer, texture, NULL, &emoji_rect);
 
-                item_y += emoji_h + 5.0;
+                        font_draw(font, renderer, EMOJI_DEFINITIONS[i].name,
+                                  sidebar_x + 20.0, item_y + emoji_h + 5.0,
+                                  font_color);
+                }
 
-                font_draw(font, renderer, EMOJI_DEFINITIONS[i].name,
-                          sidebar_x + 20.0, item_y, font_color);
-
-                item_y += 30.0;
+                item_y += 35.0 + emoji_h;
         }
 }
 
 void sidebar_handle_mouse_down(World *world) { (void)world; }
+
+void sidebar_handle_scroll(SDL_Renderer *renderer, World *world, float y) {
+        int renderer_w, renderer_h;
+        SDL_GetRendererOutputSize(renderer, &renderer_w, &renderer_h);
+
+        float max_scroll = 0;
+        for (int i = 0; i < EMOJI_COUNT; i++) {
+                EmojiDefinition *definition = &EMOJI_DEFINITIONS[i];
+
+                if (definition->unlocked && world->textures[i])
+                        max_scroll +=
+                            35.0 +
+                            (definition->colliders->type == COLLIDER_BOX
+                                 ? definition->colliders->box.width
+                                 : definition->colliders->circle.radius * 2.0);
+        }
+
+        float limit = fmaxf(max_scroll - renderer_h + 40.0f, 0.0f);
+        world->sidebar_scroll_px = fminf(
+            fmaxf(world->sidebar_scroll_px + y * SCROLL_FACTOR, 0.0f), limit);
+}
 
 bool pos_in_sidebar(SDL_Renderer *renderer, float x) {
         int renderer_w, renderer_h;
