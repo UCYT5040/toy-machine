@@ -306,7 +306,7 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
     [EMOJI_LAVA] = {.name = "lava",
                     .svg_path = "assets/emojis/lava.svg",
                     CIRCULAR_EMOJI(24.0),
-                    .mass = 1.0
+                    .mass = 1.0,
                     .restitution = 0.1,
                     .default_tags = TAG_HOT | TAG_BURNING,
                     .update = NULL,
