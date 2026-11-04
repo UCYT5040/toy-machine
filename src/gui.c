@@ -1,6 +1,5 @@
 #include "gui.h"
 #include "dev.h"
-#include "emoji_picker.h"
 #include "event.h"
 #include "sidebar.h"
 #include "vault.h"

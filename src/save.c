@@ -50,7 +50,7 @@ typedef struct {
         int32_t needs_coins;
         uint8_t ejecting;
         double eject_timer;
-        
+
         char recipe_id[SAVE_MAX_RECIPE_ID];
         int32_t processing_inputs[SAVE_MAX_INPUTS];
 
@@ -69,29 +69,29 @@ typedef struct {
         uint64_t tags;
 } SaveEntity;
 
-#define ENTITY_SAVE_FIELDS(X, e, s)     \
-        X(active)                       \
-        X(pinned)                       \
-        X(pinned_target_index)          \
-        X(pinned_by_index)              \
-        X(pinned_offset)                \
-        X(processing)                   \
-        X(processing_input_count)       \
-        X(processing_timer)             \
-        X(needs_coins)                  \
-        X(ejecting)                     \
-        X(eject_timer)                  \
-        X(pos)                          \
-        X(last_pos)                     \
-        X(v)                            \
-        X(a)                            \
-        X(shake_last_delta)             \
-        X(shake_distance)               \
-        X(despawn_timer)                \
-        X(angle)                        \
-        X(omega)                        \
-        X(torque)                       \
-        X(scale)                        \
+#define ENTITY_SAVE_FIELDS(X, e, s)                                            \
+        X(active)                                                              \
+        X(pinned)                                                              \
+        X(pinned_target_index)                                                 \
+        X(pinned_by_index)                                                     \
+        X(pinned_offset)                                                       \
+        X(processing)                                                          \
+        X(processing_input_count)                                              \
+        X(processing_timer)                                                    \
+        X(needs_coins)                                                         \
+        X(ejecting)                                                            \
+        X(eject_timer)                                                         \
+        X(pos)                                                                 \
+        X(last_pos)                                                            \
+        X(v)                                                                   \
+        X(a)                                                                   \
+        X(shake_last_delta)                                                    \
+        X(shake_distance)                                                      \
+        X(despawn_timer)                                                       \
+        X(angle)                                                               \
+        X(omega)                                                               \
+        X(torque)                                                              \
+        X(scale)                                                               \
         X(tags)
 
 static SaveEntity pack_entity(const Entity *entity, int index) {
@@ -145,9 +145,10 @@ static bool unpack_entity(Entity *entity, const SaveEntity *saved) {
                 entity->processing_inputs = malloc(count * sizeof(int));
                 if (!entity->processing_inputs) {
                         return false;
-                }      
+                }
                 for (size_t i = 0; i < count; i++) {
-                        entity->processing_inputs[i] = saved->processing_inputs[i];
+                        entity->processing_inputs[i] =
+                            saved->processing_inputs[i];
                 }
         }
 
@@ -166,8 +167,8 @@ static bool save_path(int slot, char *buffer, size_t buffer_size) {
 bool save(const World *world, int slot, char *error, size_t error_size) {
         char path[64];
         if (!save_path(slot, path, sizeof path)) {
-                snprintf(error, error_size, "Save slot must be between 1 and %d",
-                         SAVE_SLOT_COUNT);
+                snprintf(error, error_size,
+                         "Save slot must be between 1 and %d", SAVE_SLOT_COUNT);
                 return false;
         }
 
@@ -240,8 +241,8 @@ bool save(const World *world, int slot, char *error, size_t error_size) {
 bool load(World *world, int slot, char *error, size_t error_size) {
         char path[64];
         if (!save_path(slot, path, sizeof path)) {
-                snprintf(error, error_size, "Save slot must be between 1 and %d",
-                         SAVE_SLOT_COUNT);
+                snprintf(error, error_size,
+                         "Save slot must be between 1 and %d", SAVE_SLOT_COUNT);
                 return false;
         }
 
@@ -271,7 +272,7 @@ bool load(World *world, int slot, char *error, size_t error_size) {
                 occupied = calloc(MAX_ENTITIES, sizeof *occupied);
                 ok = saved && occupied &&
                      fread(saved, sizeof *saved, header.entity_count, file) ==
-                     header.entity_count;
+                         header.entity_count;
 
                 for (uint32_t i = 0; i < header.entity_count; i++) {
                         SaveEntity *s = &saved[i];
@@ -284,7 +285,7 @@ bool load(World *world, int slot, char *error, size_t error_size) {
                             s->processing_input_count > SAVE_MAX_INPUTS) {
                                 ok = false;
                                 break;
-                        } 
+                        }
 
                         if (s->recipe_id[0] != '\0' &&
                             !recipe_find_by_id(s->recipe_id)) {
@@ -350,7 +351,7 @@ bool load(World *world, int slot, char *error, size_t error_size) {
                         world->vault.balance = header.vault_balance;
                         world->gravity = header.gravity;
                         world->space_mode = header.space_mode;
-                        world->space_mode_transition = 
+                        world->space_mode_transition =
                             header.space_mode_transition;
                         world->last_mouse_move = header.last_mouse_move;
                         world->speed = header.speed;
@@ -362,7 +363,7 @@ bool load(World *world, int slot, char *error, size_t error_size) {
                                      (UINT64_C(1) << i)) != 0;
                         }
                         EMOJI_DEFINITIONS[EMOJI_NONE].unlocked = false;
-                        world->emoji_picker_open = false;
+                        world->sidebar_shown = false;
                         world->dragged_entity_index = -1;
                 } else {
                         for (int i = 0; i < MAX_ENTITIES; i++) {
