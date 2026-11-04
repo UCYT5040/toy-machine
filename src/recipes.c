@@ -35,6 +35,16 @@ static Recipe RECIPES[] = {
      .consume_a = true,
      .consume_b = true,
 
+     .specificity = 0},
+    {.id = "lava",
+     .inputs = {{.mode = CRITERION_EXACT, .type = EMOJI_STONE},
+                {.mode = CRITERION_EXACT, .type = EMOJI_FIRE}},
+     .output = {.mode = OUTPUT_STATIC, .static_output = EMOJI_LAVA},
+     
+     .processing_time = 4.0,
+     .consume_a = true,
+     .consume_b = true,
+
      .specificity = 0}};
 
 static const size_t RECIPE_COUNT = sizeof(RECIPES) / sizeof(RECIPES[0]);
