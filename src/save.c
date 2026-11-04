@@ -168,6 +168,7 @@ bool save(const World *world, int slot, char *error, size_t error_size) {
         if (!save_path(slot, path, sizeof path)) {
                 snprintf(error, error_size, "Save slot must be between 1 and %d",
                          SAVE_SLOT_COUNT);
+                return false;
         }
 
         char temp_path[72];
@@ -191,7 +192,7 @@ bool save(const World *world, int slot, char *error, size_t error_size) {
         header.space_mode_transition = world->space_mode_transition;
         header.last_mouse_move = world->last_mouse_move;
         header.speed = world->speed;
-        header.unlocked_mask = UINT64_C(1);
+        header.unlocked_mask = UINT64_C(0);
 
         for (int i = 1; i < EMOJI_COUNT; i++) {
                 if (EMOJI_DEFINITIONS[i].unlocked) {
@@ -355,12 +356,12 @@ bool load(World *world, int slot, char *error, size_t error_size) {
                         world->speed = header.speed;
                         world->save_slot = slot;
 
-                        for (int i = 0; i < EMOJI_COUNT; i++) {
+                        for (int i = 1; i < EMOJI_COUNT; i++) {
                                 EMOJI_DEFINITIONS[i].unlocked =
                                     (header.unlocked_mask &
                                      (UINT64_C(1) << i)) != 0;
                         }
-                        EMOJI_DEFINITIONS[EMOJI_NONE].unlocked = true;
+                        EMOJI_DEFINITIONS[EMOJI_NONE].unlocked = false;
                         world->emoji_picker_open = false;
                         world->dragged_entity_index = -1;
                 } else {
