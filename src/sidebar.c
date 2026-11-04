@@ -3,9 +3,32 @@
 #include "entities.h"
 #include "font.h"
 #include "types.h"
+#include "vec2.h"
 
 #include <SDL2/SDL.h>
 #include <math.h>
+
+static float get_emoji_height(EmojiDefinition *definition) {
+        switch (definition->colliders->type) {
+        case COLLIDER_BOX:
+                return definition->colliders->box.height;
+        case COLLIDER_CIRCLE:
+                return definition->colliders->circle.radius * 2.0;
+        default:
+                return definition->radius * 2.0;
+        }
+}
+
+static float get_emoji_width(EmojiDefinition *definition) {
+        switch (definition->colliders->type) {
+        case COLLIDER_BOX:
+                return definition->colliders->box.width;
+        case COLLIDER_CIRCLE:
+                return definition->colliders->circle.radius * 2.0;
+        default:
+                return definition->radius * 2.0;
+        }
+}
 
 void draw_sidebar(SDL_Renderer *renderer, World *world, FontAtlas *font) {
         int renderer_w, renderer_h;
@@ -32,22 +55,15 @@ void draw_sidebar(SDL_Renderer *renderer, World *world, FontAtlas *font) {
                           10.0, font_color);
 
         float item_y = 40.0 - world->sidebar_scroll_px;
-        for (int i = 0; i < EMOJI_COUNT; i++) {
+        for (int i = 1; i < EMOJI_COUNT; i++) {
                 EmojiDefinition *definition = &EMOJI_DEFINITIONS[i];
                 SDL_Texture *texture = world->textures[i];
 
                 if (!definition->unlocked || !texture)
                         continue;
 
-                float emoji_w =
-                    definition->colliders->type == COLLIDER_BOX
-                        ? definition->colliders->box.width
-                        : definition->colliders->circle.radius * 2.0;
-
-                float emoji_h =
-                    definition->colliders->type == COLLIDER_BOX
-                        ? definition->colliders->box.width
-                        : definition->colliders->circle.radius * 2.0;
+                float emoji_w = get_emoji_width(definition);
+                float emoji_h = get_emoji_height(definition);
 
                 if (item_y + 35.0 + emoji_h > 0.0 &&
                     item_y - (35.0 + emoji_h) < renderer_h) {
@@ -65,22 +81,101 @@ void draw_sidebar(SDL_Renderer *renderer, World *world, FontAtlas *font) {
         }
 }
 
-void sidebar_handle_mouse_down(World *world) { (void)world; }
+void sidebar_handle_mouse_down(SDL_Renderer *renderer, World *world) {
+        int renderer_w, renderer_h;
+        SDL_GetRendererOutputSize(renderer, &renderer_w, &renderer_h);
+
+        int sidebar_x = (int)fmax(renderer_w - SIDEBAR_WIDTH, 0.0);
+
+        float item_y = 40.0 - world->sidebar_scroll_px;
+        Vec2 spawn_pos;
+        EmojiType emoji_type;
+        bool spawn_found = false;
+        for (int i = 1; i < EMOJI_COUNT; i++) {
+                EmojiDefinition *definition = &EMOJI_DEFINITIONS[i];
+                SDL_Texture *texture = world->textures[i];
+
+                if (!definition->unlocked || !texture)
+                        continue;
+
+                float x = (float)sidebar_x + 20.0;
+                float y = item_y;
+
+                switch (definition->colliders->type) {
+                case COLLIDER_BOX: {
+                        float w = definition->colliders->box.width;
+                        float h = definition->colliders->box.height;
+
+                        if (world->mouse_pos.x >= x &&
+                            world->mouse_pos.x <= x + w &&
+                            world->mouse_pos.y >= y &&
+                            world->mouse_pos.y <= y + h) {
+                                spawn_pos = (Vec2){x + w / 2, y + h / 2};
+                                emoji_type = i;
+                                spawn_found = true;
+                        }
+
+                        break;
+                }
+                case COLLIDER_CIRCLE: {
+                        Vec2 center =
+                            (Vec2){x + definition->colliders->circle.radius,
+                                   y + definition->colliders->circle.radius};
+
+                        if (vec2_distance(world->mouse_pos, center) <=
+                            definition->colliders->circle.radius) {
+                                spawn_pos = center;
+                                emoji_type = i;
+                                spawn_found = true;
+                        }
+                }
+                default: {
+                        /*
+                        This treats it like a circle using `definition->radius`
+                        for any calculations
+                        */
+
+                        Vec2 center = (Vec2){x + definition->radius,
+                                             y + definition->radius};
+
+                        if (vec2_distance(world->mouse_pos, center) <=
+                            definition->radius) {
+                                spawn_pos = center;
+                                emoji_type = i;
+                                spawn_found = true;
+                        }
+                }
+                }
+
+                if (spawn_found)
+                        break;
+
+                item_y += 35.0 + get_emoji_height(definition);
+        }
+
+        if (spawn_found) {
+                world->sidebar_shown = false;
+
+                Entity *new_entity = entity_spawn(world, emoji_type, spawn_pos);
+                if (!new_entity)
+                        return;
+
+                world->dragged_entity_index = new_entity->index;
+                world->drag_local_offset =
+                    vec2_sub(world->mouse_pos, spawn_pos);
+        }
+}
 
 void sidebar_handle_scroll(SDL_Renderer *renderer, World *world, float y) {
         int renderer_w, renderer_h;
         SDL_GetRendererOutputSize(renderer, &renderer_w, &renderer_h);
 
         float max_scroll = 0;
-        for (int i = 0; i < EMOJI_COUNT; i++) {
+        for (int i = 1; i < EMOJI_COUNT; i++) {
                 EmojiDefinition *definition = &EMOJI_DEFINITIONS[i];
 
                 if (definition->unlocked && world->textures[i])
-                        max_scroll +=
-                            35.0 +
-                            (definition->colliders->type == COLLIDER_BOX
-                                 ? definition->colliders->box.width
-                                 : definition->colliders->circle.radius * 2.0);
+                        max_scroll += 35.0 + get_emoji_height(definition);
         }
 
         float limit = fmaxf(max_scroll - renderer_h + 40.0f, 0.0f);

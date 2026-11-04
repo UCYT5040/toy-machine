@@ -42,7 +42,7 @@ void handle_event(World *world, SDL_Renderer *renderer, SDL_Event *event,
                             true; // TODO: Consider adding a mouse button state
                         if (world->sidebar_shown &&
                             pos_in_sidebar(renderer, world->mouse_pos.x)) {
-                                sidebar_handle_mouse_down(world);
+                                sidebar_handle_mouse_down(renderer, world);
                         } else {
                                 world_handle_mouse_down(world);
                         }

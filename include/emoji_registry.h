@@ -43,7 +43,7 @@ typedef enum {
         TAG_INVENTORY = 1ULL << 8,
         TAG_SPACE = 1ULL << 9, // E.g., planets, starts, etc.
         TAG_INVENTORY_IMMUNE = 1ULL
-                               << 10, // Will not be collected by inventories
+            << 10, // Will not be collected by inventories
 } EmojiTag;
 
 typedef enum {

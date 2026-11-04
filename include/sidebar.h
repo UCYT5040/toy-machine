@@ -10,7 +10,7 @@
 
 void draw_sidebar(SDL_Renderer *renderer, World *world, FontAtlas *font);
 
-void sidebar_handle_mouse_down(World *world);
+void sidebar_handle_mouse_down(SDL_Renderer *renderer, World *world);
 
 void sidebar_handle_scroll(SDL_Renderer *renderer, World *world, float y);
 
