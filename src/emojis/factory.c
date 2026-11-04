@@ -1,6 +1,7 @@
 #include "emojis/factory.h"
 #include "entities.h"
 #include "recipes.h"
+#include "vault.h"
 
 #define EJECT_INTERVAL 0.25
 
@@ -83,6 +84,9 @@ void emoji_factory_update(World *world, Entity *self, double dt) {
 
                         if (new_emoji > EMOJI_NONE && new_emoji < EMOJI_COUNT) {
                             EMOJI_DEFINITIONS[new_emoji].unlocked = true;
+
+                            /* TODO: Probably should use a macro for the amount added */
+                            vault_add(&world->vault, 10);
                         }
 
                         Entity *new_entity =
