@@ -9,7 +9,7 @@
 #include "types.h"
 #include "vault.h"
 
-struct World {
+typedef struct World {
         Entity entities[MAX_ENTITIES];
         SDL_Texture *textures[EMOJI_COUNT];
 
@@ -24,7 +24,6 @@ struct World {
         double space_mode_transition;
 
         bool emoji_unlocks[EMOJI_COUNT - 1]; // Exclude EMOJI_NONE
-        bool emoji_picker_open;
 
         Vec2 mouse_pos;
         bool mouse_down;
@@ -46,7 +45,7 @@ struct World {
         // TODO: Add more developer/debugging features
 
         bool sidebar_shown;
-};
+} World;
 
 void world_init(World *world, SDL_Renderer *renderer);
 void world_update(World *world, double dt);

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "emoji_registry.h"
 #include "world.h"
 
 #define FAN_ACCEL 1800.0

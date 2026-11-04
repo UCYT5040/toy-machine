@@ -3,8 +3,11 @@
 
 #include "emoji_picker.h"
 #include "event.h"
+#include "sidebar.h"
 
-void handle_event(World *world, SDL_Event *event, bool *running) {
+// This will not draw anything using the renderer
+void handle_event(World *world, SDL_Renderer *renderer, SDL_Event *event,
+                  bool *running) {
         switch (event->type) {
         case SDL_QUIT:
                 *running = false;
@@ -37,8 +40,9 @@ void handle_event(World *world, SDL_Event *event, bool *running) {
                         world->mouse_pos.y = (double)event->button.y;
                         world->mouse_down =
                             true; // TODO: Consider adding a mouse button state
-                        if (world->emoji_picker_open) {
-                                emoji_picker_handle_mouse_down(world);
+                        if (world->sidebar_shown &&
+                            pos_in_sidebar(renderer, world->mouse_pos.x)) {
+                                sidebar_handle_mouse_down(world);
                         } else {
                                 world_handle_mouse_down(world);
                         }
@@ -51,7 +55,7 @@ void handle_event(World *world, SDL_Event *event, bool *running) {
                         world->mouse_down = false;
                         world_handle_mouse_up(world);
                 } else if (event->button.button == SDL_BUTTON_MIDDLE) {
-                        emoji_picker_toggle(world);
+                        world->sidebar_shown = !world->sidebar_shown;
                 }
                 break;
         }
@@ -61,7 +65,7 @@ void handle_event(World *world, SDL_Event *event, bool *running) {
                         world->dev_command_mode = !world->dev_command_mode;
                 } else if (!world->dev_command_mode &&
                            event->key.keysym.sym == SDLK_SPACE) {
-                        emoji_picker_toggle(world);
+                        world->sidebar_shown = !world->sidebar_shown;
                 }
         }
         }

@@ -1,6 +1,5 @@
 #include "emojis/bank.h"
 
-#include <math.h>
 #include <stdbool.h>
 
 #include "emoji_registry.h"

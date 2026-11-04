@@ -41,7 +41,7 @@ typedef struct {
         };
 } RecipeOutput;
 
-struct Recipe {
+typedef struct Recipe {
         const char *id;
         IngredientCriterion inputs[2];
         RecipeOutput output;
@@ -51,7 +51,7 @@ struct Recipe {
         bool consume_b;
 
         int specificity; // Higher values evaluated first
-};
+} Recipe;
 
 void recipes_init(void);
 

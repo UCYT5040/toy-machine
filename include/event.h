@@ -4,4 +4,5 @@
 #include "world.h"
 #include <SDL2/SDL.h>
 
-void handle_event(World *world, SDL_Event *event, bool *running);
+void handle_event(World *world, SDL_Renderer *renderer, SDL_Event *event,
+                  bool *running);

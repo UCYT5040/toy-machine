@@ -53,7 +53,10 @@ void app_run(App *app, World *world) {
                 /* event processing */
                 SDL_Event event;
                 while (SDL_PollEvent(&event)) {
-                        handle_event(world, &event, &app->running);
+                        /* handle_event will not draw anything using the
+                        renderer */
+                        handle_event(world, app->renderer, &event,
+                                     &app->running);
                         gui_console_handle_event(&app->dev_console, world,
                                                  &event, &app->running);
                 }
@@ -70,8 +73,6 @@ void app_run(App *app, World *world) {
                 world_render(world, app->renderer);
                 vault_render(&world->vault, app->renderer, &app->font_atlas,
                              world->width);
-
-                emoji_picker_render(world, app->renderer);
 
                 if (world->dev_command_mode) {
                         gui_console_render(&app->dev_console, app->renderer);

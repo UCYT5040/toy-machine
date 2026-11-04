@@ -23,6 +23,8 @@ void emoji_pin_unpin(World *world, Entity *pin) {
 }
 
 void emoji_pin_update(World *world, Entity *self, double dt) {
+        (void)dt;
+
         if (self->pinned_target_index >= 0) {
                 Entity *target = &world->entities[self->pinned_target_index];
 

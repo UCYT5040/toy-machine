@@ -5,7 +5,7 @@
 #include "types.h"
 #include <stdbool.h>
 
-struct Entity {
+typedef struct Entity {
         EmojiDefinition *definition;
 
         bool active;  /* Ignore this entity if false (but do not overwrite!) */
@@ -46,7 +46,7 @@ struct Entity {
         double scale; // To scale individual entities
 
         uint64_t tags;
-};
+} Entity;
 
 static const double G = 6.67430e-11; /* m^3 / (kg · s^2) */
 
