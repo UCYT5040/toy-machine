@@ -4,6 +4,7 @@
 #include "entities.h"
 #include "vault.h"
 #include "world.h"
+#include "save.h"
 
 #include <SDL2/SDL.h>
 #include <limits.h>
@@ -50,6 +51,9 @@ static void dev_command_help(char *output_buffer, size_t output_buffer_size) {
             " velocity <on/off> - toggle velocity vectors\n"
             " unlock <emoji> - unlock a specific emoji\n"
             " unlockall - unlock all emojis\n"
+            " save <slot> - save to given slot or already selected slot\n"
+            " load <slot> - load given slot or already selected slot\n"
+            " slot <1-9> - set current save slot\n"
             " exit - exit the game\n");
         /*
         This is commented out because there are way too many emojis now, just
@@ -60,6 +64,24 @@ static void dev_command_help(char *output_buffer, size_t output_buffer_size) {
                               EMOJI_DEFINITIONS[i].name);
         }
         */
+}
+
+static bool parse_slot(const char *text, int *slot) {
+        if (!text) {
+                return false;
+        }
+
+        char *end = NULL;
+        long value = strtol(text, &end, 10);
+
+        if (end == text || *end != '\0' || value < 1 ||
+            value > SAVE_SLOT_COUNT) {
+                return false;
+
+        }
+        
+        *slot = (int)value;
+        return true;
 }
 
 void run_dev_command(World *world, char *command, char *output_buffer,
@@ -212,7 +234,59 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                                  "Only \"on\" and \"off\" are allowed.");
                 }
         } else if (strcmp(command_name, "exit") == 0) {
-                exit(0);
+                world->quit_requested = true;
+        } else if (strcmp(command_name, "save") == 0) {
+                char *slot_str = strtok(NULL, " \t\n");
+                int slot = world->save_slot;
+
+                if (slot_str && !parse_slot(slot_str, &slot)) {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Slot must be between 1 and %d",
+                                 SAVE_SLOT_COUNT);
+                        return;
+                }
+
+                char error[128];
+                if (save(world, slot, error, sizeof error)) {
+                        world->save_slot = slot;
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Saved slot %d", slot);
+                } else {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Saved failed: %s", error);
+                }
+        } else if (strcmp(command_name, "load") == 0) {
+                char *slot_str = strtok(NULL, " \t\n");
+                int slot = world->save_slot;
+
+                if (slot_str && !parse_slot(slot_str, &slot)) {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Slot must be between 1 and %d",
+                                 SAVE_SLOT_COUNT);
+                        return;
+                }
+
+                char error[128];
+                if (load(world, slot, error, sizeof error)) {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Loaded slot %d", slot); 
+                } else {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Load failed: %s", error);
+                }
+        } else if (strcmp(command_name, "slot") == 0) {
+                char *slot_str = strtok(NULL, " \t\n");
+                int slot;
+
+                if (!parse_slot(slot_str, &slot)) {
+                        snprintf(output_buffer, output_buffer_size,
+                                 "Usage: slot <1-%d>", SAVE_SLOT_COUNT);
+                        return;
+                }
+
+                world->save_slot = slot;
+                snprintf(output_buffer, output_buffer_size,
+                         "Current save slot: %d", slot);
         } else if (strcmp(command, "velocity") == 0) {
                 char *option_str = strtok(NULL, " \t\n");
                 if (option_str == NULL) {
