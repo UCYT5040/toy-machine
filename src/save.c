@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define SAVE_VERSION 2u
+#define SAVE_VERSION 3u
 #define SAVE_MAX_RECIPE_ID 32
 #define SAVE_MAX_INPUTS 8
 
@@ -47,7 +47,7 @@ typedef struct {
         uint8_t processing;
         int32_t processing_input_count;
         double processing_timer;
-        int32_t processing_display;
+        int32_t needs_coins;
         uint8_t ejecting;
         double eject_timer;
         
@@ -78,7 +78,7 @@ typedef struct {
         X(processing)                   \
         X(processing_input_count)       \
         X(processing_timer)             \
-        X(processing_display)           \
+        X(needs_coins)                  \
         X(ejecting)                     \
         X(eject_timer)                  \
         X(pos)                          \

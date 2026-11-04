@@ -23,7 +23,6 @@ struct World {
         bool space_mode;
         double space_mode_transition;
 
-        bool emoji_unlocks[EMOJI_COUNT - 1]; // Exclude EMOJI_NONE
         bool emoji_picker_open;
 
         Vec2 mouse_pos;
