@@ -38,6 +38,10 @@ typedef struct World {
         double speed; // Currently used only for dev commands, but could
                       // be an effect later on (this is a multiplier for dt)
 
+        int save_slot;
+        bool quit_requested; /* Currently only triggered by dev console exit
+                                commands only*/
+
         bool dev_command_mode; // If true, the dev command window is open (game
                                // is paused)
         bool dev_show_hitboxes;

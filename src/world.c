@@ -23,6 +23,7 @@ void world_init(World *world, SDL_Renderer *renderer) {
         world->dragged_entity_index =
             -1; // First element will be in a dragging state if not set to `-1`
         world->speed = 1.0; // If left unset, the game will be frozen (0.0)
+        world->save_slot = 1;
 
         vault_init(&world->vault, renderer);
 

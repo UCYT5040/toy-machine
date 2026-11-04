@@ -55,6 +55,8 @@ typedef struct Recipe {
 
 void recipes_init(void);
 
+const Recipe *recipe_find_by_id(const char *id);
+
 bool recipe_criterion_matches(const IngredientCriterion *criterion,
                               const Entity *entity);
 

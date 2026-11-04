@@ -1,6 +1,7 @@
 #include "recipes.h"
 #include "emoji_registry.h"
 #include <stdlib.h>
+#include <string.h>
 
 static Recipe RECIPES[] = {
     {
@@ -80,6 +81,20 @@ void recipes_init(void) {
 
         qsort(RECIPES, RECIPE_COUNT, sizeof(Recipe),
               recipe_compare_specificity);
+}
+
+const Recipe *recipe_find_by_id(const char *id) {
+        if (!id || !*id) {
+                return NULL;
+        }
+
+        for (size_t i = 0; i < RECIPE_COUNT; i++) {
+                if (RECIPES[i].id && strcmp(RECIPES[i].id, id) == 0) {
+                        return &RECIPES[i];
+                }
+        }
+
+        return NULL;
 }
 
 bool recipe_criterion_matches(const IngredientCriterion *criterion,

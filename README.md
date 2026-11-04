@@ -3,9 +3,16 @@
 A physics and object simulation game.
 
 ## How to play
-Your primary progression method will be combining emojis, which gives you coins, acheivements also give you coins and there are other methods as well.
+You can spawn emojis with the emoji picker (press space to open it) and click the emoji you want to spawn, each emoji has it's own attributes and behaviour.
 
-Currently we've implemented a bank emoji which when shaken drops a coin, this is slow and annoying though.
+Your primary progression method will be combining emojis, which will give you coins, acheivements will also give you coins and there will be other methods as well.
+
+In order to combine emojis, you need to use the Factory emoji, put in items and it throws out your crafted item, 
+you can also throw fast rocks on it to remove the item currently inside the factory.
+
+You're given a few base emojis to start crafting new emojis, as you make new emojis, you can spawn those unlocked emojis via the emoji picker.
+
+Currently there's only a bank emoji as a coin generator which when shaken drops a coin, this is slow and annoying though.
 
 There is a vault system, where all coins get collected and stored, all transactions will occur via the vault
 
