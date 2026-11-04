@@ -81,6 +81,10 @@ void emoji_factory_update(World *world, Entity *self, double dt) {
                             &world->entities[self->processing_inputs[0]],
                             &world->entities[self->processing_inputs[1]]);
 
+                        if (new_emoji > EMOJI_NONE && new_emoji < EMOJI_COUNT) {
+                            EMOJI_DEFINITIONS[new_emoji].unlocked = true;
+                        }
+
                         Entity *new_entity =
                             entity_spawn(world, new_emoji, self->pos);
                         new_entity->active = false;
