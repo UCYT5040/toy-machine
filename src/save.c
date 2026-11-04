@@ -135,9 +135,17 @@ static bool unpack_entity(Entity *entity, const SaveEntity *saved) {
 
         if (saved->recipe_id[0] != '\0') {
                 entity->current_recipe = recipe_find_by_id(saved->recipe_id);
-                if (!entity->processing_inputs) {
+                if (!entity->current_recipe) {
                         return false;
                 }
+        }
+
+        if (entity->processing_input_count > 0) {
+                size_t count = (size_t)entity->processing_input_count;
+                entity->processing_inputs = malloc(count * sizeof(int));
+                if (!entity->processing_inputs) {
+                        return false;
+                }      
                 for (size_t i = 0; i < count; i++) {
                         entity->processing_inputs[i] = saved->processing_inputs[i];
                 }
@@ -163,7 +171,7 @@ bool save(const World *world, int slot, char *error, size_t error_size) {
         }
 
         char temp_path[72];
-        snprintf(temp_path, sizof temp_path, "%s.tmp", path);
+        snprintf(temp_path, sizeof temp_path, "%s.tmp", path);
 
         FILE *file = fopen(temp_path, "wb");
         if (!file) {
@@ -258,6 +266,12 @@ bool load(World *world, int slot, char *error, size_t error_size) {
         bool *occupied = NULL;
 
         if (ok && header.entity_count > 0) {
+                saved = calloc(header.entity_count, sizeof *saved);
+                occupied = calloc(MAX_ENTITIES, sizeof *occupied);
+                ok = saved && occupied &&
+                     fread(saved, sizeof *saved, header.entity_count, file) ==
+                     header.entity_count;
+
                 for (uint32_t i = 0; i < header.entity_count; i++) {
                         SaveEntity *s = &saved[i];
                         s->recipe_id[SAVE_MAX_RECIPE_ID - 1] = '\0';
@@ -299,8 +313,16 @@ bool load(World *world, int slot, char *error, size_t error_size) {
                              !occupied[s->pinned_target_index])) {
                                 ok = false;
                         }
+
+                        if (s->pinned_by_index >= 0 &&
+                            (s->pinned_by_index >= MAX_ENTITIES ||
+                             !occupied[s->pinned_by_index])) {
+                                ok = false;
+                        }
                 }
         }
+
+        fclose(file);
 
         if (ok) {
                 for (int i = 0; i < MAX_ENTITIES; i++) {
@@ -308,6 +330,12 @@ bool load(World *world, int slot, char *error, size_t error_size) {
                 }
 
                 memset(world->entities, 0, sizeof world->entities);
+
+                for (int i = 0; i < MAX_ENTITIES; i++) {
+                        world->entities[i].index = i;
+                        world->entities[i].collect = true;
+                }
+
                 for (uint32_t i = 0; ok && i < header.entity_count; i++) {
                         const SaveEntity *s = &saved[i];
                         Entity *entity = &world->entities[s->index];
