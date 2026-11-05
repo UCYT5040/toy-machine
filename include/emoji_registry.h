@@ -41,9 +41,12 @@ typedef enum {
         TAG_WET = 1ULL << 6,
         TAG_ELECTRIC = 1ULL << 7,
         TAG_INVENTORY = 1ULL << 8,
-        TAG_SPACE = 1ULL << 9, // E.g., planets, starts, etc.
-        TAG_INVENTORY_IMMUNE = 1ULL
-            << 10, // Will not be collected by inventories
+        // E.g., planets, starts, etc.
+        TAG_SPACE = 1ULL << 9,
+        // Will not be collected by inventories
+        TAG_INVENTORY_IMMUNE = 1ULL << 10,
+        // Don't apply gravitational force
+        TAG_NO_GRAVITY = 1ULL << 11
 } EmojiTag;
 
 typedef enum {
@@ -74,6 +77,7 @@ typedef struct {
 
         EmojiUpdateFunction update;
         EmojiCollideFunction collide;
+        EmojiWallCollideFunction wall_collide;
 } EmojiDefinition;
 
 extern EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT];

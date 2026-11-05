@@ -343,6 +343,10 @@ void entity_constrain_to_bounds(Entity *entity, World *world) {
                         // Little resistance so it comes to a rest eventually
                         entity->v.x *= 0.995;
                         entity->omega *= 0.995;
+
+                        if (entity->definition->wall_collide)
+                                entity->definition->wall_collide(
+                                    world, entity, (Vec2){0.0, -1.0});
                 }
         }
 
@@ -351,14 +355,26 @@ void entity_constrain_to_bounds(Entity *entity, World *world) {
         if (entity->pos.x - radius < 0) {
                 entity->pos.x = radius;
                 entity->v.x = -entity->v.x * entity->definition->restitution;
+
+                if (entity->definition->wall_collide)
+                        entity->definition->wall_collide(world, entity,
+                                                         (Vec2){1.0, 0.0});
         }
         if (entity->pos.x + radius > world->width) {
                 entity->pos.x = world->width - radius;
                 entity->v.x = -entity->v.x * entity->definition->restitution;
+
+                if (entity->definition->wall_collide)
+                        entity->definition->wall_collide(world, entity,
+                                                         (Vec2){-1.0, 0.0});
         }
         if (entity->pos.y - radius < 0) {
                 entity->pos.y = radius;
                 entity->v.y = -entity->v.y * entity->definition->restitution;
+
+                if (entity->definition->wall_collide)
+                        entity->definition->wall_collide(world, entity,
+                                                         (Vec2){0.0, 1.0});
         }
 }
 
@@ -387,7 +403,7 @@ void world_resolve_collisions(World *world) {
 
 void entity_apply_forces(Entity *entity, World *world) {
         if (!entity->active || entity->definition->mass <= 0.0 ||
-            entity->pinned)
+            entity->pinned || entity->tags & TAG_NO_GRAVITY)
                 return;
 
         entity->a = (Vec2){0.0, 0.0};
