@@ -43,6 +43,9 @@ bool vault_spend(Vault *vault, int amount) {
 
 void vault_render(const Vault *vault, SDL_Renderer *renderer, FontAtlas *font,
                   int window_width) {
+        if (vault->balance <= 0)
+                return;
+
         SDL_FRect icon = {window_width - VAULT_MARGIN - VAULT_ICON_SIZE,
                           VAULT_MARGIN, VAULT_ICON_SIZE, VAULT_ICON_SIZE};
 
@@ -54,7 +57,7 @@ void vault_render(const Vault *vault, SDL_Renderer *renderer, FontAtlas *font,
                 return;
         }
 
-        char text[32];
+        char text[16];
         snprintf(text, sizeof text, "%d", vault->balance);
 
         int text_width = font_measure_text(font, text);
