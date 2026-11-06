@@ -31,6 +31,8 @@ typedef struct Entity {
         int needs_coins; // If this is an inventory, and it wants coins, any
                          // adjacent currency inventories will empty into it.
 
+        const char *note_text;
+
         Vec2 pos;
         Vec2 last_pos;
         Vec2 v;

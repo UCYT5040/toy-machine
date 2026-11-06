@@ -160,8 +160,8 @@ void sidebar_handle_mouse_down(SDL_Renderer *renderer, World *world) {
                 if (!new_entity)
                         return;
 
-                world->dragged_entity_index = new_entity->index;
-                world->drag_local_offset =
+                world->pressed_entity_index = new_entity->index;
+                world->press_local_offset =
                     vec2_sub(world->mouse_pos, spawn_pos);
         }
 }

@@ -30,7 +30,7 @@ void emoji_bank_update(World *world, Entity *self, double dt) {
 
         double distance = vec2_length(delta);
 
-        if (world->dragged_entity_index != self->index) {
+        if (world->pressed_entity_index != self->index) {
                 distance *= BANK_AUTOMATED_SHAKE_PENALTY;
         }
 

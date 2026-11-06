@@ -84,8 +84,8 @@ void entity_remove(World *world, Entity *entity) {
                 return;
         }
 
-        if (world->dragged_entity_index == entity->index) {
-                world->dragged_entity_index = -1;
+        if (world->pressed_entity_index == entity->index) {
+                world->pressed_entity_index = -1;
         }
 
         if (entity->pinned_target_index >= 0 &&

@@ -4,7 +4,7 @@
 void emoji_computer_mouse_update(World *world, Entity *self, double dt) {
         (void)dt;
 
-        if (world->dragged_entity_index != -1) {
+        if (world->pressed_entity_index != -1) {
                 self->last_pos = self->pos;
                 return;
         }

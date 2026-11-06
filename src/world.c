@@ -12,6 +12,7 @@
 
 #define PHYSICS_SUBSTEPS 8
 #define MAX_A 2500.0
+#define DRAG_THRESHOLD 6.0f
 
 void world_init(World *world, SDL_Renderer *renderer) {
         *world = (World){0};
@@ -21,7 +22,7 @@ void world_init(World *world, SDL_Renderer *renderer) {
         world->gravity = (Vec2){0.0, 981.0};
         world->space_mode = false;
 
-        world->dragged_entity_index =
+        world->pressed_entity_index =
             -1; // First element will be in a dragging state if not set to `-1`
         world->speed = 1.0; // If left unset, the game will be frozen (0.0)
         world->save_slot = 1;
@@ -51,6 +52,8 @@ void world_init(World *world, SDL_Renderer *renderer) {
         SDL_Surface *bg_box_surface = IMG_Load("assets/box.jpg");
         SDL_Surface *bg_space_surface = IMG_Load("assets/space.jpg");
 
+        SDL_Surface *paper_popup_surface = IMG_Load("assets/paper_popup.svg");
+
         if (!bg_box_surface || !bg_space_surface) {
                 return;
         }
@@ -59,6 +62,13 @@ void world_init(World *world, SDL_Renderer *renderer) {
             SDL_CreateTextureFromSurface(renderer, bg_space_surface);
         SDL_FreeSurface(bg_box_surface);
         SDL_FreeSurface(bg_space_surface);
+
+        if (paper_popup_surface) {
+                world->paper_popup =
+                    SDL_CreateTextureFromSurface(renderer, paper_popup_surface);
+                SDL_FreeSurface(paper_popup_surface);
+        }
+        SDL_FreeSurface(paper_popup_surface);
 
         SDL_SetTextureColorMod(world->bg_box, 190, 190,
                                190); // Dim the box background
@@ -112,80 +122,100 @@ void world_update(World *world, double dt) {
                         if (!entity->active)
                                 continue;
 
-                        if (i == world->dragged_entity_index) {
-                                Vec2 relative_grab = vec2_rotate(
-                                    world->drag_local_offset, entity->angle);
+                        if (i == world->pressed_entity_index) {
+                                if (world->is_dragging) {
+                                        Vec2 relative_grab = vec2_rotate(
+                                            world->press_local_offset,
+                                            entity->angle);
 
-                                entity->pos =
-                                    vec2_sub(world->mouse_pos, relative_grab);
+                                        entity->pos = vec2_sub(world->mouse_pos,
+                                                               relative_grab);
 
-                                entity->v = world->mouse_speed;
+                                        entity->v = world->mouse_speed;
 
-                                if (entity->pinned) {
-                                        entity->omega = 0.0;
-                                        entity->torque = 0.0;
+                                        if (entity->pinned) {
+                                                entity->omega = 0.0;
+                                                entity->torque = 0.0;
+                                                continue;
+                                        }
+
+                                        double ax = fmax(
+                                            -MAX_A,
+                                            fmin(MAX_A, (world->mouse_accel.x *
+                                                         -1.0)));
+                                        double ay = fmax(
+                                            -MAX_A,
+                                            fmin(MAX_A, (world->mouse_accel.y *
+                                                         -1.0)));
+                                        Vec2 effective_accel = {ax, ay};
+
+                                        double mass = entity->definition->mass;
+                                        Vec2 grav_force =
+                                            world->space_mode
+                                                ? (Vec2){0.0, 0.0}
+                                                : vec2_scale(world->gravity,
+                                                             mass);
+                                        Vec2 accel_force = vec2_scale(
+                                            effective_accel, -0.25 * mass);
+                                        Vec2 total_force =
+                                            vec2_add(grav_force, accel_force);
+
+                                        double swing_torque = vec2_cross(
+                                            vec2_scale(relative_grab, -1.0),
+                                            total_force);
+
+                                        entity->torque = swing_torque;
+
+                                        entity->omega += (entity->torque *
+                                                          entity->inv_inertia) *
+                                                         substep_dt;
+                                        // Dampen velocity
+                                        double speed_drag =
+                                            1.8 + fabs(entity->omega) * 0.04;
+                                        entity->omega *=
+                                            (1.0 - speed_drag * substep_dt);
+                                        entity->angle +=
+                                            entity->omega * substep_dt;
+                                        entity->torque =
+                                            0.0; // Reset torque after applying
+                                                 // it
+
+                                        // Constrain dragged entity to bounds
+                                        Vec2 contact_point;
+                                        double penetration;
+
+                                        if (get_lowest_point(
+                                                entity, &contact_point,
+                                                &penetration,
+                                                (double)world->height)) {
+                                                entity->pos.y -= penetration;
+                                        }
+
+                                        double radius =
+                                            entity->definition->radius *
+                                            entity->scale;
+                                        if (entity->pos.x - radius < 0) {
+                                                entity->pos.x = radius;
+                                        }
+                                        if (entity->pos.x + radius >
+                                            world->width) {
+                                                entity->pos.x =
+                                                    world->width - radius;
+                                        }
+                                        if (entity->pos.y - radius < 0) {
+                                                entity->pos.y = radius;
+                                        }
+
                                         continue;
+                                } else {
+                                        float distance = vec2_distance(
+                                            world->mouse_pos,
+                                            world->press_start_pos);
+
+                                        if (distance > DRAG_THRESHOLD) {
+                                                world->is_dragging = true;
+                                        }
                                 }
-
-                                double ax = fmax(
-                                    -MAX_A,
-                                    fmin(MAX_A, (world->mouse_accel.x * -1.0)));
-                                double ay = fmax(
-                                    -MAX_A,
-                                    fmin(MAX_A, (world->mouse_accel.y * -1.0)));
-                                Vec2 effective_accel = {ax, ay};
-
-                                double mass = entity->definition->mass;
-                                Vec2 grav_force =
-                                    world->space_mode
-                                        ? (Vec2){0.0, 0.0}
-                                        : vec2_scale(world->gravity, mass);
-                                Vec2 accel_force =
-                                    vec2_scale(effective_accel, -0.25 * mass);
-                                Vec2 total_force =
-                                    vec2_add(grav_force, accel_force);
-
-                                double swing_torque =
-                                    vec2_cross(vec2_scale(relative_grab, -1.0),
-                                               total_force);
-
-                                entity->torque = swing_torque;
-
-                                entity->omega +=
-                                    (entity->torque * entity->inv_inertia) *
-                                    substep_dt;
-                                // Dampen velocity
-                                double speed_drag =
-                                    1.8 + fabs(entity->omega) * 0.04;
-                                entity->omega *=
-                                    (1.0 - speed_drag * substep_dt);
-                                entity->angle += entity->omega * substep_dt;
-                                entity->torque =
-                                    0.0; // Reset torque after applying it
-
-                                // Constrain dragged entity to bounds
-                                Vec2 contact_point;
-                                double penetration;
-
-                                if (get_lowest_point(entity, &contact_point,
-                                                     &penetration,
-                                                     (double)world->height)) {
-                                        entity->pos.y -= penetration;
-                                }
-
-                                double radius =
-                                    entity->definition->radius * entity->scale;
-                                if (entity->pos.x - radius < 0) {
-                                        entity->pos.x = radius;
-                                }
-                                if (entity->pos.x + radius > world->width) {
-                                        entity->pos.x = world->width - radius;
-                                }
-                                if (entity->pos.y - radius < 0) {
-                                        entity->pos.y = radius;
-                                }
-
-                                continue;
                         }
 
                         entity_apply_forces(entity, world);
@@ -199,7 +229,7 @@ void world_update(World *world, double dt) {
 
                         if (!entity->active ||
                             entity->definition->mass <= 0.0 || entity->pinned ||
-                            i == world->dragged_entity_index)
+                            i == world->pressed_entity_index)
                                 continue;
 
                         entity_physics_integrate(entity, &substep_dt);
@@ -362,12 +392,12 @@ void world_handle_mouse_down(World *world) {
         int entity_index = world_get_entity_at(world, world->mouse_pos);
 
         if (entity_index != -1) {
-                world->dragged_entity_index = entity_index;
+                world->pressed_entity_index = entity_index;
 
-                Entity *dragged = &world->entities[entity_index];
+                Entity *pressed = &world->entities[entity_index];
 
-                Vec2 d = vec2_sub(world->mouse_pos, dragged->pos);
-                world->drag_local_offset = vec2_rotate(d, -dragged->angle);
+                Vec2 d = vec2_sub(world->mouse_pos, pressed->pos);
+                world->press_local_offset = vec2_rotate(d, -pressed->angle);
         }
 }
 
@@ -376,15 +406,30 @@ void world_handle_mouse_up(World *world) {
         double mouse_dt =
             (double)time / 1000.0 - (double)world->last_mouse_move / 1000.0;
 
-        if (world->dragged_entity_index != -1) {
-                Entity *dragged = &world->entities[world->dragged_entity_index];
-                if (!dragged->pinned && mouse_dt < 0.1)
-                        dragged->v = world->mouse_speed;
-                else
-                        dragged->v = (Vec2){0.0, 0.0};
+        if (world->pressed_entity_index != -1) {
+                if (world->is_dragging) {
+                        Entity *dragged =
+                            &world->entities[world->pressed_entity_index];
+                        if (!dragged->pinned && mouse_dt < 0.1)
+                                dragged->v = world->mouse_speed;
+                        else
+                                dragged->v = (Vec2){0.0, 0.0};
+
+                        world->is_dragging = false;
+                } else {
+                        // TODO: Switch this to a proper press event
+
+                        Entity *pressed =
+                            &world->entities[world->pressed_entity_index];
+
+                        if (pressed->type == EMOJI_PAPER) {
+                                world->popup_open = true;
+                                world->popup_text = pressed->note_text;
+                        }
+                }
         }
 
-        world->dragged_entity_index = -1;
+        world->pressed_entity_index = -1;
 }
 
 int world_get_entity_at(World *world, Vec2 pos) {

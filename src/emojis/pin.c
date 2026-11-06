@@ -65,7 +65,7 @@ void emoji_pin_collide(World *world, Entity *self, Entity *other) {
         other->a = (Vec2){0.0, 0.0};
         other->omega = 0.0;
 
-        if (world->dragged_entity_index == self->index) {
-                world->dragged_entity_index = -1;
+        if (world->pressed_entity_index == self->index) {
+                world->pressed_entity_index = -1;
         }
 }

@@ -364,7 +364,7 @@ bool load(World *world, int slot, char *error, size_t error_size) {
                         }
                         EMOJI_DEFINITIONS[EMOJI_NONE].unlocked = false;
                         world->sidebar_shown = false;
-                        world->dragged_entity_index = -1;
+                        world->pressed_entity_index = -1;
                 } else {
                         for (int i = 0; i < MAX_ENTITIES; i++) {
                                 free(world->entities[i].processing_inputs);

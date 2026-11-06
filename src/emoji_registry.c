@@ -220,7 +220,19 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
          .collide = NULL,
          .wall_collide = NULL},
 
-    /* Please add all emojis above this line */
+    [EMOJI_PAPER] = {.name = "paper",
+                     .svg_path = "assets/emojis/paper.svg",
+                     CIRCULAR_EMOJI(20.0),
+                     .mass = 0.5,
+                     .restitution = 0.1,
+                     .default_tags = TAG_NONE,
+                     .unlocked = false,
+                     .update = NULL,
+                     .collide = NULL,
+                     .wall_collide = NULL},
+
+    /* Please add all emojis above this line */ /* why? and why is this
+                                                   duplicated below */
     /* These emojis are unlocked by default because they're for cleaning */
     [EMOJI_TRASHBIN] = {.name = "trashbin",
                         .svg_path = "assets/emojis/trashbin.svg",
@@ -311,7 +323,7 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                     .default_tags = TAG_HOT | TAG_BURNING,
                     .update = NULL,
                     .collide = NULL},
-    /* Please add all emojis above this line */
+    /* Please add all emojis above this line */ /* why? */
     /* These emojis are unlocked by default because they're for cleaning */
     [EMOJI_TRASHBIN] = {.name = "trashbin",
                         .svg_path = "assets/emojis/trashbin.svg",

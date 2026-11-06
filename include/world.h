@@ -15,6 +15,12 @@ typedef struct World {
 
         SDL_Texture *bg_box;
         SDL_Texture *bg_space;
+
+        SDL_Texture *paper_popup;
+
+        bool popup_open;
+        const char *popup_text;
+
         Vault vault;
 
         int width, height;
@@ -31,9 +37,12 @@ typedef struct World {
         Vec2 last_mouse_speed;
         Vec2 mouse_speed;
         Vec2 mouse_accel;
-        int dragged_entity_index; // -1 if no entity is being dragged
-        Vec2 drag_local_offset; // The point where this entity is being dragged
-                                // from, relative to it's center
+        int pressed_entity_index; // -1 if no entity is being dragged
+        Vec2 press_local_offset; // The point where this entity is being dragged
+                                 // from, relative to it's center
+        Vec2 press_start_pos;    // The position of the entity when it was first
+                                 // pressed
+        bool is_dragging;
 
         double speed; // Currently used only for dev commands, but could
                       // be an effect later on (this is a multiplier for dt)
