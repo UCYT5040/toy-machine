@@ -1,6 +1,7 @@
 #include "emoji_registry.h"
 #include "emojis/bank.h"
 #include "emojis/broom.h"
+#include "emojis/car.h"
 #include "emojis/computer_mouse.h"
 #include "emojis/factory.h"
 #include "emojis/fan.h"
@@ -315,9 +316,9 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
             .mass = 500.0,
             .restitution = 0.1,
             .default_tags = TAG_CONDUCTIVE,
-            .update = NULL,
+            .update = emoji_car_update,
             .collide = NULL,
-            .wall_collide = NULL,
+            .wall_collide = emoji_car_wall_collide,
         },
     /* Please add all emojis above this line */
     /* These emojis are unlocked by default because they're for cleaning
