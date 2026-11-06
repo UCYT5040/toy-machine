@@ -66,7 +66,6 @@ void world_init(World *world, SDL_Renderer *renderer) {
         if (paper_popup_surface) {
                 world->paper_popup =
                     SDL_CreateTextureFromSurface(renderer, paper_popup_surface);
-                SDL_FreeSurface(paper_popup_surface);
         }
         SDL_FreeSurface(paper_popup_surface);
 
