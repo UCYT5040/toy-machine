@@ -53,7 +53,7 @@ static Recipe RECIPES[] = {
      
      .processing_time = 6.0,
      .consume_a = true,
-     .consume_b = true, /* TODO: There's a bug in factory that causes a segfault when either of these are false, please fix it */
+     .consume_b = false,
 
      .specificity = 0}};
 
