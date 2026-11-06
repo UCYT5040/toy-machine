@@ -40,7 +40,7 @@ static Recipe RECIPES[] = {
      .inputs = {{.mode = CRITERION_EXACT, .type = EMOJI_STONE},
                 {.mode = CRITERION_EXACT, .type = EMOJI_FIRE}},
      .output = {.mode = OUTPUT_STATIC, .static_output = EMOJI_LAVA},
-     
+
      .processing_time = 4.0,
      .consume_a = true,
      .consume_b = true,
@@ -50,7 +50,7 @@ static Recipe RECIPES[] = {
      .inputs = {{.mode = CRITERION_EXACT, .type = EMOJI_LAVA},
                 {.mode = CRITERION_EXACT, .type = EMOJI_HAMMER}},
      .output = {.mode = OUTPUT_STATIC, .static_output = EMOJI_GEAR},
-     
+
      .processing_time = 6.0,
      .consume_a = true,
      .consume_b = false,

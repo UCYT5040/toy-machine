@@ -28,6 +28,7 @@ typedef enum {
         EMOJI_PURSE,
         EMOJI_DOLLAR,
         EMOJI_LAVA,
+        EMOJI_CAR,
         EMOJI_COUNT
 } EmojiType;
 
