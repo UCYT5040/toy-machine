@@ -3,6 +3,7 @@
 #include "dev.h"
 #include "emoji_registry.h"
 #include "entities.h"
+#include "popover.h"
 #include "vault.h"
 
 #include <SDL2/SDL.h>
@@ -290,7 +291,30 @@ void world_render(World *world, SDL_Renderer *renderer) {
                     entity->processing_input_count > 0) {
                         switch (entity->definition->processing_display) {
                         case EMOJI_PROCESSING_DISPLAY_SUM:
-                        default:
+                        default: {
+                                float icon_size = radius * 0.7;
+                                float spacing = radius * 0.1;
+
+                                float content_width =
+                                    entity->processing_input_count * icon_size +
+                                    (entity->processing_input_count - 1) *
+                                        spacing;
+                                float content_height = icon_size;
+
+                                Vec2 popover_size = {content_width,
+                                                     content_height};
+                                Vec2 tip = {entity->pos.x,
+                                            entity->pos.y - radius * 1.5};
+
+                                popover_draw_background(renderer, tip,
+                                                        popover_size,
+                                                        POPOVER_POSITION_TOP);
+                                SDL_FRect popover_bounds = popover_get_bounds(
+                                    tip, popover_size, POPOVER_POSITION_TOP);
+
+                                float start_x = popover_bounds.x;
+                                float icon_y = popover_bounds.y;
+
                                 for (int j = 0;
                                      j < entity->processing_input_count; j++) {
                                         int input_index =
@@ -310,17 +334,11 @@ void world_render(World *world, SDL_Renderer *renderer) {
                                                         continue;
                                                 }
 
-                                                double input_radius =
-                                                    0.5 * radius;
-
                                                 SDL_FRect input_dest_rect = {
-                                                    entity->pos.x -
-                                                        input_radius * 1.5 +
-                                                        j * input_radius * 3.0,
-                                                    entity->pos.y -
-                                                        input_radius * 1.5,
-                                                    input_radius * 2.0,
-                                                    input_radius * 2.0};
+                                                    start_x + j * (icon_size +
+                                                                   spacing),
+                                                    icon_y, icon_size,
+                                                    icon_size};
 
                                                 SDL_RenderCopyF(
                                                     renderer, input_texture,
@@ -328,6 +346,7 @@ void world_render(World *world, SDL_Renderer *renderer) {
                                         }
                                 }
                                 break;
+                        }
                         }
                 }
 
