@@ -47,6 +47,8 @@ typedef struct Entity {
 
         double scale; // To scale individual entities
 
+        char custom_data[256]; // 256 bytes of custom data
+
         uint64_t tags;
 } Entity;
 
