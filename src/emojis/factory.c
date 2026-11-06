@@ -93,7 +93,9 @@ void emoji_factory_update(World *world, Entity *self, double dt) {
                             entity_spawn(world, new_emoji, self->pos);
                         new_entity->active = false;
 
-                        new_entity_indices[0] = new_entity->index;
+                        int next_index = 0;
+
+                        new_entity_indices[next_index++] = new_entity->index;
 
                         // TODO: Make it so we just add back the input entity
                         // rather than creating a new one. This requires making
@@ -107,7 +109,7 @@ void emoji_factory_update(World *world, Entity *self, double dt) {
                                     self->pos);
                                 new_entity_a->active = false;
 
-                                new_entity_indices[1] = new_entity_a->index;
+                                new_entity_indices[next_index++] = new_entity_a->index;
                         }
                         if (!self->current_recipe->consume_b) {
                                 Entity *new_entity_b = entity_spawn(
@@ -117,12 +119,12 @@ void emoji_factory_update(World *world, Entity *self, double dt) {
                                     self->pos);
                                 new_entity_b->active = false;
 
-                                new_entity_indices[2] = new_entity_b->index;
+                                new_entity_indices[next_index++] = new_entity_b->index;
                         }
 
                         free(self->processing_inputs);
                         self->processing_inputs = new_entity_indices;
-                        self->processing_input_count = new_entities;
+                        self->processing_input_count = next_index;
 
                         self->ejecting = true;
                         self->eject_timer = 0.0;
