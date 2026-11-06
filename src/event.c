@@ -43,6 +43,8 @@ void handle_event(World *world, SDL_Renderer *renderer, SDL_Event *event,
                         if (world->sidebar_shown &&
                             pos_in_sidebar(renderer, world->mouse_pos.x)) {
                                 sidebar_handle_mouse_down(renderer, world);
+                        } else if (world->popup_open) {
+                                world->popup_open = false;
                         } else {
                                 world_handle_mouse_down(world);
                         }

@@ -20,8 +20,8 @@ void emoji_coin_update(World *world, Entity *self, double dt) {
         /* Deposit coin into vault after despawning */
         vault_add(&world->vault, 1);
 
-        if (world->dragged_entity_index == self->index) {
-                world->dragged_entity_index = -1;
+        if (world->pressed_entity_index == self->index) {
+                world->pressed_entity_index = -1;
         }
 
         self->active = false;
