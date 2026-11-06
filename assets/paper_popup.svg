@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <!-- Soft drop shadow for popup depth -->
+    <filter id="popup-shadow" x="-5%" y="-5%" width="110%" height="114%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#1e4968" flood-opacity="0.12" />
+    </filter>
+  </defs>
+
+  <!-- ===================================================================== -->
+  <!-- 4:3 PAPER POPUP WINDOW / BACKGROUND (Inspired by Noto Paper Emoji)    -->
+  <!-- ===================================================================== -->
+  <g id="paper-popup-window" filter="url(#popup-shadow)">
+
+    <!-- White Inner Paper Sheet (#FFFFFF) -->
+    <path id="paper-body"
+          d="M 48 44
+             H 714
+             V 504
+             H 128
+             C 122 536, 106 554, 84 554
+             C 62 554, 48 538, 48 512
+             Z"
+          fill="#FFFFFF" />
+
+    <!-- Sky-Blue Paper Border (#6FBFF0) -->
+    <path id="paper-border"
+          d="M 60 32
+             H 702
+             C 715.25 32, 726 42.75, 726 56
+             V 496
+             H 704
+             V 54
+             H 58
+             V 512
+             C 58 534, 68 546, 84 546
+             C 101 546, 114 531, 120 492
+             H 140
+             C 133 540, 112 568, 84 568
+             C 54 568, 36 544, 36 512
+             V 56
+             C 36 42.75, 46.75 32, 60 32
+             Z"
+          fill="#6FBFF0" />
+
+    <!-- Bottom Curled Flap (#6FBFF0) -->
+    <path id="paper-bottom-curl"
+          d="M 120 492
+             C 121.5 485, 127 480, 135 480
+             H 752
+             C 761 480, 767 486.5, 766 495.5
+             C 762 534, 745 568, 712 568
+             H 84
+             C 109 568, 116 530, 120 492
+             Z"
+          fill="#6FBFF0" />
+
+    <!-- Top & Bottom Decorative Pill Accents (#B0BEC5) framing the open center -->
+    <g id="decorative-accents" fill="#B0BEC5">
+      <!-- Top ruled line accents -->
+      <rect x="116" y="88" width="530" height="18" rx="9" />
+      <rect x="116" y="130" width="340" height="18" rx="9" opacity="0.55" />
+      <!-- Bottom short signature line accent (matching the bottom bar of the emoji) -->
+      <rect x="116" y="426" width="220" height="18" rx="9" />
+    </g>
+
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- CENTER TEXT SPACE (Open safe area: x = 116..646, y = 175..400)        -->
+  <!-- Place your popup title and body text inside this group                -->
+  <!-- ===================================================================== -->
+  <g id="center-text-space" transform="translate(381, 288)" text-anchor="middle">
+    <!-- Uncomment below to include embedded SVG text:
+    <text y="-18" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="32" font-weight="700" fill="#37474F">Popup Title</text>
+    <text y="24" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="400" fill="#546E7A">Your centered message text goes here.</text>
+    -->
+  </g>
+</svg>
