@@ -132,7 +132,7 @@ void emoji_factory_update(World *world, Entity *self, double dt) {
         }
 }
 
-#define MIN_THROW_VELOCITY 200.0
+#define MIN_THROW_VELOCITY 400.0
 
 void emoji_factory_collide(World *world, Entity *self, Entity *other) {
         if (self->processing || self->ejecting ||
