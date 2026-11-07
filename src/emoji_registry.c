@@ -5,6 +5,7 @@
 #include "emojis/computer_mouse.h"
 #include "emojis/factory.h"
 #include "emojis/fan.h"
+#include "emojis/mirror.h"
 #include "emojis/money_bag.h"
 #include "emojis/pin.h"
 #include "emojis/purse.h"
@@ -349,7 +350,7 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                       .restitution = 0.2,
                       .default_tags = TAG_NONE,
                       .update = NULL,
-                      .collide = NULL,
+                      .collide = emoji_mirror_collide,
                       .wall_collide = NULL},
     /* Please add all emojis above this line */
     /* These emojis are unlocked by default because they're for cleaning
