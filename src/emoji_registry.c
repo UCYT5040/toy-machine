@@ -361,6 +361,18 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                        .update = emoji_balloon_update,
                        .collide = NULL,
                        .wall_collide = NULL},
+    [EMOJI_ELECTRIC_TRAIN] =
+        {
+            .name = "electric_train",
+            .svg_path = "assets/emojis/electric_train.svg",
+            CIRCULAR_EMOJI(24.0),
+            .mass = 3.0,
+            .restitution = 0.3,
+            .default_tags = TAG_CONDUCTIVE,
+            .unlocked = false,
+            .update = NULL,
+            .collide = NULL,
+        }
     /* Please add all emojis above this line */
     /* These emojis are unlocked by default because they're for cleaning
      */
