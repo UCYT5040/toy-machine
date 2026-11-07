@@ -4,6 +4,7 @@
 #include "emoji_registry.h"
 #include "entities.h"
 #include "popover.h"
+#include "tutorial.h"
 #include "vault.h"
 
 #include <SDL2/SDL.h>
@@ -77,6 +78,8 @@ void world_init(World *world, SDL_Renderer *renderer) {
                 world->entities[i].active = false;
                 world->entities[i].collect = true;
         }
+
+        tutorial_enter_step(world, TUTORIAL_STEP_START);
 }
 
 void world_update(World *world, double dt) {
@@ -397,6 +400,7 @@ void world_handle_mouse_down(World *world) {
 
                 Vec2 d = vec2_sub(world->mouse_pos, pressed->pos);
                 world->press_local_offset = vec2_rotate(d, -pressed->angle);
+                world->press_start_pos = world->mouse_pos;
         }
 }
 

@@ -1,9 +1,12 @@
 #include "tutorial.h"
+#include "dispenser.h"
 
 void tutorial_enter_step(World *world, TutorialStep step) {
         switch (step) {
         case TUTORIAL_STEP_START:
-                break; // TODO: Show a note
+                dispense_note(world, "Welcome to the Toy Machine! Click on the "
+                                     "note to read it.");
+                break;
         }
 }
 
