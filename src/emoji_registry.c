@@ -319,6 +319,18 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
             .collide = NULL,
             .wall_collide = emoji_car_wall_collide,
         },
+    [EMOJI_ELECTRICITY] = 
+        {
+            .name = "electricity",
+            .svg_path = "assets/emojis/electricity.svg",
+            CIRCULAR_EMOJI(20.0),
+            .mass = 0.3,
+            .restitution = 0.2,
+            .default_tags = TAG_CONDUCTIVE | TAG_ELECTRIC,
+            .unlocked = false, /* Maybe set it to true */
+            .update = NULL,
+            .collide = NULL,
+        },
     /* Please add all emojis above this line */
     /* These emojis are unlocked by default because they're for cleaning
      */
