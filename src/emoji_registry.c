@@ -1,4 +1,5 @@
 #include "emoji_registry.h"
+#include "emojis/balloon.h"
 #include "emojis/bank.h"
 #include "emojis/broom.h"
 #include "emojis/car.h"
@@ -11,7 +12,6 @@
 #include "emojis/purse.h"
 #include "emojis/trashbin.h"
 #include "emojis/wind.h"
-#include <sys/select.h>
 
 #define CIRCULAR_EMOJI(r)                                                      \
         .radius = r, .colliders = {{.type = COLLIDER_CIRCLE,                   \
@@ -352,6 +352,15 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                       .update = NULL,
                       .collide = emoji_mirror_collide,
                       .wall_collide = NULL},
+    [EMOJI_BALLOON] = {.name = "balloon",
+                       .svg_path = "assets/emojis/balloon.svg",
+                       CIRCULAR_EMOJI(20.0),
+                       .mass = 0.1,
+                       .restitution = 0.8,
+                       .default_tags = TAG_NO_GRAVITY,
+                       .update = emoji_balloon_update,
+                       .collide = NULL,
+                       .wall_collide = NULL},
     /* Please add all emojis above this line */
     /* These emojis are unlocked by default because they're for cleaning
      */
