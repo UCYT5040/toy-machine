@@ -10,6 +10,7 @@
 #include "emojis/purse.h"
 #include "emojis/trashbin.h"
 #include "emojis/wind.h"
+#include <sys/select.h>
 
 #define CIRCULAR_EMOJI(r)                                                      \
         .radius = r, .colliders = {{.type = COLLIDER_CIRCLE,                   \
@@ -18,22 +19,21 @@
                                     .circle = {.radius = r}}}
 
 EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
-    [EMOJI_COMPUTER_MOUSE] =
-        {.name = "computer_mouse",
-         .svg_path = "assets/emojis/computer_mouse.svg",
-         .radius = 20.0,
-         .colliders = {{.type = COLLIDER_BOX,
-                        .offset = {0.0, 0.0},
-                        .angle = 0.0,
-                        .box = {.width = 24.0, .height = 36.0}}},
-         .mass = 1.0, /* I don't know how this works so it's just 1.0 now */
-         .restitution = 0.1,
-         .default_tags =
-             TAG_NONE, /* Not sure how the tags works so I'm leaving it as is */
-         .unlocked = false,
-         .update = emoji_computer_mouse_update,
-         .collide = NULL,
-         .wall_collide = NULL},
+    [EMOJI_COMPUTER_MOUSE] = {.name = "computer_mouse",
+                              .svg_path = "assets/emojis/computer_mouse.svg",
+                              .radius = 20.0,
+                              .colliders = {{.type = COLLIDER_BOX,
+                                             .offset = {0.0, 0.0},
+                                             .angle = 0.0,
+                                             .box = {.width = 24.0,
+                                                     .height = 36.0}}},
+                              .mass = 1.0,
+                              .restitution = 0.1,
+                              .default_tags = TAG_NONE,
+                              .unlocked = false,
+                              .update = emoji_computer_mouse_update,
+                              .collide = NULL,
+                              .wall_collide = NULL},
     [EMOJI_SOCCER_BALL] = {.name = "soccer_ball",
                            .svg_path = "assets/emojis/soccer_ball.svg",
                            CIRCULAR_EMOJI(20.0),
@@ -209,21 +209,28 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                      .update = NULL,
                      .collide = NULL,
                      .wall_collide = NULL},
-    [EMOJI_STEAM_TRAIN] =
-        {.name = "steam_train",
-         .svg_path = "assets/emojis/steam_train.svg",
-         CIRCULAR_EMOJI(24.0), /* TODO: Update this to a rectangular hitbox */
-         .mass = 5.0,
-         .restitution = 0.1,
-         .default_tags = TAG_NONE,
-         .unlocked = false,
-         .update = NULL,
-         .collide = NULL,
-         .wall_collide = NULL},
-
+    [EMOJI_STEAM_TRAIN] = {.name = "steam_train",
+                           .svg_path = "assets/emojis/steam_train.svg",
+                           .radius = 20.0,
+                           .colliders = {{.type = COLLIDER_BOX,
+                                          .offset = {0.0, 0.0},
+                                          .angle = 0.0,
+                                          .box = {.width = 40.0,
+                                                  .height = 38.0}}},
+                           .mass = 5.0,
+                           .restitution = 0.1,
+                           .default_tags = TAG_NONE,
+                           .unlocked = false,
+                           .update = NULL,
+                           .collide = NULL,
+                           .wall_collide = NULL},
     [EMOJI_PAPER] = {.name = "paper",
                      .svg_path = "assets/emojis/paper.svg",
-                     CIRCULAR_EMOJI(20.0),
+                     .radius = 20.0,
+                     .colliders = {{.type = COLLIDER_BOX,
+                                    .offset = {0.0, 0.0},
+                                    .angle = 0.0,
+                                    .box = {.width = 30.0, .height = 35.0}}},
                      .mass = 0.5,
                      .restitution = 0.1,
                      .default_tags = TAG_NONE,
@@ -319,7 +326,7 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
             .collide = NULL,
             .wall_collide = emoji_car_wall_collide,
         },
-    [EMOJI_ELECTRICITY] = 
+    [EMOJI_ELECTRICITY] =
         {
             .name = "electricity",
             .svg_path = "assets/emojis/electricity.svg",
@@ -331,6 +338,19 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
             .update = NULL,
             .collide = NULL,
         },
+    [EMOJI_MIRROR] = {.name = "mirror",
+                      .svg_path = "assets/emojis/mirror.svg",
+                      .radius = 20.0,
+                      .colliders = {{.type = COLLIDER_BOX,
+                                     .offset = {0.0, 0.0},
+                                     .angle = 0.0,
+                                     .box = {.width = 30.0, .height = 35.0}}},
+                      .mass = 1.0,
+                      .restitution = 0.2,
+                      .default_tags = TAG_NONE,
+                      .update = NULL,
+                      .collide = NULL,
+                      .wall_collide = NULL},
     /* Please add all emojis above this line */
     /* These emojis are unlocked by default because they're for cleaning
      */
