@@ -1,6 +1,7 @@
 #include "gui.h"
 #include "dev.h"
 #include "event.h"
+#include "paper.h"
 #include "sidebar.h"
 #include "vault.h"
 
@@ -79,6 +80,12 @@ void app_run(App *app, World *world) {
 
                 if (world->sidebar_shown) {
                         draw_sidebar(app->renderer, world, &app->font_atlas);
+                }
+
+                if (world->popup_open) {
+                        paper_popup_render(
+                            app->renderer, &app->font_atlas, world->popup_text,
+                            world->paper_popup, world->width, world->height);
                 }
 
                 SDL_RenderPresent(app->renderer);

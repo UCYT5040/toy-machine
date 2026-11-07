@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define SAVE_VERSION 3u
+#define SAVE_VERSION 4u
 #define SAVE_MAX_RECIPE_ID 32
 #define SAVE_MAX_INPUTS 8
 
@@ -32,6 +32,7 @@ typedef struct {
         double space_mode_transition;
         uint32_t last_mouse_move;
         double speed;
+        int32_t tutorial_progress;
 } SaveHeader;
 
 typedef struct {
@@ -194,6 +195,7 @@ bool save(const World *world, int slot, char *error, size_t error_size) {
         header.last_mouse_move = world->last_mouse_move;
         header.speed = world->speed;
         header.unlocked_mask = UINT64_C(0);
+        header.tutorial_progress = world->tutorial_progress;
 
         for (int i = 1; i < EMOJI_COUNT; i++) {
                 if (EMOJI_DEFINITIONS[i].unlocked) {
@@ -365,6 +367,7 @@ bool load(World *world, int slot, char *error, size_t error_size) {
                         EMOJI_DEFINITIONS[EMOJI_NONE].unlocked = false;
                         world->sidebar_shown = false;
                         world->pressed_entity_index = -1;
+                        world->tutorial_progress = header.tutorial_progress;
                 } else {
                         for (int i = 0; i < MAX_ENTITIES; i++) {
                                 free(world->entities[i].processing_inputs);

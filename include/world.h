@@ -59,6 +59,8 @@ typedef struct World {
 
         bool sidebar_shown;
         double sidebar_scroll_px;
+
+        int tutorial_progress;
 } World;
 
 void world_init(World *world, SDL_Renderer *renderer);
