@@ -17,6 +17,7 @@ typedef struct World {
         SDL_Texture *bg_space;
 
         SDL_Texture *paper_popup;
+        SDL_Texture *settings_icon;
 
         bool popup_open;
         const char *popup_text;
