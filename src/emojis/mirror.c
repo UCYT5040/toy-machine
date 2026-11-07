@@ -1,5 +1,6 @@
 #include "emojis/mirror.h"
 #include "SDL_timer.h"
+#include "emoji_registry.h"
 #include "entities.h"
 #include "vec2.h"
 #include "world.h"
@@ -8,6 +9,9 @@
 #include <math.h>
 
 void emoji_mirror_collide(World *world, Entity *self, Entity *other) {
+        if (other->type == EMOJI_MIRROR)
+                return; // 2 mirrors can't duplicate eachother
+
         struct emoji_mirror_ctx *ctx =
             (struct emoji_mirror_ctx *)self->custom_data;
 

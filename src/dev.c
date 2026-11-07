@@ -2,9 +2,9 @@
 #include "SDL_render.h"
 #include "emoji_registry.h"
 #include "entities.h"
+#include "save.h"
 #include "vault.h"
 #include "world.h"
-#include "save.h"
 
 #include <SDL2/SDL.h>
 #include <limits.h>
@@ -77,9 +77,8 @@ static bool parse_slot(const char *text, int *slot) {
         if (end == text || *end != '\0' || value < 1 ||
             value > SAVE_SLOT_COUNT) {
                 return false;
-
         }
-        
+
         *slot = (int)value;
         return true;
 }
@@ -269,7 +268,7 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                 char error[128];
                 if (load(world, slot, error, sizeof error)) {
                         snprintf(output_buffer, output_buffer_size,
-                                 "Loaded slot %d", slot); 
+                                 "Loaded slot %d", slot);
                 } else {
                         snprintf(output_buffer, output_buffer_size,
                                  "Load failed: %s", error);
