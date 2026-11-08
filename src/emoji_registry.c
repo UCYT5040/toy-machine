@@ -1,12 +1,13 @@
 #include "emoji_registry.h"
 #include "emojis/balloon.h"
 #include "emojis/bank.h"
+#include "emojis/bomb.h"
 #include "emojis/broom.h"
 #include "emojis/car.h"
 #include "emojis/computer_mouse.h"
+#include "emojis/credits.h"
 #include "emojis/factory.h"
 #include "emojis/fan.h"
-#include "emojis/credits.h"
 #include "emojis/gear.h"
 #include "emojis/mirror.h"
 #include "emojis/money_bag.h"
@@ -78,7 +79,7 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                      .svg_path = "assets/emojis/stone.svg",
                      CIRCULAR_EMOJI(15.0),
                      .mass = 2.0,
-                     .restitution = 0.5,
+                     .restitution = 0.2,
                      .default_tags = TAG_NONE,
                      .unlocked = true,
                      .update = NULL,
@@ -244,21 +245,21 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                      .collide = NULL,
                      .wall_collide = NULL,
                      .click = emoji_paper_click},
-                     [EMOJI_CREDITS] = {.name = "credits",
-                     .svg_path = "assets/emojis/credits.svg",
-                     .radius = 20.0,
-                     .colliders = {{.type = COLLIDER_BOX,
-                                    .offset = {0.0, 0.0},
-                                    .angle = 0.0,
-                                    .box = {.width = 30.0, .height = 35.0}}},
-                     .mass = 0.01,
-                     .restitution = 0.1,
-                     .default_tags = TAG_NONE,
-                     .unlocked = false,
-                     .update = NULL,
-                     .collide = NULL,
-                     .wall_collide = NULL,
-                     .click = emoji_credits_click},
+    [EMOJI_CREDITS] = {.name = "credits",
+                       .svg_path = "assets/emojis/credits.svg",
+                       .radius = 20.0,
+                       .colliders = {{.type = COLLIDER_BOX,
+                                      .offset = {0.0, 0.0},
+                                      .angle = 0.0,
+                                      .box = {.width = 30.0, .height = 35.0}}},
+                       .mass = 0.01,
+                       .restitution = 0.1,
+                       .default_tags = TAG_NONE,
+                       .unlocked = false,
+                       .update = NULL,
+                       .collide = NULL,
+                       .wall_collide = NULL,
+                       .click = emoji_credits_click},
     [EMOJI_CREDIT_CARD] = {.name = "credit_card",
                            .svg_path = "assets/emojis/credit_card.svg",
                            .radius = 20.0,
@@ -403,6 +404,15 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                     .update = NULL,
                     .collide = NULL,
                     .click = emoji_play_click},
+    [EMOJI_BOMB] = {.name = "bomb",
+                    .svg_path = "assets/emojis/bomb.svg",
+                    CIRCULAR_EMOJI(20.0),
+                    .mass = 20.0,
+                    .restitution = 0.2,
+                    .default_tags = TAG_METALLIC,
+                    .update = emoji_bomb_update,
+                    .collide = emoji_bomb_collide,
+                    .wall_collide = NULL},
     /* Please add all emojis above this line */
     /* These emojis are unlocked by default because they're for cleaning
      */

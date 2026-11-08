@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "collision.h"
 #include "emoji_registry.h"
@@ -36,6 +37,7 @@ void entity_create_default(Entity *entity, int definition_index, Vec2 pos,
         entity->pinned_target_index = -1;
         entity->pinned_by_index = -1;
         entity->pinned_offset = (Vec2){0.0, 0.0};
+        memset(entity->custom_data, 0, sizeof(entity->custom_data));
 }
 
 void entity_update_inertia(Entity *entity) {

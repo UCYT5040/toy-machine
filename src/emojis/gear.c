@@ -7,5 +7,7 @@ void emoji_gear_update(World *world, Entity *self, double dt) {
 }
 
 void emoji_gear_collide(World *world, Entity *self, Entity *other) {
+        (void)world;
+
         other->omega = -self->omega;
 }
