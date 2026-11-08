@@ -232,7 +232,7 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                                     .offset = {0.0, 0.0},
                                     .angle = 0.0,
                                     .box = {.width = 30.0, .height = 35.0}}},
-                     .mass = 0.5,
+                     .mass = 0.01,
                      .restitution = 0.1,
                      .default_tags = TAG_NONE,
                      .unlocked = false,
