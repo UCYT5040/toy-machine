@@ -29,15 +29,11 @@ typedef enum {
         EMOJI_DOLLAR,
         EMOJI_LAVA,
         EMOJI_CAR,
-        EMOJI_ELECTRICITY,
         EMOJI_PAPER,
-<<<<<<< HEAD
         EMOJI_MIRROR,
         EMOJI_BALLOON,
-=======
         EMOJI_ELECTRICITY,
         EMOJI_ELECTRIC_TRAIN,
->>>>>>> 35b0e91 (feat(emoji-registry): register electric_train emoji)
         EMOJI_COUNT
 } EmojiType;
 
