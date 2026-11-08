@@ -6,6 +6,7 @@
 #include "emojis/computer_mouse.h"
 #include "emojis/factory.h"
 #include "emojis/fan.h"
+#include "emojis/gear.h"
 #include "emojis/mirror.h"
 #include "emojis/money_bag.h"
 #include "emojis/pin.h"
@@ -149,8 +150,8 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                     .restitution = 0.6,
                     .default_tags = TAG_NONE,
                     .unlocked = false,
-                    .update = NULL,
-                    .collide = NULL,
+                    .update = emoji_gear_update,
+                    .collide = emoji_gear_collide,
                     .wall_collide = NULL},
     [EMOJI_PIN] = {.name = "pin",
                    .svg_path = "assets/emojis/pin.svg",
