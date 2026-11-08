@@ -15,14 +15,6 @@ void popup_render(SDL_Renderer *renderer, FontAtlas *font, const char *text,
 
         SDL_RenderFillRect(renderer, NULL);
 
-        float rect_w = renderer_w * 0.8;
-        float rect_h = renderer_h * 0.6;
-
-        SDL_FRect popup_rect = {.x = ((renderer_w - rect_w) / 2.0),
-                                .y = ((renderer_h - rect_h) / 2.0),
-                                .w = rect_w,
-                                .h = rect_h};
-
         SDL_Texture *popup_texture = NULL;
 
         switch (popup_type) {
@@ -33,6 +25,28 @@ void popup_render(SDL_Renderer *renderer, FontAtlas *font, const char *text,
                 popup_texture = world->credits_popup;
                 break;
         }
+
+        int tex_width, tex_height = 0;
+        SDL_QueryTexture(popup_texture, NULL, NULL, &tex_width, &tex_height);
+
+        float aspect = (float)tex_width / (float)tex_height;
+
+        float max_w = renderer_w * 0.8;
+        float max_h = renderer_h * 0.6;
+
+        float rect_w = max_w;
+        float rect_h = rect_w / aspect;
+
+        if (rect_h > max_h) {
+                rect_h = max_h;
+                rect_w = rect_h * aspect;
+        }
+
+        SDL_FRect popup_rect = {.x = ((renderer_w - rect_w) / 2.0),
+                                .y = ((renderer_h - rect_h) / 2.0),
+                                .w = rect_w,
+                                .h = rect_h};
+
         SDL_RenderCopyF(renderer, popup_texture, NULL, &popup_rect);
 
         // Draw the text in the safe area of the paper
