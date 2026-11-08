@@ -41,7 +41,7 @@ void world_handle_event(App *app, World *world, SDL_Renderer *renderer,
                         world->mouse_down =
                             true; // TODO: Consider adding a mouse button state
                         if (world->sidebar_shown &&
-                            pos_in_sidebar(renderer, world->mouse_pos.x)) {
+                            pos_in_sidebar(renderer, &world->mouse_pos)) {
                                 sidebar_handle_mouse_down(renderer, world);
                         } else if (world->popup_open) {
                                 world->popup_open = false;
@@ -79,13 +79,16 @@ void world_handle_event(App *app, World *world, SDL_Renderer *renderer,
                         }
                 } else if (event->key.keysym.sym == SDLK_SPACE) {
                         world->sidebar_shown = !world->sidebar_shown;
+                } else if (event->key.keysym.sym == SDLK_ESCAPE &&
+                           world->sidebar_shown) {
+                        world->sidebar_shown = false;
                 }
                 break;
         }
 
         case SDL_MOUSEWHEEL: {
                 if (world->sidebar_shown &&
-                    pos_in_sidebar(renderer, world->mouse_pos.x)) {
+                    pos_in_sidebar(renderer, &world->mouse_pos)) {
                         sidebar_handle_scroll(renderer, world, event->wheel.y);
                 }
         }

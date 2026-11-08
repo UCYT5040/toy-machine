@@ -14,4 +14,4 @@ void sidebar_handle_mouse_down(SDL_Renderer *renderer, World *world);
 
 void sidebar_handle_scroll(SDL_Renderer *renderer, World *world, float y);
 
-bool pos_in_sidebar(SDL_Renderer *renderer, float x);
+bool pos_in_sidebar(SDL_Renderer *renderer, Vec2 *pos);

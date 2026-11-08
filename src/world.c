@@ -5,6 +5,7 @@
 #include "emoji_registry.h"
 #include "entities.h"
 #include "popover.h"
+#include "sidebar.h"
 #include "tutorial.h"
 #include "vault.h"
 
@@ -424,10 +425,16 @@ void world_handle_mouse_up(App *app, World *world) {
                 if (world->is_dragging) {
                         Entity *dragged =
                             &world->entities[world->pressed_entity_index];
-                        if (!dragged->pinned && mouse_dt < 0.1)
-                                dragged->v = world->mouse_speed;
-                        else
-                                dragged->v = (Vec2){0.0, 0.0};
+
+                        if (world->sidebar_shown &&
+                            pos_in_sidebar(app->renderer, &world->mouse_pos)) {
+                                entity_remove(world, dragged);
+                        } else {
+                                if (!dragged->pinned && mouse_dt < 0.1)
+                                        dragged->v = world->mouse_speed;
+                                else
+                                        dragged->v = (Vec2){0.0, 0.0};
+                        }
 
                         world->is_dragging = false;
                 } else {

@@ -183,12 +183,12 @@ void sidebar_handle_scroll(SDL_Renderer *renderer, World *world, float y) {
             fmaxf(world->sidebar_scroll_px + y * SCROLL_FACTOR, 0.0f), limit);
 }
 
-bool pos_in_sidebar(SDL_Renderer *renderer, float x) {
+bool pos_in_sidebar(SDL_Renderer *renderer, Vec2 *pos) {
         int renderer_w, renderer_h;
 
         SDL_GetRendererOutputSize(renderer, &renderer_w, &renderer_h);
 
         int sidebar_x = (int)fmax(renderer_w - SIDEBAR_WIDTH, 0.0);
 
-        return x >= sidebar_x;
+        return pos->x >= sidebar_x;
 }
