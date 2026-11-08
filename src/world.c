@@ -249,6 +249,8 @@ void world_update(World *world, double dt) {
 
                 entity->definition->update(world, entity, scaled_dt);
         }
+
+        tutorial_update(world, scaled_dt);
 }
 
 void world_render(World *world, SDL_Renderer *renderer) {
