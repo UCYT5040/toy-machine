@@ -3,6 +3,26 @@
 #include "world.h"
 #include "world_event.h"
 
+#include "paper.h"
+#include "sidebar.h"
+#include "vault.h"
+
+#define HUD_MARGIN 16.0
+#define HUD_ICON_SIZE 48.0
+#define HUD_ICON_GAP 16.0
+
+/* Probably should move this to the settings file when that exists */
+static bool settings_icon_render(SDL_Renderer *renderer, const World *world) {
+        if (!world->settings_icon) {
+                return false;
+        }
+
+        SDL_FRect icon = {(float)world->width - HUD_MARGIN - HUD_ICON_SIZE,
+                          HUD_MARGIN, HUD_ICON_SIZE, HUD_ICON_SIZE};
+        SDL_RenderCopyF(renderer, world->settings_icon, NULL, &icon);
+        return true;
+}
+
 void title_scene_enter(void *state_data, App *app) {
         (void)state_data;
 
@@ -27,6 +47,26 @@ void title_scene_update(void *state_data, App *app, double dt) {
 
 void title_scene_render(void *state_data, App *app, SDL_Renderer *renderer) {
         world_render((World *)state_data, renderer);
+
+        // TODO: Consider moving to, e.g., world_render_hud
+        World *world = (World *)state_data;
+
+        double vault_right_offset = HUD_MARGIN;
+        if (settings_icon_render(app->renderer, world)) {
+                vault_right_offset += HUD_ICON_SIZE + HUD_ICON_GAP;
+        }
+        vault_render(&world->vault, app->renderer, &app->font_atlas,
+                     world->width, vault_right_offset);
+
+        if (world->sidebar_shown) {
+                draw_sidebar(app->renderer, world, &app->font_atlas);
+        }
+
+        if (world->popup_open) {
+                paper_popup_render(app->renderer, &app->font_atlas,
+                                   world->popup_text, world->paper_popup,
+                                   world->width, world->height);
+        }
 }
 
 Scene title_scene = {.type = SCENE_TYPE_TITLE,

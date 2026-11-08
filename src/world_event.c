@@ -63,10 +63,7 @@ void world_handle_event(World *world, SDL_Renderer *renderer, SDL_Event *event,
         }
 
         case SDL_KEYDOWN: {
-                if (event->key.keysym.sym == SDLK_F1) {
-                        world->dev_command_mode = !world->dev_command_mode;
-                } else if (!world->dev_command_mode &&
-                           event->key.keysym.sym == SDLK_F5) {
+                if (event->key.keysym.sym == SDLK_F5) {
                         /* TODO: Some sort of animation or text to let the user
                          * know the game has saved/loaded */
                         char error[128];
@@ -74,15 +71,13 @@ void world_handle_event(World *world, SDL_Renderer *renderer, SDL_Event *event,
                                   sizeof error)) {
                                 SDL_Log("Save failed: %s", error);
                         }
-                } else if (!world->dev_command_mode &&
-                           event->key.keysym.sym == SDLK_F9) {
+                } else if (event->key.keysym.sym == SDLK_F9) {
                         char error[128];
                         if (!load(world, world->save_slot, error,
                                   sizeof error)) {
                                 SDL_Log("Load failed: %s", error);
                         }
-                } else if (!world->dev_command_mode &&
-                           event->key.keysym.sym == SDLK_SPACE) {
+                } else if (event->key.keysym.sym == SDLK_SPACE) {
                         world->sidebar_shown = !world->sidebar_shown;
                 }
                 break;

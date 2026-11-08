@@ -1,5 +1,6 @@
 #include "dev.h"
 #include "SDL_render.h"
+#include "app.h"
 #include "emoji_registry.h"
 #include "entities.h"
 #include "save.h"
@@ -83,7 +84,16 @@ static bool parse_slot(const char *text, int *slot) {
         return true;
 }
 
-void run_dev_command(World *world, char *command, char *output_buffer,
+static World *get_world_from_app(App *app) {
+        if (!app || !app->scene ||
+            app->scene->state_type != SCENE_STATE_TYPE_WORLD ||
+            !app->scene->state_data)
+                return NULL;
+
+        return (World *)app->scene->state_data;
+}
+
+void run_dev_command(App *app, char *command, char *output_buffer,
                      size_t output_buffer_size) {
         char *command_name = strtok(command, " \t\n");
         if (command_name == NULL) {
@@ -119,6 +129,8 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                                 double x = strtof(x_str, NULL);
                                 double y = strtof(y_str, NULL);
 
+                                World *world = get_world_from_app(app);
+
                                 Entity *entity =
                                     entity_spawn(world, i, (Vec2){x, y});
                                 if (entity != NULL) {
@@ -146,6 +158,8 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                 char *action = strtok(NULL, " \t\n");
                 /* View Balance */
                 if (action == NULL) {
+                        World *world = get_world_from_app(app);
+
                         snprintf(output_buffer, output_buffer_size,
                                  "Vault balance: %d", world->vault.balance);
                         return;
@@ -168,10 +182,14 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                 }
 
                 if (strcmp(action, "add") == 0) {
+                        World *world = get_world_from_app(app);
+
                         vault_add(&world->vault, (int)amount);
                         snprintf(output_buffer, output_buffer_size,
                                  "Vault balance: %d", world->vault.balance);
                 } else if (strcmp(action, "spend") == 0) {
+                        World *world = get_world_from_app(app);
+
                         if (vault_spend(&world->vault, (int)amount)) {
                                 snprintf(output_buffer, output_buffer_size,
                                          "Vault balance: %d",
@@ -204,6 +222,8 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                         return;
                 }
 
+                World *world = get_world_from_app(app);
+
                 world->speed = speed;
                 snprintf(output_buffer, output_buffer_size, "Speed set to %.2f",
                          speed);
@@ -220,10 +240,14 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                         option_str++;
 
                 if (strcmp(option_str, "on") == 0) {
+                        World *world = get_world_from_app(app);
+
                         world->dev_show_hitboxes = true;
                         snprintf(output_buffer, output_buffer_size,
                                  "Enabled hitboxes");
                 } else if (strcmp(option_str, "off") == 0) {
+                        World *world = get_world_from_app(app);
+
                         world->dev_show_hitboxes = false;
                         snprintf(output_buffer, output_buffer_size,
                                  "Disabled hitboxes");
@@ -233,9 +257,14 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                                  "Only \"on\" and \"off\" are allowed.");
                 }
         } else if (strcmp(command_name, "exit") == 0) {
+                World *world = get_world_from_app(app);
+
                 world->quit_requested = true;
         } else if (strcmp(command_name, "save") == 0) {
                 char *slot_str = strtok(NULL, " \t\n");
+
+                World *world = get_world_from_app(app);
+
                 int slot = world->save_slot;
 
                 if (slot_str && !parse_slot(slot_str, &slot)) {
@@ -256,6 +285,9 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                 }
         } else if (strcmp(command_name, "load") == 0) {
                 char *slot_str = strtok(NULL, " \t\n");
+
+                World *world = get_world_from_app(app);
+
                 int slot = world->save_slot;
 
                 if (slot_str && !parse_slot(slot_str, &slot)) {
@@ -283,6 +315,8 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                         return;
                 }
 
+                World *world = get_world_from_app(app);
+
                 world->save_slot = slot;
                 snprintf(output_buffer, output_buffer_size,
                          "Current save slot: %d", slot);
@@ -299,10 +333,14 @@ void run_dev_command(World *world, char *command, char *output_buffer,
                         option_str++;
 
                 if (strcmp(option_str, "on") == 0) {
+                        World *world = get_world_from_app(app);
+
                         world->dev_show_velocity_vectors = true;
                         snprintf(output_buffer, output_buffer_size,
                                  "Enabled velocity vectors");
                 } else if (strcmp(option_str, "off") == 0) {
+                        World *world = get_world_from_app(app);
+
                         world->dev_show_velocity_vectors = false;
                         snprintf(output_buffer, output_buffer_size,
                                  "Disabled velocity vectors");
@@ -418,4 +456,80 @@ void render_hitbox(SDL_Renderer *renderer, Entity *entity) {
                         SDL_RenderDrawLines(renderer, points, 5);
                 }
         }
+}
+void dev_console_init(DevConsole *console, FontAtlas *font_atlas) {
+        memset(console->command_buffer, 0, sizeof(console->command_buffer));
+        memset(console->output_buffer, 0, sizeof(console->output_buffer));
+        console->font_atlas = font_atlas;
+        console->was_mode_active = false;
+}
+
+bool dev_console_handle_event(App *app, SDL_Event *event, bool *running) {
+        DevConsole *console = &app->dev_console;
+
+        if (console->is_open && !console->was_mode_active) {
+                SDL_StartTextInput();
+                console->was_mode_active = true;
+        }
+
+        if (!console->is_open) {
+                if (console->was_mode_active) {
+                        SDL_StopTextInput();
+                        console->was_mode_active = false;
+                } else {
+                        // If F1 was pressed, open the console
+                        if (event->type == SDL_KEYDOWN &&
+                            event->key.keysym.sym == SDLK_F1) {
+                                console->is_open = true;
+                                return true;
+                        } else
+                                return false; // Pass to child handlers
+                }
+        }
+
+        /* These values are repeated quite a bit and
+        are pretty long so I assigned them to a variable */
+        SDL_Keycode key = event->key.keysym.sym;
+        char *cb = console->command_buffer;
+        char *ob = console->output_buffer;
+        const char *text = event->text.text;
+
+        switch (event->type) {
+        case SDL_QUIT:
+                *running = false;
+                console->is_open = false;
+                break;
+        case SDL_KEYDOWN:
+                if (key == SDLK_ESCAPE) {
+                        console->is_open = false;
+                } else if (key == SDLK_RETURN) {
+                        run_dev_command(app, cb, ob, MAX_DEV_COMMAND_OUTPUT);
+                        memset(cb, 0, MAX_DEV_COMMAND_LENGTH);
+                } else if (key == SDLK_BACKSPACE) {
+                        size_t len = strlen(cb);
+                        if (len > 0) {
+                                cb[len - 1] = '\0';
+                        }
+                } else if (key == SDLK_F1) {
+                        console->is_open = false;
+                }
+                break;
+        case SDL_TEXTINPUT:
+                if (strlen(cb) + strlen(text) < MAX_DEV_COMMAND_LENGTH) {
+                        strcat(cb, text);
+                }
+                break;
+        }
+
+        return true;
+}
+
+void dev_console_render(DevConsole *console, SDL_Renderer *renderer) {
+        SDL_Color white = {255, 255, 255, 255};
+        float fh = console->font_atlas->line_height;
+        font_draw(console->font_atlas, renderer, "> ", 10.0f, 10.0f, white);
+        font_draw(console->font_atlas, renderer, console->command_buffer, 10.0f,
+                  10.0f + fh, white);
+        font_draw(console->font_atlas, renderer, console->output_buffer, 10.0f,
+                  10.0f + fh * 2, white);
 }

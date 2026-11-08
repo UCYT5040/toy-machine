@@ -52,8 +52,6 @@ typedef struct World {
         bool quit_requested; /* Currently only triggered by dev console exit
                                 commands only*/
 
-        bool dev_command_mode; // If true, the dev command window is open (game
-                               // is paused)
         bool dev_show_hitboxes;
         bool dev_show_velocity_vectors;
         // TODO: Add more developer/debugging features
