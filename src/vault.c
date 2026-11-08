@@ -42,11 +42,11 @@ bool vault_spend(Vault *vault, int amount) {
 }
 
 void vault_render(const Vault *vault, SDL_Renderer *renderer, FontAtlas *font,
-                  int window_width) {
+                  int window_width, double right_offset) {
         if (vault->balance <= 0)
                 return;
 
-        SDL_FRect icon = {window_width - VAULT_MARGIN - VAULT_ICON_SIZE,
+        SDL_FRect icon = {(double)window_width - right_offset - VAULT_ICON_SIZE,
                           VAULT_MARGIN, VAULT_ICON_SIZE, VAULT_ICON_SIZE};
 
         if (vault->texture) {
