@@ -70,6 +70,12 @@ void world_init(World *world, SDL_Renderer *renderer) {
         }
         SDL_FreeSurface(paper_popup_surface);
 
+        SDL_Surface *settings_icon_surface = IMG_Load("assets/settings_icon.png");
+        if (settings_icon_surface) {
+                world->settings_icon = SDL_CreateTextureFromSurface(renderer, settings_icon_surface);
+        }
+        SDL_FreeSurface(settings_icon_surface);
+
         SDL_SetTextureColorMod(world->bg_box, 190, 190,
                                190); // Dim the box background
 
