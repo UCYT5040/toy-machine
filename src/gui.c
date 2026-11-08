@@ -8,6 +8,10 @@
 #include <SDL2/SDL_image.h>
 #include <string.h>
 
+#define HUD_MARGIN 16.0
+#define HUD_ICON_SIZE 48.0
+#define HUD_ICON_GAP 16.0
+
 /* App GUI stuff */
 bool app_init(App *app, const char *title, int width, int height) {
         if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -36,6 +40,18 @@ bool app_init(App *app, const char *title, int width, int height) {
         gui_console_init(&app->dev_console, &app->font_atlas);
 
         app->running = true;
+        return true;
+}
+
+/* Probably should move this to the settings file when that exists */
+static bool settings_icon_render(SDL_Renderer *renderer, const World *world) {
+        if (!world->settings_icon) {
+                return false;
+        }
+
+        SDL_FRect icon = {(float)world->width - HUD_MARGIN - HUD_ICON_SIZE,
+                          HUD_MARGIN, HUD_ICON_SIZE, HUD_ICON_SIZE};
+        SDL_RenderCopyF(renderer, world->settings_icon, NULL, &icon);
         return true;
 }
 
@@ -71,8 +87,12 @@ void app_run(App *app, World *world) {
                 SDL_RenderClear(app->renderer);
 
                 world_render(world, app->renderer);
+                double vault_right_offset = HUD_MARGIN;
+                if (settings_icon_render(app->renderer, world)) {
+                        vault_right_offset += HUD_ICON_SIZE + HUD_ICON_GAP;
+                }
                 vault_render(&world->vault, app->renderer, &app->font_atlas,
-                             world->width);
+                             world->width, vault_right_offset);
 
                 if (world->dev_command_mode) {
                         gui_console_render(&app->dev_console, app->renderer);

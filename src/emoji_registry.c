@@ -372,7 +372,7 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
             .unlocked = false,
             .update = NULL,
             .collide = NULL,
-        }
+        },
     /* Please add all emojis above this line */
     /* These emojis are unlocked by default because they're for cleaning
      */
