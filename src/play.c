@@ -4,25 +4,9 @@
 #include "world_event.h"
 
 #include "popup.h"
+#include "settings.h"
 #include "sidebar.h"
 #include "vault.h"
-
-#define HUD_MARGIN 16.0
-#define HUD_ICON_SIZE 48.0
-#define HUD_ICON_GAP 16.0
-
-/* Probably should move this to the settings file when that exists */
-static bool settings_icon_render(App *app, const World *world) {
-        if (!app->asset_manager.icon_settings) {
-                return false;
-        }
-
-        SDL_FRect icon = {(float)world->width - HUD_MARGIN - HUD_ICON_SIZE,
-                          HUD_MARGIN, HUD_ICON_SIZE, HUD_ICON_SIZE};
-        SDL_RenderCopyF(app->renderer, app->asset_manager.icon_settings, NULL,
-                        &icon);
-        return true;
-}
 
 void play_scene_enter(void *state_data, App *app) {
         (void)state_data;
@@ -39,12 +23,22 @@ void play_scene_exit(void *state_data, App *app) {
 }
 
 void play_scene_handle_event(void *state_data, App *app, SDL_Event *event) {
-        world_handle_event(app, (World *)state_data, app->renderer, event,
-                           &app->running);
+        World *world = (World *)state_data;
+
+        if (settings_handle_event(&world->settings, event, world->width,
+                                  world->height, &world->popup_open)) {
+                return;
+        }
+
+        world_handle_event(app, world, app->renderer, event, &app->running);
 };
 
 void play_scene_update(void *state_data, App *app, double dt) {
-        world_update(app, (World *)state_data, dt);
+        World *world = (World *)state_data;
+
+        if (!world->settings.open) {
+                world_update(app, world, dt);
+        }
 }
 
 void play_scene_render(void *state_data, App *app, SDL_Renderer *renderer) {
@@ -53,9 +47,11 @@ void play_scene_render(void *state_data, App *app, SDL_Renderer *renderer) {
         // TODO: Consider moving to, e.g., world_render_hud
         World *world = (World *)state_data;
 
-        double vault_right_offset = HUD_MARGIN;
-        if (settings_icon_render(app, world)) {
-                vault_right_offset += HUD_ICON_SIZE + HUD_ICON_GAP;
+        double vault_right_offset = SETTINGS_ICON_MARGIN;
+        if (settings_render_icon(app->renderer,
+                                 app->asset_manager.icon_settings,
+                                 world->width)) {
+                vault_right_offset += SETTINGS_ICON_SIZE + SETTINGS_ICON_GAP;
         }
         vault_render(&world->vault, app->renderer, &app->font_atlas,
                      world->width, vault_right_offset);
@@ -67,6 +63,12 @@ void play_scene_render(void *state_data, App *app, SDL_Renderer *renderer) {
         if (world->popup_open) {
                 popup_render(app, world->popup_text, world, world->popup_type,
                              world->width, world->height);
+        }
+
+        if (world->settings.open) {
+                settings_render_menu(&world->settings, app->renderer,
+                                     &app->font_atlas, world->width,
+                                     world->height);
         }
 }
 

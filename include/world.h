@@ -8,6 +8,7 @@
 #include "entities.h"
 #include "popup.h"
 #include "scene.h"
+#include "settings.h"
 #include "types.h"
 #include "vault.h"
 
@@ -24,6 +25,7 @@ typedef struct World {
         Entity entities[MAX_ENTITIES];
 
         PopupType popup_type;
+        Settings settings;
 
         bool popup_open;
         const char *popup_text;

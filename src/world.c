@@ -40,6 +40,7 @@ void world_init(World *world, SDL_Renderer *renderer, SceneType scene_type) {
         world->rain_channel = -1;
 
         vault_init(&world->vault, renderer);
+        settings_init(&world->settings);
 
         // Set all entities to inactive and collectable
         for (int i = 0; i < MAX_ENTITIES; i++) {
