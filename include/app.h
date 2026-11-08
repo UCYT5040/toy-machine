@@ -7,6 +7,7 @@
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 
+typedef void (*PlayEmojiClickFunction)(World *world, App *app);
 
 typedef struct App {
         SDL_Window *window;
@@ -16,6 +17,7 @@ typedef struct App {
         Scene *scene;
         Scene *next_scene;
         DevConsole dev_console;
+        PlayEmojiClickFunction play_emoji_click_function;
         bool running;
 } App;
 

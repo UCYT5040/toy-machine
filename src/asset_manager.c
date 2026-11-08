@@ -70,6 +70,7 @@ void asset_manager_init(AssetManager *asset_manager, SDL_Renderer *renderer) {
 
         asset_manager->title_music =
             Mix_LoadMUS("assets/music/corona_radiata.ogg");
+        asset_manager->intro_music = Mix_LoadMUS("assets/music/demon_seed.ogg");
 
         asset_manager->sfx_rain = Mix_LoadWAV("assets/sfx/rain.ogg");
 }

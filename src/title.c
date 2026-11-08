@@ -24,12 +24,20 @@ static void spawn_rain_cloud(World *world, float x) {
 
 #define NUM_RAIN_CLOUDS 3
 
+void title_scene_enter_intro(World *world, App *app) {
+        Mix_FadeOutMusic(500);
+
+        Mix_FadeInMusic(app->asset_manager.intro_music, 1, 500);
+}
+
 void title_scene_enter(void *state_data, App *app) {
         (void)state_data;
 
         app->scene->state_data = calloc(1, sizeof(World));
 
         World *world = (World *)app->scene->state_data;
+
+        app->play_emoji_click_function = title_scene_enter_intro;
 
         world_init(world, app->renderer, SCENE_TYPE_TITLE);
 
