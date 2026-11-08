@@ -1,4 +1,5 @@
 #include "popup.h"
+#include "app.h"
 #include "world.h"
 
 /* All these constants are based on SVG viewport 800x600 */
@@ -6,23 +7,22 @@
 #define PAPER_SAFE_Y (180.0f / 600.0f)
 #define PAPER_SAFE_W (530.0f / 800.0f)
 
-void popup_render(SDL_Renderer *renderer, FontAtlas *font, const char *text,
-                  World *world, PopupType popup_type, int renderer_w,
-                  int renderer_h) {
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+void popup_render(App *app, const char *text, World *world,
+                  PopupType popup_type, int renderer_w, int renderer_h) {
+        SDL_SetRenderDrawBlendMode(app->renderer, SDL_BLENDMODE_BLEND);
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
+        SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, 128);
 
-        SDL_RenderFillRect(renderer, NULL);
+        SDL_RenderFillRect(app->renderer, NULL);
 
         SDL_Texture *popup_texture = NULL;
 
         switch (popup_type) {
         case POPUP_TYPE_PAPER:
-                popup_texture = world->paper_popup;
+                popup_texture = app->asset_manager.popup_paper;
                 break;
         case POPUP_TYPE_CREDITS:
-                popup_texture = world->credits_popup;
+                popup_texture = app->asset_manager.popup_credits;
                 break;
         }
 
@@ -47,7 +47,7 @@ void popup_render(SDL_Renderer *renderer, FontAtlas *font, const char *text,
                                 .w = rect_w,
                                 .h = rect_h};
 
-        SDL_RenderCopyF(renderer, popup_texture, NULL, &popup_rect);
+        SDL_RenderCopyF(app->renderer, popup_texture, NULL, &popup_rect);
 
         // Draw the text in the safe area of the paper
         float safe_area_x = popup_rect.x + PAPER_SAFE_X * rect_w;
@@ -55,6 +55,6 @@ void popup_render(SDL_Renderer *renderer, FontAtlas *font, const char *text,
         /*float max_text_width = PAPER_SAFE_W * rect_w; */
 
         // TODO: Wrap!
-        font_draw(font, renderer, text, safe_area_x, safe_area_y,
-                  (SDL_Color){0, 0, 0, 255});
+        font_draw(&app->font_atlas, app->renderer, text, safe_area_x,
+                  safe_area_y, (SDL_Color){0, 0, 0, 255});
 }

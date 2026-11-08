@@ -12,14 +12,15 @@
 #define HUD_ICON_GAP 16.0
 
 /* Probably should move this to the settings file when that exists */
-static bool settings_icon_render(SDL_Renderer *renderer, const World *world) {
-        if (!world->settings_icon) {
+static bool settings_icon_render(App *app, const World *world) {
+        if (!app->asset_manager.icon_settings) {
                 return false;
         }
 
         SDL_FRect icon = {(float)world->width - HUD_MARGIN - HUD_ICON_SIZE,
                           HUD_MARGIN, HUD_ICON_SIZE, HUD_ICON_SIZE};
-        SDL_RenderCopyF(renderer, world->settings_icon, NULL, &icon);
+        SDL_RenderCopyF(app->renderer, app->asset_manager.icon_settings, NULL,
+                        &icon);
         return true;
 }
 
@@ -52,20 +53,19 @@ void play_scene_render(void *state_data, App *app, SDL_Renderer *renderer) {
         World *world = (World *)state_data;
 
         double vault_right_offset = HUD_MARGIN;
-        if (settings_icon_render(app->renderer, world)) {
+        if (settings_icon_render(app, world)) {
                 vault_right_offset += HUD_ICON_SIZE + HUD_ICON_GAP;
         }
         vault_render(&world->vault, app->renderer, &app->font_atlas,
                      world->width, vault_right_offset);
 
         if (world->sidebar_shown) {
-                draw_sidebar(app->renderer, world, &app->font_atlas);
+                draw_sidebar(app, world, &app->font_atlas);
         }
 
         if (world->popup_open) {
-                popup_render(app->renderer, &app->font_atlas, world->popup_text,
-                             world, world->popup_type, world->width,
-                             world->height);
+                popup_render(app, world->popup_text, world, world->popup_type,
+                             world->width, world->height);
         }
 }
 

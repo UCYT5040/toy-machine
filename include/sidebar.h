@@ -8,10 +8,10 @@
 // Negative factor to invert the scrolling direction
 #define SCROLL_FACTOR -20.0
 
-void draw_sidebar(SDL_Renderer *renderer, World *world, FontAtlas *font);
+void draw_sidebar(App *app, World *world, FontAtlas *font);
 
-void sidebar_handle_mouse_down(SDL_Renderer *renderer, World *world);
+void sidebar_handle_mouse_down(App *app, World *world);
 
-void sidebar_handle_scroll(SDL_Renderer *renderer, World *world, float y);
+void sidebar_handle_scroll(App *app, World *world, float y);
 
-bool pos_in_sidebar(SDL_Renderer *renderer, Vec2 *pos);
+bool pos_in_sidebar(App *app, Vec2 *pos);

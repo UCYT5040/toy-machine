@@ -27,6 +27,7 @@ bool app_init(App *app, const char *title, int width, int height) {
 
         font_init(&app->font_atlas, app->renderer,
                   "assets/Roboto_Mono/static/RobotoMono-Regular.ttf", 16);
+        asset_manager_init(&app->asset_manager, app->renderer);
         dev_console_init(&app->dev_console, &app->font_atlas);
 
         app->running = true;
@@ -111,6 +112,9 @@ void app_destroy(App *app) {
         }
 
         font_destroy(&app->font_atlas);
+
+        asset_manager_destroy(&app->asset_manager);
+
         SDL_DestroyRenderer(app->renderer);
         SDL_DestroyWindow(app->window);
         SDL_Quit();

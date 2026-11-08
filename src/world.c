@@ -32,69 +32,6 @@ void world_init(World *world, SDL_Renderer *renderer) {
 
         vault_init(&world->vault, renderer);
 
-        for (int i = 1; i < EMOJI_COUNT; i++) {
-                EmojiDefinition *definition = &EMOJI_DEFINITIONS[i];
-
-                definition->index = i;
-
-                world->textures[i] = NULL; // Initialize texture to NULL
-
-                if (definition->svg_path) {
-                        SDL_Surface *surface = IMG_Load(definition->svg_path);
-
-                        if (surface) {
-                                world->textures[i] =
-                                    SDL_CreateTextureFromSurface(renderer,
-                                                                 surface);
-                        }
-
-                        SDL_FreeSurface(surface);
-                }
-        }
-
-        SDL_Surface *bg_box_surface = IMG_Load("assets/box.svg");
-        SDL_Surface *bg_space_surface = IMG_Load("assets/space.svg");
-        SDL_Surface *bg_yard_surface = IMG_Load("assets/yard.svg");
-
-        SDL_Surface *paper_popup_surface = IMG_Load("assets/paper_popup.svg");
-        SDL_Surface *credits_popup_surface =
-            IMG_Load("assets/credits_popup.svg");
-
-        if (!bg_box_surface || !bg_space_surface) {
-                return;
-        }
-        world->bg_box = SDL_CreateTextureFromSurface(renderer, bg_box_surface);
-        world->bg_space =
-            SDL_CreateTextureFromSurface(renderer, bg_space_surface);
-        world->bg_yard =
-            SDL_CreateTextureFromSurface(renderer, bg_yard_surface);
-        SDL_FreeSurface(bg_box_surface);
-        SDL_FreeSurface(bg_space_surface);
-        SDL_FreeSurface(bg_yard_surface);
-
-        if (paper_popup_surface) {
-                world->paper_popup =
-                    SDL_CreateTextureFromSurface(renderer, paper_popup_surface);
-        }
-        SDL_FreeSurface(paper_popup_surface);
-
-        if (credits_popup_surface) {
-                world->credits_popup = SDL_CreateTextureFromSurface(
-                    renderer, credits_popup_surface);
-        }
-        SDL_FreeSurface(credits_popup_surface);
-
-        SDL_Surface *settings_icon_surface =
-            IMG_Load("assets/settings_icon.png");
-        if (settings_icon_surface) {
-                world->settings_icon = SDL_CreateTextureFromSurface(
-                    renderer, settings_icon_surface);
-        }
-        SDL_FreeSurface(settings_icon_surface);
-
-        SDL_SetTextureColorMod(world->bg_box, 190, 190,
-                               190); // Dim the box background
-
         // Set all entities to inactive and collectable
         for (int i = 0; i < MAX_ENTITIES; i++) {
                 world->entities[i].active = false;
@@ -278,18 +215,20 @@ void world_update(World *world, double dt) {
 void world_render(App *app, World *world, SDL_Renderer *renderer) {
         if (app->scene->type == SCENE_TYPE_TITLE) {
                 // Always render yard background for the title
-                SDL_RenderCopy(renderer, world->bg_yard, NULL, NULL);
+                SDL_RenderCopy(renderer, app->asset_manager.bg_yard, NULL,
+                               NULL);
 
         } else {
-                SDL_RenderCopy(renderer, world->bg_box, NULL, NULL);
+                SDL_RenderCopy(renderer, app->asset_manager.bg_box, NULL, NULL);
 
                 if (world->space_mode_transition > 0.001) {
-                        SDL_SetTextureBlendMode(world->bg_space,
+                        SDL_SetTextureBlendMode(app->asset_manager.bg_space,
                                                 SDL_BLENDMODE_BLEND);
                         SDL_SetTextureAlphaMod(
-                            world->bg_space,
+                            app->asset_manager.bg_space,
                             (Uint8)(255.0 * world->space_mode_transition));
-                        SDL_RenderCopy(renderer, world->bg_space, NULL, NULL);
+                        SDL_RenderCopy(renderer, app->asset_manager.bg_space,
+                                       NULL, NULL);
                 }
         }
 
@@ -300,7 +239,7 @@ void world_render(App *app, World *world, SDL_Renderer *renderer) {
                 }
 
                 SDL_Texture *texture =
-                    world->textures[entity->definition->index];
+                    app->asset_manager.emojis[entity->definition->index];
                 if (texture == NULL) {
                         continue;
                 }
@@ -389,10 +328,10 @@ void world_render(App *app, World *world, SDL_Renderer *renderer) {
                                                          [input_index];
 
                                                 SDL_Texture *input_texture =
-                                                    world->textures
-                                                        [input_entity
-                                                             ->definition
-                                                             ->index];
+                                                    app->asset_manager
+                                                        .emojis[input_entity
+                                                                    ->definition
+                                                                    ->index];
                                                 if (input_texture == NULL) {
                                                         continue;
                                                 }
@@ -446,7 +385,7 @@ void world_handle_mouse_up(App *app, World *world) {
                             &world->entities[world->pressed_entity_index];
 
                         if (world->sidebar_shown &&
-                            pos_in_sidebar(app->renderer, &world->mouse_pos)) {
+                            pos_in_sidebar(app, &world->mouse_pos)) {
                                 entity_remove(world, dragged);
                         } else {
                                 if (!dragged->pinned && mouse_dt < 0.1)

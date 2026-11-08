@@ -1,4 +1,5 @@
 #include "sidebar.h"
+#include "app.h"
 #include "emoji_registry.h"
 #include "entities.h"
 #include "font.h"
@@ -30,17 +31,17 @@ static float get_emoji_width(EmojiDefinition *definition) {
         }
 }
 
-void draw_sidebar(SDL_Renderer *renderer, World *world, FontAtlas *font) {
+void draw_sidebar(App *app, World *world, FontAtlas *font) {
         int renderer_w, renderer_h;
-        SDL_GetRendererOutputSize(renderer, &renderer_w, &renderer_h);
+        SDL_GetRendererOutputSize(app->renderer, &renderer_w, &renderer_h);
 
         int sidebar_x = (int)fmax(renderer_w - SIDEBAR_WIDTH, 0.0);
         int sidebar_width = renderer_w - sidebar_x;
         const SDL_Rect sidebar_rect = {
             .x = sidebar_x, .y = 0, .w = sidebar_width, .h = renderer_h};
 
-        SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
-        SDL_RenderFillRect(renderer, &sidebar_rect);
+        SDL_SetRenderDrawColor(app->renderer, 50, 50, 50, 255);
+        SDL_RenderFillRect(app->renderer, &sidebar_rect);
 
         const char title[] = "Your Items";
         int title_width = font_measure_text(font, title);
@@ -49,7 +50,7 @@ void draw_sidebar(SDL_Renderer *renderer, World *world, FontAtlas *font) {
 
         // Only draws the title if not scrolled
         if (world->sidebar_scroll_px <= 1.0)
-                font_draw(font, renderer, "Your Items",
+                font_draw(font, app->renderer, "Your Items",
                           sidebar_x + (float)sidebar_width / 2 -
                               (float)title_width / 2.0,
                           10.0, font_color);
@@ -57,7 +58,7 @@ void draw_sidebar(SDL_Renderer *renderer, World *world, FontAtlas *font) {
         float item_y = 40.0 - world->sidebar_scroll_px;
         for (int i = 1; i < EMOJI_COUNT; i++) {
                 EmojiDefinition *definition = &EMOJI_DEFINITIONS[i];
-                SDL_Texture *texture = world->textures[i];
+                SDL_Texture *texture = app->asset_manager.emojis[i];
 
                 if (!definition->unlocked || !texture)
                         continue;
@@ -70,20 +71,21 @@ void draw_sidebar(SDL_Renderer *renderer, World *world, FontAtlas *font) {
                         SDL_FRect emoji_rect = {(float)sidebar_x + 20.0, item_y,
                                                 emoji_w, emoji_h};
 
-                        SDL_RenderCopyF(renderer, texture, NULL, &emoji_rect);
+                        SDL_RenderCopyF(app->renderer, texture, NULL,
+                                        &emoji_rect);
 
-                        font_draw(font, renderer, EMOJI_DEFINITIONS[i].name,
-                                  sidebar_x + 20.0, item_y + emoji_h + 5.0,
-                                  font_color);
+                        font_draw(font, app->renderer,
+                                  EMOJI_DEFINITIONS[i].name, sidebar_x + 20.0,
+                                  item_y + emoji_h + 5.0, font_color);
                 }
 
                 item_y += 35.0 + emoji_h;
         }
 }
 
-void sidebar_handle_mouse_down(SDL_Renderer *renderer, World *world) {
+void sidebar_handle_mouse_down(App *app, World *world) {
         int renderer_w, renderer_h;
-        SDL_GetRendererOutputSize(renderer, &renderer_w, &renderer_h);
+        SDL_GetRendererOutputSize(app->renderer, &renderer_w, &renderer_h);
 
         int sidebar_x = (int)fmax(renderer_w - SIDEBAR_WIDTH, 0.0);
 
@@ -93,7 +95,7 @@ void sidebar_handle_mouse_down(SDL_Renderer *renderer, World *world) {
         bool spawn_found = false;
         for (int i = 1; i < EMOJI_COUNT; i++) {
                 EmojiDefinition *definition = &EMOJI_DEFINITIONS[i];
-                SDL_Texture *texture = world->textures[i];
+                SDL_Texture *texture = app->asset_manager.emojis[i];
 
                 if (!definition->unlocked || !texture)
                         continue;
@@ -166,15 +168,15 @@ void sidebar_handle_mouse_down(SDL_Renderer *renderer, World *world) {
         }
 }
 
-void sidebar_handle_scroll(SDL_Renderer *renderer, World *world, float y) {
+void sidebar_handle_scroll(App *app, World *world, float y) {
         int renderer_w, renderer_h;
-        SDL_GetRendererOutputSize(renderer, &renderer_w, &renderer_h);
+        SDL_GetRendererOutputSize(app->renderer, &renderer_w, &renderer_h);
 
         float max_scroll = 0;
         for (int i = 1; i < EMOJI_COUNT; i++) {
                 EmojiDefinition *definition = &EMOJI_DEFINITIONS[i];
 
-                if (definition->unlocked && world->textures[i])
+                if (definition->unlocked && app->asset_manager.emojis[i])
                         max_scroll += 35.0 + get_emoji_height(definition);
         }
 
@@ -183,10 +185,10 @@ void sidebar_handle_scroll(SDL_Renderer *renderer, World *world, float y) {
             fmaxf(world->sidebar_scroll_px + y * SCROLL_FACTOR, 0.0f), limit);
 }
 
-bool pos_in_sidebar(SDL_Renderer *renderer, Vec2 *pos) {
+bool pos_in_sidebar(App *app, Vec2 *pos) {
         int renderer_w, renderer_h;
 
-        SDL_GetRendererOutputSize(renderer, &renderer_w, &renderer_h);
+        SDL_GetRendererOutputSize(app->renderer, &renderer_w, &renderer_h);
 
         int sidebar_x = (int)fmax(renderer_w - SIDEBAR_WIDTH, 0.0);
 

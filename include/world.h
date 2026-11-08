@@ -12,15 +12,6 @@
 
 typedef struct World {
         Entity entities[MAX_ENTITIES];
-        SDL_Texture *textures[EMOJI_COUNT];
-
-        SDL_Texture *bg_box;
-        SDL_Texture *bg_space;
-        SDL_Texture *bg_yard;
-
-        SDL_Texture *paper_popup;
-        SDL_Texture *credits_popup;
-        SDL_Texture *settings_icon;
 
         PopupType popup_type;
 
