@@ -85,6 +85,7 @@ typedef struct {
         EmojiUpdateFunction update;
         EmojiCollideFunction collide;
         EmojiWallCollideFunction wall_collide;
+        EmojiClickFunction click;
 } EmojiDefinition;
 
 extern EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT];

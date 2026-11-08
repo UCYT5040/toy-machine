@@ -35,3 +35,5 @@ typedef void (*EmojiCollideFunction)(struct World *world, struct Entity *self,
 
 typedef void (*EmojiWallCollideFunction)(struct World *world,
                                          struct Entity *self, Vec2 normal);
+
+typedef void (*EmojiClickFunction)(struct World *world, struct Entity *self);

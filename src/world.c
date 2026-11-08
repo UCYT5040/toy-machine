@@ -430,14 +430,11 @@ void world_handle_mouse_up(World *world) {
 
                         world->is_dragging = false;
                 } else {
-                        // TODO: Switch this to a proper press event
-
                         Entity *pressed =
                             &world->entities[world->pressed_entity_index];
 
-                        if (pressed->type == EMOJI_PAPER) {
-                                world->popup_open = true;
-                                world->popup_text = pressed->note_text;
+                        if (pressed->definition->click) {
+                                pressed->definition->click(world, pressed);
                         }
                 }
         }

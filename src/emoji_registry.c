@@ -9,6 +9,7 @@
 #include "emojis/gear.h"
 #include "emojis/mirror.h"
 #include "emojis/money_bag.h"
+#include "emojis/paper.h"
 #include "emojis/pin.h"
 #include "emojis/purse.h"
 #include "emojis/trashbin.h"
@@ -239,7 +240,8 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                      .unlocked = false,
                      .update = NULL,
                      .collide = NULL,
-                     .wall_collide = NULL},
+                     .wall_collide = NULL,
+                     .click = emoji_paper_click},
     [EMOJI_CREDIT_CARD] = {.name = "credit_card",
                            .svg_path = "assets/emojis/credit_card.svg",
                            .radius = 20.0,
