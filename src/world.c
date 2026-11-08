@@ -50,8 +50,8 @@ void world_init(World *world, SDL_Renderer *renderer) {
                 }
         }
 
-        SDL_Surface *bg_box_surface = IMG_Load("assets/box.jpg");
-        SDL_Surface *bg_space_surface = IMG_Load("assets/space.jpg");
+        SDL_Surface *bg_box_surface = IMG_Load("assets/box.svg");
+        SDL_Surface *bg_space_surface = IMG_Load("assets/space.svg");
 
         SDL_Surface *paper_popup_surface = IMG_Load("assets/paper_popup.svg");
 
@@ -70,9 +70,11 @@ void world_init(World *world, SDL_Renderer *renderer) {
         }
         SDL_FreeSurface(paper_popup_surface);
 
-        SDL_Surface *settings_icon_surface = IMG_Load("assets/settings_icon.png");
+        SDL_Surface *settings_icon_surface =
+            IMG_Load("assets/settings_icon.png");
         if (settings_icon_surface) {
-                world->settings_icon = SDL_CreateTextureFromSurface(renderer, settings_icon_surface);
+                world->settings_icon = SDL_CreateTextureFromSurface(
+                    renderer, settings_icon_surface);
         }
         SDL_FreeSurface(settings_icon_surface);
 
