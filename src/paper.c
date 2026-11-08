@@ -1,12 +1,8 @@
 #include "paper.h"
 
 /* All these constants are based on SVG viewport 800x600 */
-#define PAPER_CENTER_X 381
-#define PAPER_CENTER_Y 288
-#define PAPER_SAFE_WIDTH 646 - 116
-#define PAPER_SAFE_HEIGHT 576 - 116
 #define PAPER_SAFE_X (116.0f / 800.0f)
-#define PAPER_SAFE_Y (116.0f / 600.0f)
+#define PAPER_SAFE_Y (180.0f / 600.0f)
 #define PAPER_SAFE_W (530.0f / 800.0f)
 
 void paper_popup_render(SDL_Renderer *renderer, FontAtlas *font,
