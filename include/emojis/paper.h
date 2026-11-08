@@ -2,4 +2,4 @@
 
 #include "world.h"
 
-void emoji_paper_click(World *world, Entity *self);
+void emoji_paper_click(App *app, World *world, Entity *self);

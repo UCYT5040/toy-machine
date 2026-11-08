@@ -11,6 +11,7 @@
 #include "emojis/money_bag.h"
 #include "emojis/paper.h"
 #include "emojis/pin.h"
+#include "emojis/play.h"
 #include "emojis/purse.h"
 #include "emojis/trashbin.h"
 #include "emojis/wind.h"
@@ -376,6 +377,16 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
             .update = NULL,
             .collide = NULL,
         },
+    [EMOJI_PLAY] = {.name = "play",
+                    .svg_path = "assets/emojis/play.svg",
+                    CIRCULAR_EMOJI(24.0),
+                    .mass = 3.0,
+                    .restitution = 0.3,
+                    .default_tags = TAG_NONE,
+                    .unlocked = false,
+                    .update = NULL,
+                    .collide = NULL,
+                    .click = emoji_play_click},
     /* Please add all emojis above this line */
     /* These emojis are unlocked by default because they're for cleaning
      */

@@ -44,6 +44,20 @@ void app_run(App *app) {
         uint64_t last_counter = SDL_GetPerformanceCounter();
 
         while (app->running) {
+
+                if (app->next_scene != NULL) {
+                        if (app->scene->exit) {
+                                app->scene->exit(app->scene->state_data, app);
+                        }
+
+                        app->scene = app->next_scene;
+                        app->next_scene = NULL;
+
+                        if (app->scene->enter) {
+                                app->scene->enter(app->scene->state_data, app);
+                        }
+                }
+
                 /* delta time compute */
                 uint64_t current_counter = SDL_GetPerformanceCounter();
                 float dt =
@@ -101,3 +115,5 @@ void app_destroy(App *app) {
         SDL_DestroyWindow(app->window);
         SDL_Quit();
 }
+
+void app_set_scene(App *app, Scene *scene) { app->next_scene = scene; }

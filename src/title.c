@@ -1,4 +1,4 @@
-#include "title.h"
+#include "scenes/title.h"
 #include "app.h"
 #include "world.h"
 #include "world_event.h"
@@ -28,7 +28,12 @@ void title_scene_enter(void *state_data, App *app) {
 
         app->scene->state_data = calloc(1, sizeof(World));
 
-        world_init((World *)app->scene->state_data, app->renderer);
+        World *world = (World *)app->scene->state_data;
+
+        world_init(world, app->renderer);
+
+        entity_spawn(world, EMOJI_PLAY,
+                     (Vec2){world->width / 2.0, world->height / 2.0});
 }
 
 void title_scene_exit(void *state_data, App *app) {
@@ -37,7 +42,7 @@ void title_scene_exit(void *state_data, App *app) {
 }
 
 void title_scene_handle_event(void *state_data, App *app, SDL_Event *event) {
-        world_handle_event((World *)state_data, app->renderer, event,
+        world_handle_event(app, (World *)state_data, app->renderer, event,
                            &app->running);
 };
 
@@ -50,17 +55,6 @@ void title_scene_render(void *state_data, App *app, SDL_Renderer *renderer) {
 
         // TODO: Consider moving to, e.g., world_render_hud
         World *world = (World *)state_data;
-
-        double vault_right_offset = HUD_MARGIN;
-        if (settings_icon_render(app->renderer, world)) {
-                vault_right_offset += HUD_ICON_SIZE + HUD_ICON_GAP;
-        }
-        vault_render(&world->vault, app->renderer, &app->font_atlas,
-                     world->width, vault_right_offset);
-
-        if (world->sidebar_shown) {
-                draw_sidebar(app->renderer, world, &app->font_atlas);
-        }
 
         if (world->popup_open) {
                 paper_popup_render(app->renderer, &app->font_atlas,

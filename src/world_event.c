@@ -6,8 +6,8 @@
 #include "world_event.h"
 
 // This will not draw anything using the renderer
-void world_handle_event(World *world, SDL_Renderer *renderer, SDL_Event *event,
-                        bool *running) {
+void world_handle_event(App *app, World *world, SDL_Renderer *renderer,
+                        SDL_Event *event, bool *running) {
         switch (event->type) {
         case SDL_QUIT:
                 *running = false;
@@ -55,7 +55,7 @@ void world_handle_event(World *world, SDL_Renderer *renderer, SDL_Event *event,
         case SDL_MOUSEBUTTONUP: {
                 if (event->button.button == SDL_BUTTON_LEFT) {
                         world->mouse_down = false;
-                        world_handle_mouse_up(world);
+                        world_handle_mouse_up(app, world);
                 } else if (event->button.button == SDL_BUTTON_MIDDLE) {
                         world->sidebar_shown = !world->sidebar_shown;
                 }

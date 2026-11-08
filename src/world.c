@@ -1,4 +1,5 @@
 #include "world.h"
+#include "app.h"
 #include "collision.h"
 #include "dev.h"
 #include "emoji_registry.h"
@@ -414,7 +415,7 @@ void world_handle_mouse_down(World *world) {
         }
 }
 
-void world_handle_mouse_up(World *world) {
+void world_handle_mouse_up(App *app, World *world) {
         uint32_t time = SDL_GetTicks();
         double mouse_dt =
             (double)time / 1000.0 - (double)world->last_mouse_move / 1000.0;
@@ -434,7 +435,7 @@ void world_handle_mouse_up(World *world) {
                             &world->entities[world->pressed_entity_index];
 
                         if (pressed->definition->click) {
-                                pressed->definition->click(world, pressed);
+                                pressed->definition->click(app, world, pressed);
                         }
                 }
         }

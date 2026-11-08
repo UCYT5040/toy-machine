@@ -1,6 +1,6 @@
 #include "app.h"
 #include "recipes.h"
-#include "title.h"
+#include "scenes/title.h"
 #include "world.h"
 
 #define WINDOW_TITLE "Toy Machine"

@@ -27,6 +27,7 @@ typedef struct {
 typedef struct World World;
 typedef struct Entity Entity;
 typedef struct Recipe Recipe;
+typedef struct App App;
 
 typedef void (*EmojiUpdateFunction)(struct World *world, struct Entity *self,
                                     double dt);
@@ -36,4 +37,5 @@ typedef void (*EmojiCollideFunction)(struct World *world, struct Entity *self,
 typedef void (*EmojiWallCollideFunction)(struct World *world,
                                          struct Entity *self, Vec2 normal);
 
-typedef void (*EmojiClickFunction)(struct World *world, struct Entity *self);
+typedef void (*EmojiClickFunction)(App *app, struct World *world,
+                                   struct Entity *self);

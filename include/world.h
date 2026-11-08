@@ -71,4 +71,4 @@ int world_get_entity_at(
                              // with a center nearest to the position.
 
 void world_handle_mouse_down(World *world);
-void world_handle_mouse_up(World *world);
+void world_handle_mouse_up(App *app, World *world);
