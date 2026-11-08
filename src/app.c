@@ -1,6 +1,5 @@
-#include "gui.h"
+#include "app.h"
 #include "dev.h"
-#include "event.h"
 #include "paper.h"
 #include "sidebar.h"
 #include "vault.h"
@@ -12,7 +11,6 @@
 #define HUD_ICON_SIZE 48.0
 #define HUD_ICON_GAP 16.0
 
-/* App GUI stuff */
 bool app_init(App *app, const char *title, int width, int height) {
         if (SDL_Init(SDL_INIT_VIDEO) != 0) {
                 return false;
@@ -40,6 +38,12 @@ bool app_init(App *app, const char *title, int width, int height) {
         gui_console_init(&app->dev_console, &app->font_atlas);
 
         app->running = true;
+
+        // Call the scene enter function (if it exists)
+        if (app->scene->enter) {
+                app->scene->enter(app->scene->state_data, app);
+        }
+
         return true;
 }
 
@@ -55,7 +59,7 @@ static bool settings_icon_render(SDL_Renderer *renderer, const World *world) {
         return true;
 }
 
-void app_run(App *app, World *world) {
+void app_run(App *app) {
         double frequency = (double)SDL_GetPerformanceFrequency();
         uint64_t last_counter = SDL_GetPerformanceCounter();
 
@@ -71,22 +75,31 @@ void app_run(App *app, World *world) {
                 while (SDL_PollEvent(&event)) {
                         /* handle_event will not draw anything using the
                         renderer */
-                        handle_event(world, app->renderer, &event,
-                                     &app->running);
-                        gui_console_handle_event(&app->dev_console, world,
-                                                 &event, &app->running);
+                        if (app->scene->handle_event) {
+                                app->scene->handle_event(app->scene->state_data,
+                                                         app, &event);
+                        }
+                        /* gui_console_handle_event(&app->dev_console, world,
+                                                 &event, &app->running); */
                 }
 
                 /* update world */
-                if (!world->dev_command_mode) {
-                        world_update(world, dt);
+                if (app->scene->update) {
+                        app->scene->update(app->scene->state_data, app, dt);
                 }
 
                 /* render pipe */
                 SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, 255);
                 SDL_RenderClear(app->renderer);
 
-                world_render(world, app->renderer);
+                if (app->scene->render) {
+                        app->scene->render(app->scene->state_data, app,
+                                           app->renderer);
+                }
+
+                // TODO: Move vault / sidebar rendering elsewhere (dev console
+                // should probably stay here?)
+                /*
                 double vault_right_offset = HUD_MARGIN;
                 if (settings_icon_render(app->renderer, world)) {
                         vault_right_offset += HUD_ICON_SIZE + HUD_ICON_GAP;
@@ -106,13 +119,18 @@ void app_run(App *app, World *world) {
                         paper_popup_render(
                             app->renderer, &app->font_atlas, world->popup_text,
                             world->paper_popup, world->width, world->height);
-                }
+                }*/
 
                 SDL_RenderPresent(app->renderer);
         }
 }
 
 void app_destroy(App *app) {
+        // Call the scene exit function (if it exists)
+        if (app->scene->exit) {
+                app->scene->exit(app->scene->state_data, app);
+        }
+
         font_destroy(&app->font_atlas);
         SDL_DestroyRenderer(app->renderer);
         SDL_DestroyWindow(app->window);

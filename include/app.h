@@ -2,6 +2,7 @@
 #define GUI_H
 
 #include "font.h"
+#include "scene.h"
 #include "world.h"
 #include <SDL2/SDL.h>
 #include <stdbool.h>
@@ -16,16 +17,17 @@ typedef struct {
         bool was_mode_active;
 } DevConsole;
 
-typedef struct {
+typedef struct App {
         SDL_Window *window;
         SDL_Renderer *renderer;
         FontAtlas font_atlas;
+        Scene *scene;
         DevConsole dev_console;
         bool running;
 } App;
 
 bool app_init(App *app, const char *title, int width, int height);
-void app_run(App *app, World *world);
+void app_run(App *app);
 void app_destroy(App *app);
 
 void gui_console_init(DevConsole *console, FontAtlas *font_atlas);

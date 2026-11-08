@@ -1,13 +1,13 @@
 #include <SDL2/SDL.h>
 #include <stdint.h>
 
-#include "event.h"
 #include "save.h"
 #include "sidebar.h"
+#include "world_event.h"
 
 // This will not draw anything using the renderer
-void handle_event(World *world, SDL_Renderer *renderer, SDL_Event *event,
-                  bool *running) {
+void world_handle_event(World *world, SDL_Renderer *renderer, SDL_Event *event,
+                        bool *running) {
         switch (event->type) {
         case SDL_QUIT:
                 *running = false;
