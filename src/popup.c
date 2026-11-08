@@ -1,13 +1,14 @@
-#include "paper.h"
+#include "popup.h"
+#include "world.h"
 
 /* All these constants are based on SVG viewport 800x600 */
 #define PAPER_SAFE_X (116.0f / 800.0f)
 #define PAPER_SAFE_Y (180.0f / 600.0f)
 #define PAPER_SAFE_W (530.0f / 800.0f)
 
-void paper_popup_render(SDL_Renderer *renderer, FontAtlas *font,
-                        const char *text, SDL_Texture *popup_texture,
-                        int renderer_w, int renderer_h) {
+void popup_render(SDL_Renderer *renderer, FontAtlas *font, const char *text,
+                  World *world, PopupType popup_type, int renderer_w,
+                  int renderer_h) {
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
@@ -22,6 +23,16 @@ void paper_popup_render(SDL_Renderer *renderer, FontAtlas *font,
                                 .w = rect_w,
                                 .h = rect_h};
 
+        SDL_Texture *popup_texture = NULL;
+
+        switch (popup_type) {
+        case POPUP_TYPE_PAPER:
+                popup_texture = world->paper_popup;
+                break;
+        case POPUP_TYPE_CREDITS:
+                popup_texture = world->credits_popup;
+                break;
+        }
         SDL_RenderCopyF(renderer, popup_texture, NULL, &popup_rect);
 
         // Draw the text in the safe area of the paper

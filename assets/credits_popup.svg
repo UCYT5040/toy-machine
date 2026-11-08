@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <!-- Soft drop shadow for popup depth -->
+    <filter id="popup-shadow" x="-5%" y="-5%" width="110%" height="114%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#1e4968" flood-opacity="0.16" />
+    </filter>
+
+    <!-- Clip paths for crisp clapperboard sticks -->
+    <clipPath id="lower-bar-clip">
+      <rect x="48" y="144" width="704" height="58" />
+    </clipPath>
+    <clipPath id="upper-bar-clip">
+      <rect x="0" y="0" width="704" height="58" />
+    </clipPath>
+  </defs>
+
+  <!-- ===================================================================== -->
+  <!-- 4:3 CLAPPERBOARD CREDITS POPUP WINDOW (Inspired by Noto Clapper Emoji)-->
+  <!-- ===================================================================== -->
+  <g id="credits-popup-window" filter="url(#popup-shadow)">
+
+    <!-- Main Slate Board Body (#424242) -->
+    <path id="slate-body"
+          d="M 58 202
+             H 742
+             V 552
+             C 742 560.84, 734.84 568, 726 568
+             H 74
+             C 65.16 568, 58 560.84, 58 552
+             Z"
+          fill="#424242" />
+
+    <!-- Under-Clapper Black Shadow Bar (#000000) -->
+    <rect id="slate-top-shadow"
+          x="70" y="192" width="672" height="22"
+          fill="#000000" />
+
+    <!-- Left 3D Bevel Edge on Slate Board (#616161) -->
+    <path id="slate-left-bevel"
+          d="M 58 202
+             H 80
+             V 560
+             C 80 564.42, 76.42 568, 72 568
+             H 70
+             C 63.37 568, 58 562.63, 58 556
+             Z"
+          fill="#616161" />
+
+    <!-- =================================================================== -->
+    <!-- LOWER HORIZONTAL CLAPPER BAR                                        -->
+    <!-- =================================================================== -->
+    <g id="lower-clapper-bar" clip-path="url(#lower-bar-clip)">
+      <!-- Light Gray Base (#EEEEEE) -->
+      <rect x="48" y="144" width="704" height="58" fill="#EEEEEE" />
+
+      <!-- Top Edge Highlight (#F5F5F5) -->
+      <rect x="48" y="144" width="704" height="8" fill="#F5F5F5" />
+
+      <!-- Diagonal Dark Chevron Stripes (#424242) -->
+      <g fill="#424242">
+        <polygon points="200,144 142,202 226,202 284,144" />
+        <polygon points="368,144 310,202 394,202 452,144" />
+        <polygon points="536,144 478,202 562,202 620,144" />
+        <polygon points="704,144 646,202 730,202 752,180 752,144" />
+      </g>
+
+      <!-- Subtle Top Edge Shading -->
+      <rect x="48" y="144" width="704" height="8" fill="#424242" opacity="0.3" />
+
+      <!-- Left End-Cap (#BDBDBD) -->
+      <rect x="48" y="144" width="11" height="58" fill="#BDBDBD" />
+    </g>
+
+    <!-- =================================================================== -->
+    <!-- UPPER TILTED CLAPPER STICK                                          -->
+    <!-- =================================================================== -->
+    <g id="upper-clapper-bar" transform="translate(48, 144) rotate(-5.6) translate(0, -58)">
+      <g clip-path="url(#upper-bar-clip)">
+        <!-- Light Gray Base (#EEEEEE) -->
+        <rect x="0" y="0" width="704" height="58" fill="#EEEEEE" />
+
+        <!-- Top Edge Highlight (#F5F5F5) -->
+        <rect x="0" y="0" width="704" height="8" fill="#F5F5F5" />
+
+        <!-- Diagonal Dark Chevron Stripes (#424242) -->
+        <g fill="#424242">
+          <polygon points="11,8 94,58 11,58" />
+          <polygon points="152,58 94,0 178,0 236,58" />
+          <polygon points="320,58 262,0 346,0 404,58" />
+          <polygon points="488,58 430,0 514,0 572,58" />
+          <polygon points="656,58 598,0 682,0 704,22 704,58" />
+        </g>
+
+        <!-- Subtle Top Edge Shading -->
+        <rect x="0" y="0" width="704" height="8" fill="#424242" opacity="0.3" />
+
+        <!-- Left End-Cap (#9E9E9E) -->
+        <rect x="0" y="0" width="11" height="58" fill="#9E9E9E" />
+      </g>
+    </g>
+
+    <!-- =================================================================== -->
+    <!-- CORNER HINGE BRACKET & RIVETS                                       -->
+    <!-- =================================================================== -->
+    <g id="clapper-hinge">
+      <!-- Hinge Shadow / Backing Plate (#616161) -->
+      <path d="M 180 202
+               H 75
+               C 65.6 202, 58 194.4, 58 185
+               V 109
+               C 58 94.5, 81.5 86.2, 97.2 99.6
+               L 190 176
+               C 199.8 184.2, 192.4 202, 180 202
+               Z"
+            fill="#616161" />
+
+      <!-- Hinge Metallic Front Plate (#C6C6C6) -->
+      <path d="M 190 202
+               H 92
+               C 79.85 202, 70 192.15, 70 180
+               V 115
+               C 70 98.2, 91.8 90.4, 105.6 102.6
+               L 200 176.5
+               C 212.5 186.8, 205.4 202, 190 202
+               Z"
+            fill="#C6C6C6" />
+
+      <!-- Three Hinge Bolts / Rivets (#616161) -->
+      <ellipse cx="97" cy="130" rx="10.5" ry="10.2" fill="#616161" />
+      <ellipse cx="97" cy="178" rx="10.5" ry="10.2" fill="#616161" />
+      <ellipse cx="171" cy="178" rx="10.5" ry="10.2" fill="#616161" />
+    </g>
+
+    <!-- =================================================================== -->
+    <!-- TOP & BOTTOM CHALK LINE ACCENTS (Framing the open center text area) -->
+    <!-- =================================================================== -->
+    <g id="decorative-accents" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" stroke-miterlimit="10">
+      <!-- Top horizontal chalk rule -->
+      <line x1="128" y1="256" x2="688" y2="256" />
+
+      <!-- Bottom horizontal chalk rule + Scene/Take vertical dividers -->
+      <line x1="128" y1="484" x2="688" y2="484" />
+      <line x1="308" y1="484" x2="308" y2="542" />
+      <line x1="508" y1="484" x2="508" y2="542" />
+    </g>
+
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- CENTER TEXT SPACE (Open safe area: x = 128..688, y = 280..460)        -->
+  <!-- Place your popup title and body text inside this group                -->
+  <!-- ===================================================================== -->
+  <g id="center-text-space" transform="translate(408, 370)" text-anchor="middle">
+    <!-- Uncomment below to include embedded SVG text:
+    <text y="-18" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="32" font-weight="700" fill="#FFFFFF">Popup Title</text>
+    <text y="24" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="400" fill="#E0E0E0">Your centered message text goes here.</text>
+    -->
+  </g>
+</svg>

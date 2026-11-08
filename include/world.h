@@ -6,6 +6,7 @@
 
 #include "emoji_registry.h"
 #include "entities.h"
+#include "popup.h"
 #include "types.h"
 #include "vault.h"
 
@@ -15,9 +16,13 @@ typedef struct World {
 
         SDL_Texture *bg_box;
         SDL_Texture *bg_space;
+        SDL_Texture *bg_yard;
 
         SDL_Texture *paper_popup;
+        SDL_Texture *credits_popup;
         SDL_Texture *settings_icon;
+
+        PopupType popup_type;
 
         bool popup_open;
         const char *popup_text;
@@ -64,7 +69,7 @@ typedef struct World {
 
 void world_init(World *world, SDL_Renderer *renderer);
 void world_update(World *world, double dt);
-void world_render(World *world, SDL_Renderer *renderer);
+void world_render(App *app, World *world, SDL_Renderer *renderer);
 
 int world_get_entity_at(
     World *world, Vec2 pos); // If multiple entities overlap, selects the entity

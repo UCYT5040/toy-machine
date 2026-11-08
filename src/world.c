@@ -54,8 +54,11 @@ void world_init(World *world, SDL_Renderer *renderer) {
 
         SDL_Surface *bg_box_surface = IMG_Load("assets/box.svg");
         SDL_Surface *bg_space_surface = IMG_Load("assets/space.svg");
+        SDL_Surface *bg_yard_surface = IMG_Load("assets/yard.svg");
 
         SDL_Surface *paper_popup_surface = IMG_Load("assets/paper_popup.svg");
+        SDL_Surface *credits_popup_surface =
+            IMG_Load("assets/credits_popup.svg");
 
         if (!bg_box_surface || !bg_space_surface) {
                 return;
@@ -63,14 +66,23 @@ void world_init(World *world, SDL_Renderer *renderer) {
         world->bg_box = SDL_CreateTextureFromSurface(renderer, bg_box_surface);
         world->bg_space =
             SDL_CreateTextureFromSurface(renderer, bg_space_surface);
+        world->bg_yard =
+            SDL_CreateTextureFromSurface(renderer, bg_yard_surface);
         SDL_FreeSurface(bg_box_surface);
         SDL_FreeSurface(bg_space_surface);
+        SDL_FreeSurface(bg_yard_surface);
 
         if (paper_popup_surface) {
                 world->paper_popup =
                     SDL_CreateTextureFromSurface(renderer, paper_popup_surface);
         }
         SDL_FreeSurface(paper_popup_surface);
+
+        if (credits_popup_surface) {
+                world->credits_popup = SDL_CreateTextureFromSurface(
+                    renderer, credits_popup_surface);
+        }
+        SDL_FreeSurface(credits_popup_surface);
 
         SDL_Surface *settings_icon_surface =
             IMG_Load("assets/settings_icon.png");
@@ -263,15 +275,22 @@ void world_update(World *world, double dt) {
         tutorial_update(world, scaled_dt);
 }
 
-void world_render(World *world, SDL_Renderer *renderer) {
-        SDL_RenderCopy(renderer, world->bg_box, NULL, NULL);
+void world_render(App *app, World *world, SDL_Renderer *renderer) {
+        if (app->scene->type == SCENE_TYPE_TITLE) {
+                // Always render yard background for the title
+                SDL_RenderCopy(renderer, world->bg_yard, NULL, NULL);
 
-        if (world->space_mode_transition > 0.001) {
-                SDL_SetTextureBlendMode(world->bg_space, SDL_BLENDMODE_BLEND);
-                SDL_SetTextureAlphaMod(
-                    world->bg_space,
-                    (Uint8)(255.0 * world->space_mode_transition));
-                SDL_RenderCopy(renderer, world->bg_space, NULL, NULL);
+        } else {
+                SDL_RenderCopy(renderer, world->bg_box, NULL, NULL);
+
+                if (world->space_mode_transition > 0.001) {
+                        SDL_SetTextureBlendMode(world->bg_space,
+                                                SDL_BLENDMODE_BLEND);
+                        SDL_SetTextureAlphaMod(
+                            world->bg_space,
+                            (Uint8)(255.0 * world->space_mode_transition));
+                        SDL_RenderCopy(renderer, world->bg_space, NULL, NULL);
+                }
         }
 
         for (int i = 0; i < MAX_ENTITIES; i++) {

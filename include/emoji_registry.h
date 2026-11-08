@@ -35,6 +35,7 @@ typedef enum {
         EMOJI_ELECTRICITY,
         EMOJI_ELECTRIC_TRAIN,
         EMOJI_PLAY,
+        EMOJI_CREDITS,
         EMOJI_COUNT
 } EmojiType;
 

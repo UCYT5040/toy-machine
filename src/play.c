@@ -3,7 +3,7 @@
 #include "world.h"
 #include "world_event.h"
 
-#include "paper.h"
+#include "popup.h"
 #include "sidebar.h"
 #include "vault.h"
 
@@ -46,7 +46,7 @@ void play_scene_update(void *state_data, App *app, double dt) {
 }
 
 void play_scene_render(void *state_data, App *app, SDL_Renderer *renderer) {
-        world_render((World *)state_data, renderer);
+        world_render(app, (World *)state_data, renderer);
 
         // TODO: Consider moving to, e.g., world_render_hud
         World *world = (World *)state_data;
@@ -63,9 +63,9 @@ void play_scene_render(void *state_data, App *app, SDL_Renderer *renderer) {
         }
 
         if (world->popup_open) {
-                paper_popup_render(app->renderer, &app->font_atlas,
-                                   world->popup_text, world->paper_popup,
-                                   world->width, world->height);
+                popup_render(app->renderer, &app->font_atlas, world->popup_text,
+                             world, world->popup_type, world->width,
+                             world->height);
         }
 }
 
