@@ -11,18 +11,6 @@
 #define HUD_ICON_SIZE 48.0
 #define HUD_ICON_GAP 16.0
 
-/* Probably should move this to the settings file when that exists */
-static bool settings_icon_render(SDL_Renderer *renderer, const World *world) {
-        if (!world->settings_icon) {
-                return false;
-        }
-
-        SDL_FRect icon = {(float)world->width - HUD_MARGIN - HUD_ICON_SIZE,
-                          HUD_MARGIN, HUD_ICON_SIZE, HUD_ICON_SIZE};
-        SDL_RenderCopyF(renderer, world->settings_icon, NULL, &icon);
-        return true;
-}
-
 void title_scene_enter(void *state_data, App *app) {
         (void)state_data;
 
@@ -57,9 +45,8 @@ void title_scene_render(void *state_data, App *app, SDL_Renderer *renderer) {
         World *world = (World *)state_data;
 
         if (world->popup_open) {
-                popup_render(app->renderer, &app->font_atlas, world->popup_text,
-                             world, world->popup_type, world->width,
-                             world->height);
+                popup_render(app, world->popup_text, world, world->popup_type,
+                             world->width, world->height);
         }
 }
 
