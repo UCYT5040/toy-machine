@@ -44,7 +44,7 @@ void play_scene_handle_event(void *state_data, App *app, SDL_Event *event) {
 };
 
 void play_scene_update(void *state_data, App *app, double dt) {
-        world_update((World *)state_data, dt);
+        world_update(app, (World *)state_data, dt);
 }
 
 void play_scene_render(void *state_data, App *app, SDL_Renderer *renderer) {

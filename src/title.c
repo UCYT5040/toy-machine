@@ -13,6 +13,17 @@
 #define HUD_ICON_SIZE 48.0
 #define HUD_ICON_GAP 16.0
 
+static void spawn_rain_cloud(World *world, float x) {
+        float y = (float)(rand() % (world->height / 3) + 50);
+
+        Entity *cloud = entity_spawn(world, EMOJI_RAIN_CLOUD, (Vec2){x, y});
+
+        cloud->scale += (float)(rand() % 40 - 20) / 100.0f;
+        cloud->angle += (float)(rand() % 40 - 20) / 100.0f;
+}
+
+#define NUM_RAIN_CLOUDS 3
+
 void title_scene_enter(void *state_data, App *app) {
         (void)state_data;
 
@@ -21,6 +32,16 @@ void title_scene_enter(void *state_data, App *app) {
         World *world = (World *)app->scene->state_data;
 
         world_init(world, app->renderer, SCENE_TYPE_TITLE);
+
+        // Set title to be raining already
+        world->rain_intensity = 1.0f;
+
+        for (int i = 0; i < NUM_RAIN_CLOUDS; i++) {
+                float x =
+                    world->width * ((float)(i + 1) / (NUM_RAIN_CLOUDS + 2));
+                x += (float)(rand() % 100 - 50); // Random offset
+                spawn_rain_cloud(world, x);
+        }
 
         entity_spawn(world, EMOJI_PLAY,
                      (Vec2){world->width / 2.0, world->height / 2.0});
@@ -41,7 +62,7 @@ void title_scene_handle_event(void *state_data, App *app, SDL_Event *event) {
 };
 
 void title_scene_update(void *state_data, App *app, double dt) {
-        world_update((World *)state_data, dt);
+        world_update(app, (World *)state_data, dt);
 }
 
 void title_scene_render(void *state_data, App *app, SDL_Renderer *renderer) {

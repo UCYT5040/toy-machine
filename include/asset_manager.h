@@ -19,6 +19,8 @@ typedef struct AssetManager {
         SDL_Texture *icon_vault;
 
         Mix_Music *title_music;
+
+        Mix_Chunk *sfx_rain;
 } AssetManager;
 
 void asset_manager_init(AssetManager *asset_manager, SDL_Renderer *renderer);

@@ -413,6 +413,15 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                     .update = emoji_bomb_update,
                     .collide = emoji_bomb_collide,
                     .wall_collide = NULL},
+    [EMOJI_RAIN_CLOUD] = {.name = "rain_cloud",
+                          .svg_path = "assets/emojis/rain_cloud.svg",
+                          CIRCULAR_EMOJI(60.0),
+                          .mass = 20.0,
+                          .restitution = 0.2,
+                          .default_tags = TAG_NO_GRAVITY,
+                          .update = NULL,
+                          .collide = NULL,
+                          .wall_collide = NULL},
     /* Please add all emojis above this line */
     /* These emojis are unlocked by default because they're for cleaning
      */

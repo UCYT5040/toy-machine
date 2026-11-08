@@ -37,6 +37,7 @@ typedef enum {
         EMOJI_PLAY,
         EMOJI_CREDITS,
         EMOJI_BOMB,
+        EMOJI_RAIN_CLOUD,
         EMOJI_COUNT
 } EmojiType;
 

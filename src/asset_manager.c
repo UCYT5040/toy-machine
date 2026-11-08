@@ -1,6 +1,7 @@
 #include "asset_manager.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL_mixer.h>
 
 void asset_manager_init(AssetManager *asset_manager, SDL_Renderer *renderer) {
         for (int i = 1; i < EMOJI_COUNT; i++) {
@@ -69,6 +70,8 @@ void asset_manager_init(AssetManager *asset_manager, SDL_Renderer *renderer) {
 
         asset_manager->title_music =
             Mix_LoadMUS("assets/music/corona_radiata.ogg");
+
+        asset_manager->sfx_rain = Mix_LoadWAV("assets/sfx/rain.ogg");
 }
 
 void asset_manager_destroy(AssetManager *asset_manager) {

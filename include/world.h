@@ -11,6 +11,15 @@
 #include "types.h"
 #include "vault.h"
 
+#define MAX_RAINDROPS 150
+
+typedef struct Raindrop {
+        Vec2 pos;
+        float speed;
+        float length;
+        float alpha;
+} Raindrop;
+
 typedef struct World {
         Entity entities[MAX_ENTITIES];
 
@@ -58,12 +67,17 @@ typedef struct World {
 
         int tutorial_progress;
 
+        int rain_channel;
+        float rain_intensity;
+
+        Raindrop raindrops[MAX_RAINDROPS];
+
         bool enable_box_and_space_background;
         bool enable_tutorial;
 } World;
 
 void world_init(World *world, SDL_Renderer *renderer, SceneType scene_type);
-void world_update(World *world, double dt);
+void world_update(App *app, World *world, double dt);
 void world_render(App *app, World *world, SDL_Renderer *renderer);
 
 int world_get_entity_at(

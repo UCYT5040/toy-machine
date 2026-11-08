@@ -37,6 +37,7 @@ void world_init(World *world, SDL_Renderer *renderer, SceneType scene_type) {
             -1; // First element will be in a dragging state if not set to `-1`
         world->speed = 1.0; // If left unset, the game will be frozen (0.0)
         world->save_slot = 1;
+        world->rain_channel = -1;
 
         vault_init(&world->vault, renderer);
 
@@ -48,16 +49,73 @@ void world_init(World *world, SDL_Renderer *renderer, SceneType scene_type) {
 
         if (world->enable_tutorial)
                 tutorial_enter_step(world, TUTORIAL_STEP_START);
+
+        for (int i = 0; i < MAX_RAINDROPS; i++) {
+                Raindrop *drop = &world->raindrops[i];
+
+                drop->pos.x = (float)(rand() % (world->width - 200) + 100);
+                drop->pos.y = (float)(rand() % world->height);
+
+                drop->speed = 450.0f + (float)(rand() % 300);
+
+                drop->length = 12.0f + (drop->speed / 750.0f) * 10.0f;
+
+                drop->alpha = 140.0f + (float)(rand() % 80);
+        }
 }
 
-void world_update(World *world, double dt) {
+void world_update(App *app, World *world, double dt) {
         world->space_mode = false;
+        bool rain_cloud_present = false;
         for (int i = 0; i < MAX_ENTITIES; i++) {
-                if (world->entities[i].active &&
-                    (world->entities[i].tags & TAG_SPACE)) {
-                        world->space_mode = true;
-                        break;
+                if (world->entities[i].active) {
+                        if (world->entities[i].tags & TAG_SPACE) {
+                                world->space_mode = true;
+                                break;
+                        }
+                        if (world->entities[i].type == EMOJI_RAIN_CLOUD &&
+                            world->rain_intensity < 1.0) {
+                                world->rain_intensity += dt * 0.05;
+                                if (world->rain_intensity > 1.0) {
+                                        world->rain_intensity = 1.0;
+                                }
+                                rain_cloud_present = true;
+                        }
                 }
+        }
+
+        if (!rain_cloud_present && world->rain_intensity > 0.0) {
+                world->rain_intensity -=
+                    dt * 0.1; // Faster decay that growth, since multiple
+                              // clouds can cause more growth
+                if (world->rain_intensity < 0.0) {
+                        world->rain_intensity = 0.0;
+                }
+        }
+
+        if (world->rain_intensity > 0.01f) {
+                if (world->rain_channel == -1) {
+                        world->rain_channel = Mix_PlayChannel(
+                            -1, app->asset_manager.sfx_rain, -1);
+                } else
+                        Mix_Volume(
+                            world->rain_channel,
+                            (int)(world->rain_intensity * MIX_MAX_VOLUME));
+
+                // Update raindrops
+                for (int i = 0; i < MAX_RAINDROPS; i++) {
+                        Raindrop *drop = &world->raindrops[i];
+                        drop->pos.y += drop->speed * dt;
+                        drop->pos.x -= drop->speed * 0.15f * dt;
+
+                        if (drop->pos.y > world->height) {
+                                drop->pos.y = -drop->length;
+                                drop->pos.x = rand() % world->width;
+                        }
+                }
+        } else if (world->rain_channel != -1) {
+                Mix_HaltChannel(world->rain_channel);
+                world->rain_channel = -1;
         }
 
         if (world->space_mode) {
@@ -367,6 +425,25 @@ void world_render(App *app, World *world, SDL_Renderer *renderer) {
 
                 if (world->dev_show_hitboxes)
                         render_hitbox(renderer, entity);
+        }
+
+        int visible_drops = (int)(MAX_RAINDROPS * world->rain_intensity);
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+        for (int i = 0; i < visible_drops; i++) {
+                Raindrop *drop = &world->raindrops[i];
+                Uint8 a = (Uint8)(drop->alpha * world->rain_intensity);
+                SDL_SetRenderDrawColor(renderer, 180, 205, 230, a);
+                SDL_RenderDrawLineF(renderer, drop->pos.x, drop->pos.y,
+                                    drop->pos.x - 3.0f,
+                                    drop->pos.y + drop->length);
+        }
+
+        if (world->rain_intensity > 0.01f) {
+                SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+                Uint8 alpha = (Uint8)(110.0f * world->rain_intensity);
+                SDL_SetRenderDrawColor(renderer, 20, 30, 45, alpha);
+                SDL_RenderFillRect(renderer, NULL);
         }
 }
 
