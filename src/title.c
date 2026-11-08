@@ -7,6 +7,8 @@
 #include "sidebar.h"
 #include "vault.h"
 
+#include <SDL2/SDL_mixer.h>
+
 #define HUD_MARGIN 16.0
 #define HUD_ICON_SIZE 48.0
 #define HUD_ICON_GAP 16.0
@@ -22,11 +24,15 @@ void title_scene_enter(void *state_data, App *app) {
 
         entity_spawn(world, EMOJI_PLAY,
                      (Vec2){world->width / 2.0, world->height / 2.0});
+
+        Mix_FadeInMusic(app->asset_manager.title_music, -1, 2000);
 }
 
 void title_scene_exit(void *state_data, App *app) {
         free(state_data);
         app->scene->state_data = NULL;
+
+        Mix_FadeOutMusic(500);
 }
 
 void title_scene_handle_event(void *state_data, App *app, SDL_Event *event) {

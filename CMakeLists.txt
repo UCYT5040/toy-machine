@@ -8,7 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED IMPORTED_TARGET
-    sdl2 SDL2_image SDL2_ttf)
+    sdl2 SDL2_image SDL2_ttf SDL2_mixer)
 
 file(GLOB SOURCES CONFIGURE_DEPENDS "src/*.c" "src/emojis/*.c")
 add_executable(toy_machine ${SOURCES})

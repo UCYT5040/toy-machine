@@ -2,9 +2,14 @@
 #include "dev.h"
 
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 
 bool app_init(App *app, const char *title, int width, int height) {
-        if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+                return false;
+        }
+
+        if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
                 return false;
         }
 
@@ -114,6 +119,9 @@ void app_destroy(App *app) {
         font_destroy(&app->font_atlas);
 
         asset_manager_destroy(&app->asset_manager);
+
+        Mix_CloseAudio();
+        Mix_Quit();
 
         SDL_DestroyRenderer(app->renderer);
         SDL_DestroyWindow(app->window);

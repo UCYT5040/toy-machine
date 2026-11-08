@@ -66,6 +66,9 @@ void asset_manager_init(AssetManager *asset_manager, SDL_Renderer *renderer) {
 
         SDL_SetTextureColorMod(asset_manager->bg_box, 190, 190,
                                190); // Dim the box background
+
+        asset_manager->title_music =
+            Mix_LoadMUS("assets/music/corona_radiata.ogg");
 }
 
 void asset_manager_destroy(AssetManager *asset_manager) {

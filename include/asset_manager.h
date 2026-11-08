@@ -3,6 +3,7 @@
 #include "emoji_registry.h"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 
 typedef struct AssetManager {
         SDL_Texture *emojis[EMOJI_COUNT];
@@ -16,6 +17,8 @@ typedef struct AssetManager {
 
         SDL_Texture *icon_settings;
         SDL_Texture *icon_vault;
+
+        Mix_Music *title_music;
 } AssetManager;
 
 void asset_manager_init(AssetManager *asset_manager, SDL_Renderer *renderer);
