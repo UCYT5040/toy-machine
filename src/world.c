@@ -17,8 +17,16 @@
 #define MAX_A 2500.0
 #define DRAG_THRESHOLD 6.0f
 
-void world_init(World *world, SDL_Renderer *renderer) {
+void world_init(World *world, SDL_Renderer *renderer, SceneType scene_type) {
         *world = (World){0};
+
+        if (scene_type == SCENE_TYPE_PLAY) {
+                world->enable_box_and_space_background = true;
+                world->enable_tutorial = true;
+        } else {
+                world->enable_box_and_space_background = false;
+                world->enable_tutorial = false;
+        }
 
         SDL_GetRendererOutputSize(renderer, &world->width, &world->height);
 
@@ -38,7 +46,8 @@ void world_init(World *world, SDL_Renderer *renderer) {
                 world->entities[i].collect = true;
         }
 
-        tutorial_enter_step(world, TUTORIAL_STEP_START);
+        if (world->enable_tutorial)
+                tutorial_enter_step(world, TUTORIAL_STEP_START);
 }
 
 void world_update(World *world, double dt) {
@@ -209,11 +218,12 @@ void world_update(World *world, double dt) {
                 entity->definition->update(world, entity, scaled_dt);
         }
 
-        tutorial_update(world, scaled_dt);
+        if (world->enable_tutorial)
+                tutorial_update(world, scaled_dt);
 }
 
 void world_render(App *app, World *world, SDL_Renderer *renderer) {
-        if (app->scene->type == SCENE_TYPE_TITLE) {
+        if (!world->enable_box_and_space_background) {
                 // Always render yard background for the title
                 SDL_RenderCopy(renderer, app->asset_manager.bg_yard, NULL,
                                NULL);

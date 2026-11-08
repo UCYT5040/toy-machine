@@ -29,7 +29,8 @@ void play_scene_enter(void *state_data, App *app) {
 
         app->scene->state_data = calloc(1, sizeof(World));
 
-        world_init((World *)app->scene->state_data, app->renderer);
+        world_init((World *)app->scene->state_data, app->renderer,
+                   SCENE_TYPE_PLAY);
 }
 
 void play_scene_exit(void *state_data, App *app) {

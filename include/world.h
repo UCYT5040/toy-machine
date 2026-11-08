@@ -7,6 +7,7 @@
 #include "emoji_registry.h"
 #include "entities.h"
 #include "popup.h"
+#include "scene.h"
 #include "types.h"
 #include "vault.h"
 
@@ -56,9 +57,12 @@ typedef struct World {
         double sidebar_scroll_px;
 
         int tutorial_progress;
+
+        bool enable_box_and_space_background;
+        bool enable_tutorial;
 } World;
 
-void world_init(World *world, SDL_Renderer *renderer);
+void world_init(World *world, SDL_Renderer *renderer, SceneType scene_type);
 void world_update(World *world, double dt);
 void world_render(App *app, World *world, SDL_Renderer *renderer);
 

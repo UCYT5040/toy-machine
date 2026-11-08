@@ -18,7 +18,7 @@ void title_scene_enter(void *state_data, App *app) {
 
         World *world = (World *)app->scene->state_data;
 
-        world_init(world, app->renderer);
+        world_init(world, app->renderer, SCENE_TYPE_TITLE);
 
         entity_spawn(world, EMOJI_PLAY,
                      (Vec2){world->width / 2.0, world->height / 2.0});
