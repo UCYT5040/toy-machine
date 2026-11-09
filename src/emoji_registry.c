@@ -432,6 +432,15 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                          .update = emoji_parachute_update,
                          .collide = emoji_parachute_collide,
                          .wall_collide = NULL},
+    [EMOJI_PACKAGE] = {.name = "package",
+                       .svg_path = "assets/emojis/package.svg",
+                       CIRCULAR_EMOJI(40.0),
+                       .mass = 2.0,
+                       .restitution = 0.2,
+                       .default_tags = TAG_NONE,
+                       .update = emoji_parachute_update,
+                       .collide = emoji_parachute_collide,
+                       .wall_collide = NULL},
     /* Please add all emojis above this line */
     /* These emojis are unlocked by default because they're for cleaning
      */

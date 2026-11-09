@@ -39,6 +39,7 @@ typedef enum {
         EMOJI_BOMB,
         EMOJI_RAIN_CLOUD,
         EMOJI_PARACHUTE,
+        EMOJI_PACKAGE,
         EMOJI_COUNT
 } EmojiType;
 

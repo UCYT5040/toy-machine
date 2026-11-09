@@ -242,7 +242,12 @@ void world_update(App *app, World *world, double dt) {
                                             world->press_start_pos);
 
                                         if (distance > DRAG_THRESHOLD) {
-                                                world->is_dragging = true;
+                                                if (!(entity->type ==
+                                                          EMOJI_PARACHUTE &&
+                                                      entity->pinned_target_index >=
+                                                          0))
+                                                        world->is_dragging =
+                                                            true;
                                         }
                                 }
                         }
