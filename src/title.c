@@ -1,5 +1,6 @@
 #include "scenes/title.h"
 #include "app.h"
+#include "emoji_registry.h"
 #include "world.h"
 #include "world_event.h"
 
@@ -28,6 +29,18 @@ void title_scene_enter_intro(World *world, App *app) {
         Mix_FadeOutMusic(500);
 
         Mix_FadeInMusic(app->asset_manager.intro_music, 1, 500);
+
+        // Add a parachute & package falling from the top of the screen
+        float x = (float)(rand() % (world->width - 200) + 100);
+        Entity *parachute =
+            entity_spawn(world, EMOJI_PARACHUTE, (Vec2){x, -150.0f});
+        Entity *package =
+            entity_spawn(world, EMOJI_PACKAGE, (Vec2){x, -100.0f});
+        parachute->tags |= TAG_BOUNDARY_IMMUNE;
+        package->tags |= TAG_BOUNDARY_IMMUNE;
+        parachute->pinned_target_index = package->index;
+        parachute->pinned_offset =
+            (Vec2){0.0f, -package->definition->radius * package->scale};
 }
 
 void title_scene_enter(void *state_data, App *app) {

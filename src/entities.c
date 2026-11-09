@@ -290,6 +290,21 @@ void entity_constrain_to_bounds(Entity *entity, World *world) {
         if (!entity->active || entity->definition->mass <= 0.0)
                 return;
 
+        if (entity->tags & TAG_BOUNDARY_IMMUNE) {
+                double radius = entity->definition->radius * entity->scale;
+                bool inside_x =
+                    (entity->pos.x - radius >= 0.0) &&
+                    (entity->pos.x + radius <= (double)world->width);
+                bool inside_y =
+                    (entity->pos.y - radius >= 0.0) &&
+                    (entity->pos.y + radius <= (double)world->height);
+                if (inside_x && inside_y) {
+                        entity->tags &= ~TAG_BOUNDARY_IMMUNE;
+                } else {
+                        return;
+                }
+        }
+
         double floor_y = (double)world->height;
         Vec2 contact_point;
         double penetration;

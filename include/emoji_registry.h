@@ -35,6 +35,7 @@ typedef enum {
         EMOJI_ELECTRICITY,
         EMOJI_ELECTRIC_TRAIN,
         EMOJI_PLAY,
+        EMOJI_SKIP,
         EMOJI_CREDITS,
         EMOJI_BOMB,
         EMOJI_RAIN_CLOUD,
@@ -59,7 +60,8 @@ typedef enum {
         // Will not be collected by inventories
         TAG_INVENTORY_IMMUNE = 1ULL << 10,
         // Don't apply gravitational force
-        TAG_NO_GRAVITY = 1ULL << 11
+        TAG_NO_GRAVITY = 1ULL << 11,
+        TAG_BOUNDARY_IMMUNE = 1ULL << 12,
 } EmojiTag;
 
 typedef enum {

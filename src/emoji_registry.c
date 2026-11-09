@@ -16,6 +16,7 @@
 #include "emojis/pin.h"
 #include "emojis/play.h"
 #include "emojis/purse.h"
+#include "emojis/skip.h"
 #include "emojis/trashbin.h"
 #include "emojis/wind.h"
 
@@ -405,6 +406,16 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                     .update = NULL,
                     .collide = NULL,
                     .click = emoji_play_click},
+    [EMOJI_SKIP] = {.name = "skip",
+                    .svg_path = "assets/emojis/skip.svg",
+                    CIRCULAR_EMOJI(24.0),
+                    .mass = 3.0,
+                    .restitution = 0.3,
+                    .default_tags = TAG_NONE,
+                    .unlocked = false,
+                    .update = NULL,
+                    .collide = NULL,
+                    .click = emoji_skip_click},
     [EMOJI_BOMB] = {.name = "bomb",
                     .svg_path = "assets/emojis/bomb.svg",
                     CIRCULAR_EMOJI(20.0),
@@ -438,8 +449,8 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                        .mass = 2.0,
                        .restitution = 0.2,
                        .default_tags = TAG_NONE,
-                       .update = emoji_parachute_update,
-                       .collide = emoji_parachute_collide,
+                       .update = NULL,
+                       .collide = NULL,
                        .wall_collide = NULL},
     /* Please add all emojis above this line */
     /* These emojis are unlocked by default because they're for cleaning
