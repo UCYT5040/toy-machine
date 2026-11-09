@@ -57,3 +57,27 @@ Available commands:
 # Downloads Black Sun with Rays and saves as `assets/emojis/sun.svg`
 ./add_emoji.sh ☀️ sun
 ```
+
+## Credits
+
+By Jeremiah, Simon, and Utkrish.
+
+### Music
+
+"Corona Radiata" & "Demon Seed"
+
+> by Nine Inch Nails (The Slip)
+> Licensed under CC BY-NC-SA 3.0
+
+### Sounds
+
+"Falling Rain SFX" by valvalion
+
+> via Wikimedia Commons (CC BY 3.0)
+
+### Graphics
+
+Emojis based on Google Noto Emoji
+
+> Licensed under Apache 2.0
+> Derivative works adapted for Toy Machine
