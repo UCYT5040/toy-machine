@@ -47,8 +47,8 @@ typedef struct Recipe {
         RecipeOutput output;
 
         double processing_time; // Time in seconds to process the recipe
-        bool consume_a;
-        bool consume_b;
+
+        int coins_required;
 
         int specificity; // Higher values evaluated first
 } Recipe;
