@@ -1,4 +1,5 @@
 #include "emoji_registry.h"
+#include "emojis/atm.h"
 #include "emojis/balloon.h"
 #include "emojis/bank.h"
 #include "emojis/bomb.h"
@@ -187,6 +188,16 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                     .update = emoji_bank_update,
                     .collide = NULL,
                     .wall_collide = NULL},
+    [EMOJI_ATM] = {.name = "atm",
+                   .svg_path = "assets/emojis/atm.svg",
+                   CIRCULAR_EMOJI(20.0),
+                   .mass = 2.0,
+                   .restitution = 0.3,
+                   .default_tags = TAG_NONE,
+                   .unlocked = false,
+                   .update = emoji_atm_update,
+                   .collide = NULL,
+                   .wall_collide = NULL},
     [EMOJI_COIN] = {.name = "coin",
                     .svg_path = "assets/emojis/coin.svg",
                     CIRCULAR_EMOJI(15.0),

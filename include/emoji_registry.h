@@ -31,6 +31,7 @@ typedef enum {
         EMOJI_CAR,
         EMOJI_PAPER,
         EMOJI_MIRROR,
+        EMOJI_ATM,
         EMOJI_BALLOON,
         EMOJI_ELECTRICITY,
         EMOJI_ELECTRIC_TRAIN,
