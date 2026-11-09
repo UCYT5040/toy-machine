@@ -223,6 +223,14 @@ static bool test_collider_pair(Entity *e1, Collider *c1, Entity *e2,
 
 bool entity_is_colliding(Entity *e1, Entity *e2,
                          CollisionManifold *out_manifold) {
+        if (e1->pinned_target_index == e2->index ||
+            e2->pinned_target_index == e1->index) {
+                if (out_manifold) {
+                        *out_manifold = (CollisionManifold){.colliding = false};
+                }
+                return false;
+        }
+
         double r1 = e1->definition->radius * e1->scale;
         double r2 = e2->definition->radius * e2->scale;
 

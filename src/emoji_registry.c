@@ -12,6 +12,7 @@
 #include "emojis/mirror.h"
 #include "emojis/money_bag.h"
 #include "emojis/paper.h"
+#include "emojis/parachute.h"
 #include "emojis/pin.h"
 #include "emojis/play.h"
 #include "emojis/purse.h"
@@ -422,6 +423,15 @@ EmojiDefinition EMOJI_DEFINITIONS[EMOJI_COUNT] = {
                           .update = NULL,
                           .collide = NULL,
                           .wall_collide = NULL},
+    [EMOJI_PARACHUTE] = {.name = "parachute",
+                         .svg_path = "assets/emojis/parachute.svg",
+                         CIRCULAR_EMOJI(40.0),
+                         .mass = 2.0,
+                         .restitution = 0.2,
+                         .default_tags = TAG_NONE,
+                         .update = emoji_parachute_update,
+                         .collide = emoji_parachute_collide,
+                         .wall_collide = NULL},
     /* Please add all emojis above this line */
     /* These emojis are unlocked by default because they're for cleaning
      */
