@@ -74,6 +74,9 @@ typedef struct World {
 
         Raindrop raindrops[MAX_RAINDROPS];
 
+        bool exiting;
+        float exit_timer;
+
         bool enable_box_and_space_background;
         bool enable_tutorial;
 } World;

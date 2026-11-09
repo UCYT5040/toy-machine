@@ -3,5 +3,7 @@
 #include "scenes/play.h"
 
 void emoji_skip_click(App *app, World *world, Entity *self) {
-        app_set_scene(app, &play_scene);
+        if (app->play_emoji_click_function) {
+                app->play_emoji_click_function(world, app);
+        }
 }

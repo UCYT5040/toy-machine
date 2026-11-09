@@ -1,6 +1,7 @@
 #include "scenes/title.h"
 #include "app.h"
 #include "emoji_registry.h"
+#include "scenes/play.h"
 #include "world.h"
 #include "world_event.h"
 
@@ -25,6 +26,11 @@ static void spawn_rain_cloud(World *world, float x) {
 
 #define NUM_RAIN_CLOUDS 3
 
+void title_scene_exit_intro(World *world, App *app) {
+        world->exit_timer = 0.0f;
+        world->exiting = true;
+}
+
 void title_scene_enter_intro(World *world, App *app) {
         Mix_FadeOutMusic(500);
 
@@ -41,6 +47,8 @@ void title_scene_enter_intro(World *world, App *app) {
         parachute->pinned_target_index = package->index;
         parachute->pinned_offset =
             (Vec2){0.0f, -package->definition->radius * package->scale};
+
+        app->play_emoji_click_function = title_scene_exit_intro;
 }
 
 void title_scene_enter(void *state_data, App *app) {
@@ -84,13 +92,60 @@ void title_scene_handle_event(void *state_data, App *app, SDL_Event *event) {
 
 void title_scene_update(void *state_data, App *app, double dt) {
         world_update(app, (World *)state_data, dt);
+
+        World *world = (World *)state_data;
+
+        if (world->exiting) {
+                world->exit_timer += (float)dt;
+                if (world->exit_timer >= 1.0f) {
+                        app_set_scene(app, &play_scene);
+                }
+        }
 }
 
 void title_scene_render(void *state_data, App *app, SDL_Renderer *renderer) {
-        world_render(app, (World *)state_data, renderer);
+        World *world = (World *)state_data;
+        SDL_Texture *dummy_texture;
+        if (world->exiting) {
+                dummy_texture = SDL_CreateTexture(
+                    renderer, SDL_PIXELFORMAT_RGBA8888,
+                    SDL_TEXTUREACCESS_TARGET, world->width, world->height);
+                SDL_SetRenderTarget(renderer, dummy_texture);
+                SDL_RenderClear(renderer);
+        }
+
+        world_render(app, world, renderer);
 
         // TODO: Consider moving to, e.g., world_render_hud
-        World *world = (World *)state_data;
+
+        if (world->exiting) {
+                SDL_SetRenderTarget(renderer, NULL);
+
+                float zoom =
+                    1.0f + 9.0f * (world->exit_timer * world->exit_timer);
+                float view_w = (float)world->width / zoom;
+                float view_h = (float)world->height / zoom;
+
+                Vec2 package_pos = {world->width / 2.0f, world->height / 2.0f};
+
+                for (int i = 0; i < MAX_ENTITIES; i++) {
+                        Entity *entity = &world->entities[i];
+                        if (entity->active && entity->type == EMOJI_PACKAGE) {
+                                package_pos = entity->pos;
+                                break;
+                        }
+                }
+
+                SDL_Rect src_rect = {
+                    (int)fmaxf(0.0f, fminf(package_pos.x - view_w / 2.0f,
+                                           world->width - view_w)),
+                    (int)fmaxf(0.0f, fminf(package_pos.y - view_h / 2.0f,
+                                           world->height - view_h)),
+                    (int)view_w, (int)view_h};
+
+                SDL_RenderCopy(renderer, dummy_texture, &src_rect, NULL);
+                SDL_DestroyTexture(dummy_texture);
+        }
 
         if (world->popup_open) {
                 popup_render(app, world->popup_text, world, world->popup_type,
